@@ -194,7 +194,27 @@ Protected routes
 |---|---|---|
 | `student` | Public register form | Notes, cabins (read), attendance scan, CGPA |
 | `faculty` | Public register form | Notes, cabins (read), attendance host, CGPA |
-| `admin` | Seed script only (one exists) | All of the above + full admin panel |
+| `admin` | `node scripts/seedAdmin.js` only — **exactly one** can ever exist | All of the above + full admin panel |
+
+**Single-Admin enforcement — three independent layers:**
+```
+Layer 1 — API (routes/auth.js)
+    POST /api/auth/register rejects any request where role = "admin"
+    with HTTP 403 before the document reaches the database.
+
+Layer 2 — Mongoose model (models/User.js)
+    pre('validate') hook: if another admin already exists in the
+    collection the save is rejected with an error.
+    This covers direct DB inserts and manual scripts too.
+
+    pre('save') hook: if role = admin and isBlocked = true,
+    isBlocked is silently reset to false — admin can never be
+    permanently locked out.
+
+Layer 3 — Block endpoint (routes/admin.js)
+    PATCH /api/admin/users/:id/block fetches the target first;
+    returns 403 if target.role === 'admin'.
+```
 
 **Avatar logic:** If `profilePhoto` is empty, the UI generates an initials circle (e.g. "Shivakant Kurmi" → "SK") with a deterministic colour based on the name hash.
 
@@ -348,23 +368,30 @@ Credits allowed: `1, 1.5, 2, 3, 4, 5, 6, 10, 20, 40`
 
 ### 6. Admin Dashboard
 
-**Access:** Only the single `admin` account (seeded via `scripts/seedAdmin.js`). The Register page blocks `role = admin` submissions.
+**Access:** Only the single `admin` account created by `node scripts/seedAdmin.js`.  
+The system enforces that **exactly one admin can ever exist** across three independent layers (API, Mongoose model, block endpoint — see [Authentication & Role System](#1-authentication--role-system) above).
 
 **Capabilities:**
 
 | Panel | What Admin Can Do |
 |---|---|
-| Users | View all users, search by name/email, Block / Unblock |
+| Users | View all non-admin users, search by name/email, Block / Unblock |
 | Notes | View all notes, delete any note |
 | Complaints | See all feedback/complaints submitted by users, mark resolved |
 
+> The admin account itself **cannot be blocked** — the User model's `pre('save')` hook
+> silently resets `isBlocked` to `false` if someone attempts it, and the block API
+> endpoint rejects the request with 403 before it even reaches the DB.
+
 **Blocking flow:**
 ```
-Admin blocks user
+Admin blocks a user
     → PATCH /api/admin/users/:id/block  { isBlocked: true }
+    → Endpoint checks: target.role === 'admin'? → 403 (cannot block admin)
+    → Otherwise saves isBlocked = true
     → User's next request hits protect middleware
     → Middleware checks user.isBlocked → returns 403
-    → Axios 401 interceptor redirects to /login
+    → Axios interceptor clears session and redirects to /login
     → ProtectedRoute checks isBlocked → redirects to /blocked
 
 User on /blocked page
@@ -457,9 +484,17 @@ MONGO_URI=mongodb://127.0.0.1:27017/mycampus
 JWT_SECRET=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
 JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5173
+
+# Admin seed credentials — used only by node scripts/seedAdmin.js
+ADMIN_NAME=Admin
+ADMIN_EMAIL=admin@mycampus.edu
+ADMIN_PASSWORD=CHANGE_BEFORE_SEEDING
+ADMIN_DEPT=Administration
 ```
-> `JWT_SECRET` and `MONGO_URI` must never be committed to git.  
-> Use `.env.example` files as safe templates.
+> `JWT_SECRET`, `MONGO_URI`, and `ADMIN_PASSWORD` must never be committed to git.  
+> Admin credentials are read from `.env` so **nothing is hardcoded** in source code.  
+> After seeding you may delete the `ADMIN_*` lines from `.env` — they are no longer needed.  
+> Use `.env.example` files as safe commitrable templates.
 
 ---
 
@@ -495,11 +530,27 @@ cp Frontend/.env.example Frontend/.env
 ```
 
 ### 3 — Seed the admin account (run once)
+
+Before running the seed, set your desired admin credentials in `Backend/.env`:
+```env
+ADMIN_NAME=Admin
+ADMIN_EMAIL=admin@mycampus.edu
+ADMIN_PASSWORD=YourStrongPassword123
+ADMIN_DEPT=Administration
+```
+Then run:
 ```bash
 cd Backend
 node scripts/seedAdmin.js
-# Credentials: admin@mycampus.edu / Admin@123  ← change after first login
 ```
+The script will:
+- Check if an admin already exists (exits safely if one does)
+- Create the admin account using credentials from `.env`
+- Print a confirmation with the email used
+
+> Only **one** admin account can ever exist. The seed script, the API register endpoint, and
+> the Mongoose model all independently enforce this rule. Running the script a second time
+> prints a warning and exits without creating a duplicate.
 
 ### 4 — Start the servers
 
@@ -534,7 +585,11 @@ Deploy the Backend to Railway, Render, or any Node.js host.
 | API authentication | JWT (HS256), 7-day expiry |
 | Route protection | `protect` middleware on every private route |
 | Role-based access | `restrictTo(role)` middleware after `protect` |
-| Admin isolation | Single admin, seed-only, register route blocks `admin` role |
+| Single admin — Layer 1 | Register API rejects `role=admin` with HTTP 403 |
+| Single admin — Layer 2 | Mongoose `pre('validate')` blocks a second admin at DB level |
+| Single admin — Layer 3 | Block endpoint checks `target.role` and returns 403 for admin |
+| Admin account unblockable | `pre('save')` hook resets `isBlocked` to false if role is admin |
+| Admin credentials | Seeded from `.env` variables — never hardcoded in source |
 | Blocked users | Checked inside `protect` — returns 403 immediately |
 | QR proxy prevention | Token expires server-side every 10s + device lock |
 | Device lock | `deviceId` fingerprint + 20-minute cooldown checked in DB |

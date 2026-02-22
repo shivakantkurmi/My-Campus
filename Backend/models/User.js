@@ -14,6 +14,30 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// ── Enforce single admin at the DB / model level ────────────
+// This fires before every save (insert or update).
+// If a document with role='admin' is being created/changed AND
+// another admin already exists in the collection, reject it.
+userSchema.pre('validate', async function (next) {
+  if (this.role === 'admin') {
+    const existing = await this.constructor.findOne(
+      { role: 'admin', _id: { $ne: this._id } }
+    );
+    if (existing) {
+      return next(new Error('Only one admin account is allowed.'));
+    }
+  }
+  next();
+});
+
+// Admin account can never be blocked
+userSchema.pre('save', function (next) {
+  if (this.role === 'admin' && this.isBlocked) {
+    this.isBlocked = false;
+  }
+  next();
+});
+
 // Hash password before save
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

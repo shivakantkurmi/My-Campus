@@ -21,13 +21,16 @@ router.get('/users', ...adminGuard, async (req, res) => {
 router.patch('/users/:id/block', ...adminGuard, async (req, res) => {
   try {
     const { isBlocked } = req.body;
-    const user = await User.findByIdAndUpdate(
-      req.params.id,
-      { isBlocked },
-      { new: true }
-    );
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    return res.json({ message: `User ${isBlocked ? 'blocked' : 'unblocked'}`, user });
+
+    // Safety: never allow blocking the admin account
+    const target = await User.findById(req.params.id);
+    if (!target) return res.status(404).json({ message: 'User not found' });
+    if (target.role === 'admin')
+      return res.status(403).json({ message: 'The admin account cannot be blocked.' });
+
+    target.isBlocked = isBlocked;
+    await target.save();
+    return res.json({ message: `User ${isBlocked ? 'blocked' : 'unblocked'}`, user: target });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
