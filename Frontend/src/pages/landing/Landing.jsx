@@ -213,7 +213,7 @@ export default function Landing() {
             </div>
             <span className="font-semibold text-gray-700 dark:text-gray-300">My-Campus</span>
           </div>
-          <p>© 2026 My-Campus · VIT Bhopal</p>
+          <p>©Shivaknt Kurmi  2026 My-Campus · VIT Bhopal</p>
           <div className="flex gap-4">
             <Link to="/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Sign In</Link>
             <Link to="/register" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Register</Link>
