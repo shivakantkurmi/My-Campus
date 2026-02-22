@@ -114,8 +114,7 @@ My-Campus/
 │       │       ├── Layout.jsx    ← App shell (sidebar + header + outlet)
 │       │       ├── Sidebar.jsx   ← Role-filtered navigation
 │       │       └── Header.jsx    ← Page title + dark mode toggle
-│       └── pages/
-│           ├── auth/             ← Login, Register, BlockedPage
+│       └── pages/            ├── landing/          ← Public landing page (hero, features, CTA)│           ├── auth/             ← Login, Register, BlockedPage
 │           ├── dashboard/        ← Stats cards + quick access grid
 │           ├── notes/            ← Notes list, search, add/edit modal
 │           ├── faculty-cabins/   ← Cabin finder + feedback modal
@@ -265,7 +264,15 @@ This is the most complex feature. It prevents students from sharing screenshots 
 
 **Faculty flow:**
 ```
-1. Faculty uploads Excel (Col A = Reg No, Col B = Name)
+1. Faculty uploads Excel — headers are **auto-detected** (any column order):
+
+   | Column | Recognised header variations |
+   |---|---|
+   | Registration number | `Reg No`, `regno`, `Reg. No.`, `Registration Number`, `Roll No`, `Roll Number`, `Student ID`, `Enrollment No` — plus common typos like `regestration no` |
+   | Student name | `Name`, `Student Name`, `Stu Name`, `SName`, `Full Name` |
+
+   Falls back to col A = reg, col B = name when no headers are found.  
+   **Round-trip safe:** the exported Excel uses `Registration Number` / `Name` headers, so re-uploading an exported sheet always works.
    OR manually adds students one by one
 
 2. Clicks "Start Session"
@@ -338,7 +345,7 @@ This is the most complex feature. It prevents students from sharing screenshots 
 
 **Runs entirely on the frontend — no API calls needed.**
 
-**Grade → Points mapping:**
+**VIT Bhopal grade → points mapping:**
 
 | Grade | Points | Note |
 |---|---|---|
@@ -348,10 +355,12 @@ This is the most complex feature. It prevents students from sharing screenshots 
 | C | 7 | |
 | D | 6 | |
 | E | 5 | |
-| F | 0 | |
-| N1 | 0 | |
-| N2 | 0 | |
-| P | — | **Skipped** (Pass/Fail, non-graded) |
+| F | 0 | Fail |
+| N1 | 0 | Failed to clear one or more components |
+| N2 | 0 | Debarred — lack of attendance |
+| N3 | 0 | Absent in Final Assessment Test |
+| N4 | 0 | Debarred in FAT due to malpractice |
+| P | — | **Fully excluded** — credits and points both skipped |
 
 **Formula:**
 ```
@@ -359,7 +368,19 @@ GPA  = Σ(gradePoints × credits) / Σcredits
 CGPA = Σ(gradePoints × credits across all semesters) / Σcredits
 ```
 
-Credits allowed: `1, 1.5, 2, 3, 4, 5, 6, 10, 20, 40`
+Each course entry requires only **Grade** and **Credits** (subject name not needed).  
+Credits allowed: `1, 1.5, 2, 3, 4, 5, 6`
+
+A live **Points** preview (grade × credits) is shown per course row.
+
+The result card is colour-coded:
+| CGPA / GPA | Label | Colour |
+|---|---|---|
+| ≥ 9.0 | Outstanding 🏆 | Green |
+| ≥ 8.0 | Excellent 🌟 | Green |
+| ≥ 7.0 | Good 👍 | Indigo |
+| ≥ 6.0 | Average | Amber |
+| < 6.0 | Needs improvement | Red |
 
 **GPA Tab** — calculates GPA for a single semester.  
 **CGPA Tab** — add multiple semesters dynamically; CGPA auto-recalculates across all.
@@ -375,9 +396,11 @@ The system enforces that **exactly one admin can ever exist** across three indep
 
 | Panel | What Admin Can Do |
 |---|---|
-| Users | View all non-admin users, search by name/email, Block / Unblock |
+| Users | View all non-admin users filtered by role (All / Student / Faculty), search by name/email, Block / Unblock |
 | Notes | View all notes, delete any note |
 | Complaints | See all feedback/complaints submitted by users, mark resolved |
+
+**Stat cards** break down registered users by role: Students · Faculty · Admin (always 1) · Notes · Open Complaints.
 
 > The admin account itself **cannot be blocked** — the User model's `pre('save')` hook
 > silently resets `isBlocked` to `false` if someone attempts it, and the block API
@@ -461,7 +484,7 @@ Routes marked 👑 require `role = admin`.
 ### Misc
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| GET | `/stats` | 🔒 | Notes, users, cabins counts |
+| GET | `/stats` | 🔒 | Notes, users (total + by role), cabins counts |
 | GET | `/health` | — | Server health check |
 
 ---

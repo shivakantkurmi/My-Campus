@@ -3,6 +3,38 @@ import api from '../../api/axios';
 import * as XLSX from 'xlsx';
 import { Upload, Users, QrCode, Download, RefreshCw, Check, X } from 'lucide-react';
 
+// ── Flexible Excel column resolution ────────────────────────────────────────
+// Strips spaces / punctuation / casing so "Reg No", "reg no", "Reg. No.",
+// "REGNO", "Registration Number" etc. all match the same alias bucket.
+const slug = s => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+const REG_ALIASES = new Set([
+  'regno','regnumber','regnum','regnno',
+  'registrationno','registrationnumber','registration',
+  'regid','rollno','rollnumber','rollnum',
+  'studentid','studentregno','studentregnumber',
+  'regestrationno','regestrationnumber',
+  'enrollmentno','enrollmentnumber',
+  'registrationnumber',            // exported header (round-trip safe)
+]);
+
+const NAME_ALIASES = new Set([
+  'name','studentname','stuname','sname',
+  'fullname','studentsname','studentfullname',
+  'nameofsudent','nameofstudent',
+]);
+
+/** Scan a header row and return { regIdx, nameIdx } (-1 when not found). */
+const resolveColumns = (headerRow) => {
+  let regIdx = -1, nameIdx = -1;
+  (headerRow || []).forEach((cell, i) => {
+    const s = slug(cell);
+    if (regIdx  === -1 && REG_ALIASES.has(s))  regIdx  = i;
+    if (nameIdx === -1 && NAME_ALIASES.has(s)) nameIdx = i;
+  });
+  return { regIdx, nameIdx };
+};
+
 export default function FacultyAttendance() {
   const [students, setStudents] = useState([]); // { regNo, name }
   const [newReg, setNewReg] = useState('');
@@ -18,6 +50,8 @@ export default function FacultyAttendance() {
   const inputCls = 'px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none dark:text-white';
 
   // ── Excel upload ──────────────────────────────────────────────
+  // Accepts any column order and any recognised header variation.
+  // Falls back to positional (col 0 = reg, col 1 = name) when no headers matched.
   const handleExcel = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -26,9 +60,22 @@ export default function FacultyAttendance() {
       const wb = XLSX.read(ev.target.result, { type: 'binary' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
-      const parsed = rows.slice(1)
-        .filter(r => r[0])
-        .map(r => ({ regNo: String(r[0]).trim(), name: String(r[1] || '').trim() }));
+      if (!rows.length) return;
+
+      const { regIdx, nameIdx } = resolveColumns(rows[0]);
+      const hasHeaders = regIdx !== -1 || nameIdx !== -1;
+
+      // Resolved indices, or fallback positional (A=reg, B=name)
+      const rCol = regIdx  !== -1 ? regIdx  : 0;
+      const nCol = nameIdx !== -1 ? nameIdx : 1;
+
+      const dataRows = hasHeaders ? rows.slice(1) : rows;
+      const parsed = dataRows
+        .filter(r => r[rCol])
+        .map(r => ({
+          regNo: String(r[rCol]).trim(),
+          name:  String(r[nCol] ?? '').trim(),
+        }));
       setStudents(parsed);
     };
     reader.readAsBinaryString(file);
@@ -111,9 +158,14 @@ export default function FacultyAttendance() {
   };
 
   // ── Download Excel ────────────────────────────────────────────
+  // Uses canonical header names so re-uploading an exported file always works.
   const downloadExcel = () => {
     const ws = XLSX.utils.json_to_sheet(
-      attendance.map(s => ({ 'Reg No': s.regNo, Name: s.name, Status: s.present ? 'Present' : 'Absent' }))
+      attendance.map(s => ({
+        'Registration Number': s.regNo,
+        'Name':   s.name,
+        'Status': s.present ? 'Present' : 'Absent',
+      }))
     );
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Attendance');
@@ -139,7 +191,12 @@ export default function FacultyAttendance() {
         <div className="space-y-4">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 space-y-3">
             <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2"><Upload size={16}/> Upload Student List (Excel)</h3>
-            <p className="text-xs text-gray-400">Excel columns: Col A = Reg No, Col B = Name (row 1 = header)</p>
+            <p className="text-xs text-gray-400">
+              Headers are <span className="font-medium text-gray-500 dark:text-gray-300">auto-detected</span>.
+              Registration column: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">Reg No / Registration Number / Roll No / Student ID</code> (and common typos).
+              Name column: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">Name / Student Name / Stu Name / SName</code>.
+              Column order does not matter. No headers? Falls back to col A = reg, col B = name.
+            </p>
             <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcel} className="text-sm text-gray-600 dark:text-gray-300" />
           </div>
 

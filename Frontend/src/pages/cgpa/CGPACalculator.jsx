@@ -1,177 +1,283 @@
 import { useState } from 'react';
 import { Plus, Trash2, Calculator } from 'lucide-react';
 
-const GRADE_MAP = { S: 10, A: 9, B: 8, C: 7, D: 6, E: 5, F: 0, P: null, N1: 0, N2: 0 };
-const CREDIT_OPTIONS = [1, 1.5, 2, 3, 4, 5, 6, 10, 20, 40];
+// VIT Bhopal grading system
+// P = non-graded course — credits AND points are excluded from all calculations
+const GRADE_MAP = {
+  S: 10, A: 9, B: 8, C: 7, D: 6, E: 5, F: 0,
+  N1: 0, N2: 0, N3: 0, N4: 0,
+  P: null,   // null = skip entirely
+};
+
+// Descriptions shown in the grade dropdown
+const GRADE_DESC = {
+  S:  'S  — 10 pts',
+  A:  'A  — 9 pts',
+  B:  'B  — 8 pts',
+  C:  'C  — 7 pts',
+  D:  'D  — 6 pts',
+  E:  'E  — 5 pts',
+  F:  'F  — 0 pts  (Fail)',
+  N1: 'N1 — 0 pts  (Failed a component)',
+  N2: 'N2 — 0 pts  (Debarred: attendance)',
+  N3: 'N3 — 0 pts  (Absent in FAT)',
+  N4: 'N4 — 0 pts  (Debarred: malpractice)',
+  P:  'P  — Pass/Fail  (not counted)',
+};
+
+const CREDIT_OPTIONS = [1, 1.5, 2, 3, 4, 5, 6];
 const GRADES = Object.keys(GRADE_MAP);
 
-const emptySubject = () => ({ id: Date.now(), name: '', grade: 'O', credits: 3 });
+const emptyCourse = () => ({ id: Date.now() + Math.random(), grade: 'S', credits: 3 });
 
 export default function CGPACalculator() {
+  const [tab, setTab] = useState('gpa');
+  const [gpaRows, setGpaRows] = useState([emptyCourse()]);
   const [semesters, setSemesters] = useState([
-    { id: 1, label: 'Semester 1', subjects: [emptySubject()] },
+    { id: 1, label: 'Semester 1', courses: [emptyCourse()] },
   ]);
-  const [gpaSubjects, setGpaSubjects] = useState([emptySubject()]);
-  const [tab, setTab] = useState('gpa'); // gpa | cgpa
 
-  // ── GPA ──────────────────────────────────────────────────────
-  const computeGPA = (subjects) => {
-    let totalPoints = 0, totalCredits = 0;
-    subjects.forEach(s => {
-      const pts = GRADE_MAP[s.grade];
-      if (pts === null) return; // P — skip
-      totalPoints += pts * Number(s.credits);
-      totalCredits += Number(s.credits);
+  // ── Compute helpers ──────────────────────────────────────────
+  const computeGpa = (courses) => {
+    let pts = 0, creds = 0;
+    courses.forEach(c => {
+      const p = GRADE_MAP[c.grade];
+      if (p === null || p === undefined) return;
+      pts += p * Number(c.credits);
+      creds += Number(c.credits);
     });
-    return totalCredits === 0 ? 0 : (totalPoints / totalCredits).toFixed(2);
+    if (creds === 0) return '—';
+    return (pts / creds).toFixed(2);
   };
 
-  // ── CGPA ─────────────────────────────────────────────────────
-  const computeCGPA = () => {
-    let totalPoints = 0, totalCredits = 0;
-    semesters.forEach(sem => {
-      sem.subjects.forEach(s => {
-        const pts = GRADE_MAP[s.grade];
-        if (pts === null) return;
-        totalPoints += pts * Number(s.credits);
-        totalCredits += Number(s.credits);
-      });
-    });
-    return totalCredits === 0 ? 0 : (totalPoints / totalCredits).toFixed(2);
+  const computeCgpa = () => {
+    let pts = 0, creds = 0;
+    semesters.forEach(sem =>
+      sem.courses.forEach(c => {
+        const p = GRADE_MAP[c.grade];
+        if (p === null || p === undefined) return;
+        pts += p * Number(c.credits);
+        creds += Number(c.credits);
+      })
+    );
+    if (creds === 0) return '—';
+    return (pts / creds).toFixed(2);
   };
 
-  // ── Helpers ──────────────────────────────────────────────────
-  const updateGpaSub = (id, field, value) =>
-    setGpaSubjects(prev => prev.map(s => s.id === id ? { ...s, [field]: value } : s));
+  // ── GPA row helpers ──────────────────────────────────────────
+  const updateGpa = (id, field, val) =>
+    setGpaRows(prev => prev.map(r => r.id === id ? { ...r, [field]: val } : r));
 
-  const updateSemSub = (semId, subId, field, value) =>
-    setSemesters(prev => prev.map(sem =>
-      sem.id === semId
-        ? { ...sem, subjects: sem.subjects.map(s => s.id === subId ? { ...s, [field]: value } : s) }
-        : sem
+  // ── CGPA helpers ─────────────────────────────────────────────
+  const updateSem = (semId, courseId, field, val) =>
+    setSemesters(prev => prev.map(s =>
+      s.id === semId
+        ? { ...s, courses: s.courses.map(c => c.id === courseId ? { ...c, [field]: val } : c) }
+        : s
     ));
 
-  const addCgpaSemester = () =>
-    setSemesters(prev => [...prev, { id: Date.now(), label: `Semester ${prev.length + 1}`, subjects: [emptySubject()] }]);
+  const addSemCourse = (semId) =>
+    setSemesters(prev => prev.map(s =>
+      s.id === semId ? { ...s, courses: [...s.courses, emptyCourse()] } : s
+    ));
 
-  const removeSemester = (id) => setSemesters(prev => prev.filter(s => s.id !== id));
+  const removeSemCourse = (semId, courseId) =>
+    setSemesters(prev => prev.map(s =>
+      s.id === semId ? { ...s, courses: s.courses.filter(c => c.id !== courseId) } : s
+    ));
 
-  const inputCls = 'px-2 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded text-sm focus:outline-none dark:text-white';
+  // ── Shared row component ─────────────────────────────────────
+  const select = 'px-2 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer';
 
-  const SubjectRow = ({ sub, onUpdate, onRemove }) => (
-    <div className="flex flex-wrap gap-2 items-center">
-      <input
-        value={sub.name} onChange={e => onUpdate('name', e.target.value)}
-        placeholder="Subject name"
-        className={`${inputCls} flex-1 min-w-28`}
-      />
-      <select value={sub.grade} onChange={e => onUpdate('grade', e.target.value)} className={inputCls}>
-        {GRADES.map(g => <option key={g}>{g}</option>)}
-      </select>
-      <select value={sub.credits} onChange={e => onUpdate('credits', e.target.value)} className={inputCls}>
-        {CREDIT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-      </select>
-      <button onClick={onRemove} className="p-1.5 text-red-400 hover:text-red-600">
-        <Trash2 size={14} />
-      </button>
+  const CourseRow = ({ course, onChange, onRemove, canRemove }) => (
+    <div className="flex items-center gap-2">
+      {/* Grade */}
+      <div className="flex-1">
+        <label className="text-xs text-gray-400 mb-1 block">Grade</label>
+        <select value={course.grade} onChange={e => onChange('grade', e.target.value)} className={select}>
+          {GRADES.map(g => (
+            <option key={g} value={g}>{GRADE_DESC[g]}</option>
+          ))}
+        </select>
+      </div>
+      {/* Credits */}
+      <div className="flex-1">
+        <label className="text-xs text-gray-400 mb-1 block">Credits</label>
+        <select value={course.credits} onChange={e => onChange('credits', e.target.value)} className={select}>
+          {CREDIT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </div>
+      {/* Points preview */}
+      <div className="w-14 text-center">
+        <label className="text-xs text-gray-400 mb-1 block">Points</label>
+        <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+          {GRADE_MAP[course.grade] === null
+            ? <span className="text-gray-400 font-normal text-xs">skip</span>
+            : (GRADE_MAP[course.grade] * Number(course.credits)).toFixed(0)
+          }
+        </span>
+      </div>
+      {/* Remove */}
+      <div className="w-8 pt-5">
+        {canRemove && (
+          <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition">
+            <Trash2 size={13} />
+          </button>
+        )}
+      </div>
     </div>
   );
 
+  const resultVal = tab === 'gpa' ? computeGpa(gpaRows) : computeCgpa();
+  const numResult = parseFloat(resultVal);
+  const resultColor = isNaN(numResult) ? 'text-gray-400'
+    : numResult >= 8.5 ? 'text-emerald-500'
+    : numResult >= 7 ? 'text-indigo-500'
+    : numResult >= 5.5 ? 'text-amber-500'
+    : 'text-red-500';
+
   return (
-    <div className="max-w-3xl space-y-5">
+    <div className="max-w-2xl space-y-5">
+
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl w-fit">
         {['gpa', 'cgpa'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-5 py-2.5 uppercase text-sm font-semibold border-b-2 transition ${tab === t ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500'}`}>
-            {t}
+            className={`px-6 py-2 text-sm font-semibold rounded-lg transition ${
+              tab === t
+                ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            {t.toUpperCase()}
           </button>
         ))}
       </div>
 
-      {/* GPA Tab */}
-      {tab === 'gpa' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2"><Calculator size={16}/> GPA Calculator</h3>
-            <span className="text-2xl font-bold text-blue-600">GPA: {computeGPA(gpaSubjects)}</span>
+      {/* Result card */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {tab === 'gpa' ? 'Semester GPA' : 'Cumulative GPA (CGPA)'}
+            </p>
+            <p className={`text-5xl font-extrabold mt-1 ${resultColor}`}>
+              {resultVal === '—' ? '—' : resultVal}
+            </p>
+            {resultVal !== '—' && (
+              <p className="text-xs text-gray-400 mt-1">
+                {numResult >= 9 ? 'Outstanding 🏆'
+                  : numResult >= 8 ? 'Excellent 🌟'
+                  : numResult >= 7 ? 'Good 👍'
+                  : numResult >= 6 ? 'Average'
+                  : 'Needs improvement'}
+              </p>
+            )}
           </div>
-
-          <div className="text-xs text-gray-400 font-medium grid grid-cols-[1fr_80px_80px_36px] gap-2 px-1">
-            <span>Subject</span><span>Grade</span><span>Credits</span><span></span>
-          </div>
-
-          <div className="space-y-2">
-            {gpaSubjects.map(s => (
-              <SubjectRow key={s.id} sub={s}
-                onUpdate={(f, v) => updateGpaSub(s.id, f, v)}
-                onRemove={() => setGpaSubjects(prev => prev.filter(x => x.id !== s.id))}
-              />
-            ))}
-          </div>
-
-          <button onClick={() => setGpaSubjects(prev => [...prev, emptySubject()])}
-            className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-700 font-medium">
-            <Plus size={15}/> Add Subject
-          </button>
-
-          {/* Grade table quick reference */}
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-gray-100 dark:border-gray-700">
+          {/* Grade reference */}
+          <div className="flex flex-wrap gap-1.5">
             {Object.entries(GRADE_MAP).map(([g, p]) => (
-              <span key={g} className="text-xs px-2 py-0.5 bg-gray-50 dark:bg-gray-700 rounded text-gray-600 dark:text-gray-300">
-                {g} = {p ?? 'skip'}
+              <span key={g} className={`text-xs px-2 py-0.5 rounded-full border ${
+                p === null
+                  ? 'bg-gray-50 dark:bg-gray-700 text-gray-400 dark:text-gray-500 border-gray-200 dark:border-gray-600'
+                  : p === 0
+                  ? 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 border-red-100 dark:border-red-800'
+                  : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-600'
+              }`}>
+                {g}={p ?? 'skip'}
               </span>
             ))}
           </div>
         </div>
-      )}
+      </div>
 
-      {/* CGPA Tab */}
-      {tab === 'cgpa' && (
-        <div className="space-y-4">
-          <div className="bg-blue-600 rounded-2xl p-5 text-white text-center">
-            <p className="text-sm font-medium opacity-80">Cumulative GPA</p>
-            <p className="text-5xl font-bold mt-1">{computeCGPA()}</p>
+      {/* GPA tab */}
+      {tab === 'gpa' && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2">
+              <Calculator size={15} className="text-indigo-500" />
+              Courses this semester
+            </h3>
+            <span className="text-xs text-gray-400">{gpaRows.length} course{gpaRows.length !== 1 ? 's' : ''}</span>
           </div>
 
-          {semesters.map(sem => (
+          <div className="space-y-3">
+            {gpaRows.map((r, i) => (
+              <div key={r.id} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                  <span className="text-xs text-gray-400">Course {i + 1}</span>
+                </div>
+                <CourseRow
+                  course={r}
+                  onChange={(f, v) => updateGpa(r.id, f, v)}
+                  onRemove={() => setGpaRows(prev => prev.filter(x => x.id !== r.id))}
+                  canRemove={gpaRows.length > 1}
+                />
+              </div>
+            ))}
+          </div>
+
+          <button onClick={() => setGpaRows(prev => [...prev, emptyCourse()])}
+            className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition">
+            <Plus size={15} /> Add Course
+          </button>
+        </div>
+      )}
+
+      {/* CGPA tab */}
+      {tab === 'cgpa' && (
+        <div className="space-y-4">
+          {semesters.map((sem) => (
             <div key={sem.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <input value={sem.label}
+                  <input
+                    value={sem.label}
                     onChange={e => setSemesters(prev => prev.map(s => s.id === sem.id ? { ...s, label: e.target.value } : s))}
-                    className="font-semibold text-gray-700 dark:text-white bg-transparent border-b border-gray-300 dark:border-gray-600 focus:outline-none text-sm"
+                    className="font-semibold text-gray-700 dark:text-white bg-transparent text-sm border-b border-transparent hover:border-gray-300 focus:outline-none focus:border-indigo-400 w-32"
                   />
-                  <span className="text-sm text-blue-500 font-medium">GPA: {computeGPA(sem.subjects)}</span>
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                    GPA {computeGpa(sem.courses)}
+                  </span>
                 </div>
                 {semesters.length > 1 && (
-                  <button onClick={() => removeSemester(sem.id)} className="text-xs text-red-400 hover:text-red-600">Remove</button>
+                  <button onClick={() => setSemesters(prev => prev.filter(s => s.id !== sem.id))}
+                    className="text-xs text-red-400 hover:text-red-600 font-medium">
+                    Remove
+                  </button>
                 )}
               </div>
 
-              <div className="space-y-2">
-                {sem.subjects.map(s => (
-                  <SubjectRow key={s.id} sub={s}
-                    onUpdate={(f, v) => updateSemSub(sem.id, s.id, f, v)}
-                    onRemove={() => setSemesters(prev => prev.map(se =>
-                      se.id === sem.id ? { ...se, subjects: se.subjects.filter(x => x.id !== s.id) } : se
-                    ))}
-                  />
+              <div className="space-y-3">
+                {sem.courses.map((c, i) => (
+                  <div key={c.id} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
+                      <span className="text-xs text-gray-400">Course {i + 1}</span>
+                    </div>
+                    <CourseRow
+                      course={c}
+                      onChange={(f, v) => updateSem(sem.id, c.id, f, v)}
+                      onRemove={() => removeSemCourse(sem.id, c.id)}
+                      canRemove={sem.courses.length > 1}
+                    />
+                  </div>
                 ))}
               </div>
 
-              <button
-                onClick={() => setSemesters(prev => prev.map(se =>
-                  se.id === sem.id ? { ...se, subjects: [...se.subjects, emptySubject()] } : se
-                ))}
-                className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-700 font-medium">
-                <Plus size={14}/> Add Subject
+              <button onClick={() => addSemCourse(sem.id)}
+                className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition">
+                <Plus size={14} /> Add Course
               </button>
             </div>
           ))}
 
-          <button onClick={addCgpaSemester}
-            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 hover:border-blue-400 hover:text-blue-500 transition text-sm font-medium">
+          <button
+            onClick={() => setSemesters(prev => [...prev, { id: Date.now(), label: `Semester ${prev.length + 1}`, courses: [emptyCourse()] }])}
+            className="w-full py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:border-indigo-600 dark:hover:text-indigo-400 transition text-sm font-medium"
+          >
             + Add Semester
           </button>
         </div>

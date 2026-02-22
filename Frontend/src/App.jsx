@@ -5,6 +5,7 @@ import useThemeStore from './store/themeStore';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
+import Landing from './pages/landing/Landing';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import BlockedPage from './pages/auth/BlockedPage';
@@ -24,10 +25,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public */}
+        <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/blocked" element={<BlockedPage />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
         {/* Protected layout — outer guard */}
         <Route

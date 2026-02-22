@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+/* ── Tailwind v4 class-based dark mode ── */
+@variant dark (&:where(.dark, .dark *));
+
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #6366f1; border-radius: 3px; }
 
-body { font-family: Inter, system-ui, sans-serif; }
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* smooth page transitions */
+*, *::before, *::after { transition-property: background-color, border-color, color; transition-duration: 150ms; }

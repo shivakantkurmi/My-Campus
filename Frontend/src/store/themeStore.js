@@ -12,11 +12,13 @@ const useThemeStore = create((set) => ({
       return { dark: next };
     }),
 
-  initTheme: () => {
-    const dark = localStorage.getItem('mc_theme') === 'dark';
-    if (dark) document.documentElement.classList.add('dark');
-    return { dark };
-  },
+  initTheme: () =>
+    set(() => {
+      const dark = localStorage.getItem('mc_theme') === 'dark';
+      if (dark) document.documentElement.classList.add('dark');
+      else document.documentElement.classList.remove('dark');
+      return { dark };
+    }),
 }));
 
 export default useThemeStore;
