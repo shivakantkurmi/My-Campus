@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment secrets — NEVER commit
+.env
+.env.local
+
+# Uploaded user files
+uploads/*
+!uploads/.gitkeep
+
+# Build / logs
+dist/
+*.log

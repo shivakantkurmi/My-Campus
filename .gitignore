@@ -1,0 +1,37 @@
+# ── OS / Editor ──────────────────────────────
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ── Dependencies ─────────────────────────────
+node_modules/
+
+# ── Build outputs ─────────────────────────────
+Frontend/dist/
+Frontend/dist-ssr/
+
+# ── Environment secrets ──────────────────────
+# Real .env files must NEVER be committed
+Frontend/.env
+Frontend/.env.local
+Frontend/.env.production
+Backend/.env
+Backend/.env.local
+Backend/.env.production
+
+# ── Uploaded files ───────────────────────────
+Backend/uploads/*
+!Backend/uploads/.gitkeep
+
+# ── Logs ─────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
