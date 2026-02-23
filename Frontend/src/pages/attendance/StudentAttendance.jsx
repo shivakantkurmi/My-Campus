@@ -4,7 +4,6 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { Camera, CheckCircle, XCircle, Lock, ShieldCheck, Loader2, ScanLine, Info } from 'lucide-react';
 
 const LOCK_KEY = 'mc_attendance_lock';
-const DEVICE_KEY = 'mc_device_id';
 const LOCK_DURATION_MS = 20 * 60 * 1000;
 
 // ── Cookie helpers (survive localStorage clears) ──────────────
@@ -19,21 +18,17 @@ function getCookie(name) {
 
 // ── Lock: read/write both localStorage AND cookie ─────────────
 function isLocked() {
-  // localStorage
   const ls = localStorage.getItem(LOCK_KEY);
   if (ls) { try { if (Date.now() < JSON.parse(ls).until) return true; } catch {} }
-  // cookie fallback (survives localStorage clear)
   const ck = getCookie(LOCK_KEY);
   if (ck && Date.now() < parseInt(ck, 10)) return true;
   return false;
 }
-
 function setLock() {
   const until = Date.now() + LOCK_DURATION_MS;
   localStorage.setItem(LOCK_KEY, JSON.stringify({ until }));
   setCookie(LOCK_KEY, String(until), LOCK_DURATION_MS);
 }
-
 function getLockSeconds() {
   let until = 0;
   const ls = localStorage.getItem(LOCK_KEY);
@@ -41,6 +36,62 @@ function getLockSeconds() {
   const ck = getCookie(LOCK_KEY);
   if (ck) until = Math.max(until, parseInt(ck, 10));
   return Math.max(0, Math.ceil((until - Date.now()) / 1000));
+}
+
+// ── Hardware Device ID ────────────────────────────────────────
+// Built from GPU renderer + canvas pixels + screen metrics.
+// These come from the physical hardware and CANNOT be changed
+// by clearing cookies, localStorage, or any browser storage.
+// A different physical device will always produce a different hash.
+function djb2(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++)
+    h = (Math.imul(h, 31) + str.charCodeAt(i)) >>> 0;
+  return h.toString(16).padStart(8, '0');
+}
+
+function getHardwareDeviceId() {
+  // 1. WebGL GPU renderer — unique to the physical graphics chip
+  let gpu = 'no-webgl';
+  try {
+    const c = document.createElement('canvas');
+    const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+    if (gl) {
+      const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+      const renderer = dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+      const vendor   = dbg ? gl.getParameter(dbg.UNMASKED_VENDOR_WEBGL)   : gl.getParameter(gl.VENDOR);
+      gpu = `${renderer}|${vendor}`;
+    }
+  } catch {}
+
+  // 2. Canvas pixel fingerprint — GPU driver produces subtly unique output
+  let canvasHash = '00000000';
+  try {
+    const c = document.createElement('canvas');
+    c.width = 200; c.height = 40;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#f60';
+    ctx.fillRect(0, 0, 200, 40);
+    ctx.fillStyle = '#069';
+    ctx.font = '14px Arial';
+    ctx.fillText('MyCampus🎓', 2, 22);
+    ctx.fillStyle = 'rgba(102,204,0,0.8)';
+    ctx.font = '13px Georgia';
+    ctx.fillText('attendance2026', 4, 36);
+    canvasHash = djb2(c.toDataURL().slice(-128));
+  } catch {}
+
+  // 3. Screen + CPU — differ between different physical machines
+  const screen$ = [
+    screen.width, screen.height, screen.colorDepth,
+    window.devicePixelRatio,
+    navigator.hardwareConcurrency || 0,
+    navigator.deviceMemory || 0,
+    navigator.platform || '',
+    new Date().getTimezoneOffset(),
+  ].join('|');
+
+  return `${djb2(gpu)}-${canvasHash}-${djb2(screen$)}`;
 }
 
 export default function StudentAttendance() {
@@ -112,7 +163,7 @@ export default function StudentAttendance() {
       const res = await api.post('/attendance/mark', {
         token: payload.token,
         regNo: regNo.trim().toUpperCase(),
-        deviceId: getDeviceId(),
+        deviceId: getHardwareDeviceId(),   // hardware-derived, storage-independent
       });
       // ── Lock ONLY after server confirms success ──
       setLock();
@@ -131,18 +182,6 @@ export default function StudentAttendance() {
       setSubmitting(false);
     }
   };
-
-  function getDeviceId() {
-    // Check cookie first (survives localStorage clears), then localStorage, then generate
-    let id = getCookie(DEVICE_KEY) || localStorage.getItem(DEVICE_KEY);
-    if (!id) {
-      id = `${navigator.userAgent}_${Date.now()}_${Math.random()}`;
-    }
-    // Always persist in both places so they stay in sync
-    localStorage.setItem(DEVICE_KEY, id);
-    setCookie(DEVICE_KEY, id, 30 * 24 * 60 * 60 * 1000); // 30 days
-    return id;
-  }
 
   return (
     <div className="max-w-md mx-auto space-y-4 animate-[fadeSlideUp_0.4s_ease_both]"

@@ -137,6 +137,24 @@ router.post('/mark', protect, restrictTo('student'), async (req, res) => {
     if (!token || !regNo || !deviceId)
       return res.status(400).json({ message: 'token, regNo and deviceId are required' });
 
+    // ── Global 20-minute device lock (cross-session) ──────────────────────────
+    // Check BEFORE session lookup so it fires even if storage was cleared.
+    // Because deviceId is derived from hardware (GPU/canvas/screen), not storage,
+    // the same physical device always sends the same ID.
+    const LOCK_MS = 20 * 60 * 1000;
+    const recentByDevice = await Attendance.findOne({
+      deviceId,
+      timestamp: { $gt: new Date(Date.now() - LOCK_MS) },
+    });
+    if (recentByDevice) {
+      const minsLeft = Math.ceil(
+        (recentByDevice.timestamp.getTime() + LOCK_MS - Date.now()) / 60000
+      );
+      return res.status(429).json({
+        message: `This device already marked attendance recently. Try after ${minsLeft} minute(s).`,
+      });
+    }
+
     // Find active session matching token
     const session = await AttendanceSession.findOne({ qrToken: token, ended: false });
     if (!session)

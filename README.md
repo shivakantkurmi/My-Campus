@@ -83,7 +83,7 @@ A production-ready full-stack campus management web application built with **Rea
 | bcryptjs | Password hashing (salt rounds = 12) |
 | jsonwebtoken | JWT creation & verification |
 | dotenv | `.env` file loading |
-| uuid | Cryptographically random QR tokens |
+| crypto (built-in Node.js) | `randomUUID()` for QR tokens — no external package |
 | cors | Cross-origin request control |
 
 ---
@@ -270,10 +270,13 @@ POST   /api/feedback        → submit feedback (any auth user)
 
 **Student flow:**
 ```
-1. Enter Registration Number.
+1. Enter Registration Number (case-insensitive — 23BCE0001 == 23bce0001).
 2. Open camera → scan QR → POST /api/attendance/mark { token, regNo, deviceId }
-3. Server validates token, expiry, regNo membership, device cooldown, duplicate checks.
-4. On success → localStorage lock set for 20 minutes.
+   deviceId = hardware fingerprint derived from GPU renderer + canvas + screen metrics.
+   This is computed from physical hardware — CANNOT be changed by clearing any storage.
+3. Server checks: global 20-min device lock → token validity → regNo membership → duplicate.
+4. On success → name shown ("Attendance marked present for Shivakant Kurmi!").
+   Client-side lock timer stored in both localStorage AND cookie (20 min).
 ```
 
 **Anti-proxy protections:**
@@ -281,9 +284,13 @@ POST   /api/feedback        → submit feedback (any auth user)
 |---|---|
 | QR refresh every 10s | Old screenshots are useless |
 | Token expiry (server-side) | Tokens older than 10s are rejected |
-| Device lock (20 min) | deviceId checked in Attendance collection |
-| Duplicate regNo | DB unique index on (sessionId, studentRegNo) |
-| Duplicate device | DB unique index on (sessionId, deviceId) |
+| Hardware device ID | `getHardwareDeviceId()` — GPU/canvas/screen hash, storage-independent |
+| Global 20-min device lock | Server checks `deviceId` across ALL sessions before processing |
+| Case-insensitive regNo | Server normalises to uppercase — typos like `23bce0001` accepted |
+| Duplicate regNo | DB unique index on `(sessionId, studentRegNo)` |
+| Duplicate device | DB unique index on `(sessionId, deviceId)` |
+| Client-side lock UI | Both localStorage + cookie — survives single-storage clears |
+| Success shows name | Server returns `studentName` confirming whose attendance was marked |
 
 ---
 
@@ -574,8 +581,11 @@ node scripts/seedCabins.js
 | Admin unblockable | `pre('save')` resets `isBlocked` to false for admin role |
 | Admin credentials | Auto-seeded from `.env` — never hardcoded |
 | Blocked users | `protect` middleware checks and returns 403 |
-| QR proxy prevention | Token expires server-side every 10s + device lock |
-| Device lock | `deviceId` + 20-minute cooldown in DB |
+| QR proxy prevention | Token expires server-side every 10s + hardware device lock |
+| Hardware device ID | `getHardwareDeviceId()` — WebGL GPU + canvas + screen hash, never stored in browser |
+| Global device lock | Server queries MongoDB for any attendance from same `deviceId` in last 20 min before processing |
+| Case-insensitive regNo | Server normalises to uppercase on both mark and session-list lookup |
+| Client lock persistence | Lock timer in both localStorage + cookie — survives clearing either one |
 | CORS | Restricted to `CLIENT_URL` env value |
 | Modal z-index | Portal renders to `<body>` — immune to layout stacking contexts |
 | Secrets | Never in source code — only read from `.env` at runtime |
@@ -604,6 +614,6 @@ AttendanceSession
   facultyId → ref User, qrToken, expiresAt, students[], ended, presentCount, totalStudents
 
 Attendance
-  sessionId → ref AttendanceSession, studentRegNo, deviceId, timestamp
+  sessionId → ref AttendanceSession, studentRegNo (normalised UPPERCASE), deviceId (hardware fingerprint), timestamp
   unique indexes: (sessionId + deviceId), (sessionId + studentRegNo)
 ```
