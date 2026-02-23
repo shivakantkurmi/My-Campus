@@ -4,8 +4,23 @@ const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
 
-// ── Connect to MongoDB ────────────────────────────────────────
-connectDB();
+// ── Connect to MongoDB then auto-seed admin if needed ─────────
+connectDB().then(async () => {
+  try {
+    const User = require('./models/User');
+    const exists = await User.findOne({ role: 'admin' });
+    if (!exists) {
+      const name       = process.env.ADMIN_NAME     || 'Admin';
+      const email      = process.env.ADMIN_EMAIL    || 'admin@mycampus.edu';
+      const password   = process.env.ADMIN_PASSWORD || 'Admin@123';
+      const department = process.env.ADMIN_DEPT     || 'Administration';
+      await User.create({ name, email, password, role: 'admin', department });
+      console.log('✅ Admin auto-seeded:', email);
+    }
+  } catch (e) {
+    console.error('Admin seed error:', e.message);
+  }
+});
 
 const app = express();
 

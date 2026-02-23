@@ -1,4 +1,4 @@
-# 🎓 My-Campus
+﻿# 🎓 My-Campus
 
 A production-ready full-stack campus management web application built with **React + Vite** (frontend) and **Node.js + Express + MongoDB** (backend).
 
@@ -16,11 +16,13 @@ A production-ready full-stack campus management web application built with **Rea
    - [Anti-Proxy Attendance](#4-anti-proxy-attendance-system)
    - [CGPA Calculator](#5-gpa--cgpa-calculator)
    - [Admin Dashboard](#6-admin-dashboard)
-5. [API Reference](#api-reference)
-6. [Environment Variables](#environment-variables)
-7. [Getting Started](#getting-started)
-8. [Security Design](#security-design)
-9. [Database Models](#database-models)
+5. [UI & Animation System](#ui--animation-system)
+6. [API Reference](#api-reference)
+7. [Environment Variables](#environment-variables)
+8. [Getting Started](#getting-started)
+9. [Deployment](#deployment)
+10. [Security Design](#security-design)
+11. [Database Models](#database-models)
 
 ---
 
@@ -30,7 +32,7 @@ A production-ready full-stack campus management web application built with **Rea
 ┌──────────────────────────────────────────────────────┐
 │                     Browser                          │
 │   React + Vite  (port 5173)                          │
-│   Zustand state │ React Router │ Tailwind CSS        │
+│   Zustand state │ React Router │ Tailwind CSS v4     │
 └──────────────┬───────────────────────────────────────┘
                │  HTTP/JSON  (VITE_API_BASE_URL)
                ▼
@@ -49,9 +51,9 @@ A production-ready full-stack campus management web application built with **Rea
 └──────────────────────────────────────────────────────┘
 ```
 
-- Frontend and Backend are **completely decoupled** — no proxy server.  
-- The frontend reads the backend URL from `VITE_API_BASE_URL` in its own `.env` file.  
-- The backend reads all secrets (DB URI, JWT secret) from its own `.env` file.  
+- Frontend and Backend are **completely decoupled** — no proxy server.
+- The frontend reads the backend URL from `VITE_API_BASE_URL` in its own `.env`.
+- The backend reads all secrets (DB URI, JWT secret) from its own `.env`.
 - The two apps can be deployed independently on different hosts/ports/domains.
 
 ---
@@ -80,7 +82,6 @@ A production-ready full-stack campus management web application built with **Rea
 | MongoDB + Mongoose | NoSQL database + ODM |
 | bcryptjs | Password hashing (salt rounds = 12) |
 | jsonwebtoken | JWT creation & verification |
-| Multer | Profile photo uploads |
 | dotenv | `.env` file loading |
 | uuid | Cryptographically random QR tokens |
 | cors | Cross-origin request control |
@@ -91,48 +92,52 @@ A production-ready full-stack campus management web application built with **Rea
 
 ```
 My-Campus/
-├── .gitignore                    ← root gitignore
+├── .gitignore
 ├── README.md
 │
 ├── Frontend/
-│   ├── .env                      ← VITE_ public keys (not committed)
-│   ├── .env.example              ← safe template to commit
+│   ├── .env                        ← VITE_ public keys (not committed)
+│   ├── .env.example
 │   ├── .gitignore
-│   ├── vite.config.js            ← no proxy — direct API calls
+│   ├── vite.config.js
 │   └── src/
 │       ├── api/
-│       │   └── axios.js          ← Axios instance (reads VITE_API_BASE_URL)
+│       │   └── axios.js            ← Axios instance (reads VITE_API_BASE_URL)
 │       ├── store/
-│       │   ├── authStore.js      ← Zustand: user, token, logout
-│       │   └── themeStore.js     ← Zustand: dark/light mode
+│       │   ├── authStore.js        ← Zustand: user, token, logout
+│       │   └── themeStore.js       ← Zustand: dark/light mode
 │       ├── components/
 │       │   ├── common/
-│       │   │   ├── Avatar.jsx    ← Initials circle avatar
+│       │   │   ├── Avatar.jsx      ← Initials avatar with gradient (no photo)
+│       │   │   ├── Modal.jsx       ← Portal modal (renders to <body>)
 │       │   │   ├── Spinner.jsx
 │       │   │   └── ProtectedRoute.jsx
 │       │   └── layout/
-│       │       ├── Layout.jsx    ← App shell (sidebar + header + outlet)
-│       │       ├── Sidebar.jsx   ← Role-filtered navigation
-│       │       └── Header.jsx    ← Page title + dark mode toggle
-│       └── pages/            ├── landing/          ← Public landing page (hero, features, CTA)│           ├── auth/             ← Login, Register, BlockedPage
-│           ├── dashboard/        ← Stats cards + quick access grid
-│           ├── notes/            ← Notes list, search, add/edit modal
-│           ├── faculty-cabins/   ← Cabin finder + feedback modal
+│       │       ├── Layout.jsx      ← App shell (sidebar + header + outlet)
+│       │       ├── Sidebar.jsx     ← Role-filtered navigation
+│       │       └── Header.jsx      ← Page title + dark mode toggle
+│       ├── index.css               ← Global animation library (15+ keyframes)
+│       └── pages/
+│           ├── landing/            ← Public landing page (default route /)
+│           ├── auth/               ← Login, Register, BlockedPage
+│           ├── dashboard/          ← Stats cards + quick access grid
+│           ├── notes/              ← Notes list, search, add/edit modal
+│           ├── faculty-cabins/     ← Cabin finder + feedback modal
 │           ├── attendance/
 │           │   ├── Attendance.jsx         ← Role dispatcher
 │           │   ├── FacultyAttendance.jsx  ← Session management
 │           │   └── StudentAttendance.jsx  ← QR scanner + device lock
-│           ├── cgpa/             ← GPA + CGPA calculator
-│           ├── admin/            ← User management, notes, complaints
-│           └── profile/          ← Edit profile + photo upload
+│           ├── cgpa/               ← GPA + CGPA calculator
+│           ├── admin/              ← User management, notes, complaints
+│           └── profile/            ← Edit profile (name, dept, password)
 │
 └── Backend/
-    ├── .env                      ← secrets (not committed)
-    ├── .env.example              ← safe template to commit
+    ├── .env                        ← secrets (not committed)
+    ├── .env.example
     ├── .gitignore
-    ├── server.js                 ← Express app entry point
+    ├── server.js                   ← Express app + auto-seeds admin on startup
     ├── config/
-    │   └── db.js                 ← Mongoose connection
+    │   └── db.js
     ├── models/
     │   ├── User.js
     │   ├── Note.js
@@ -141,9 +146,9 @@ My-Campus/
     │   ├── AttendanceSession.js
     │   └── Attendance.js
     ├── middleware/
-    │   ├── auth.js               ← JWT protect middleware
-    │   ├── roleMiddleware.js     ← restrictTo(...roles) guard
-    │   └── upload.js             ← Multer profile photo handler
+    │   ├── auth.js                 ← JWT protect middleware
+    │   ├── roleMiddleware.js       ← restrictTo(...roles) guard
+    │   └── upload.js
     ├── routes/
     │   ├── auth.js
     │   ├── notes.js
@@ -152,9 +157,8 @@ My-Campus/
     │   ├── attendance.js
     │   ├── admin.js
     │   └── stats.js
-    ├── scripts/
-    │   └── seedAdmin.js          ← One-time admin account seed
-    └── uploads/                  ← Profile photos (git-ignored)
+    └── scripts/
+        └── seedCabins.js           ← Seeds 371 VIT Bhopal faculty cabin records
 ```
 
 ---
@@ -189,11 +193,12 @@ Protected routes
 ```
 
 **Roles:**
+
 | Role | Registration | Capabilities |
 |---|---|---|
 | `student` | Public register form | Notes, cabins (read), attendance scan, CGPA |
 | `faculty` | Public register form | Notes, cabins (read), attendance host, CGPA |
-| `admin` | `node scripts/seedAdmin.js` only — **exactly one** can ever exist | All of the above + full admin panel |
+| `admin` | **Auto-created on first server start** from env vars — exactly one can ever exist | All of the above + full admin panel |
 
 **Single-Admin enforcement — three independent layers:**
 ```
@@ -202,52 +207,42 @@ Layer 1 — API (routes/auth.js)
     with HTTP 403 before the document reaches the database.
 
 Layer 2 — Mongoose model (models/User.js)
-    pre('validate') hook: if another admin already exists in the
-    collection the save is rejected with an error.
-    This covers direct DB inserts and manual scripts too.
-
+    pre('validate') hook: if another admin already exists, save is rejected.
     pre('save') hook: if role = admin and isBlocked = true,
-    isBlocked is silently reset to false — admin can never be
-    permanently locked out.
+    isBlocked is silently reset to false — admin can never be locked out.
 
 Layer 3 — Block endpoint (routes/admin.js)
-    PATCH /api/admin/users/:id/block fetches the target first;
-    returns 403 if target.role === 'admin'.
+    PATCH /api/admin/users/:id/block returns 403 if target.role === 'admin'.
 ```
 
-**Avatar logic:** If `profilePhoto` is empty, the UI generates an initials circle (e.g. "Shivakant Kurmi" → "SK") with a deterministic colour based on the name hash.
+**Avatar logic:** No profile photo is stored. The UI always generates an initials circle (e.g. "Shivakant Kurmi" → "SK") with a deterministic color gradient based on the name hash.
 
 ---
 
 ### 2. Notes Sharing
 
-**How it works:**
-- Users submit a **Google Drive / OneDrive URL** (not an actual file upload) along with metadata.
-- Notes are stored in MongoDB with a reference to `uploadedBy` (User ObjectId).
-- The list is publicly readable by all authenticated users.
-- **Edit / Delete** is allowed only to the note's owner or an Admin.
+- Users submit a **Google Drive / OneDrive URL** along with metadata (no file upload).
+- **Edit / Delete** allowed only to the note owner or admin.
+- The Notes form opens in a **portal modal** (`Modal.jsx`) so it always appears above layout animation stacking contexts.
 
-**API flow:**
 ```
-GET    /api/notes          → returns all notes (populated with uploader name)
-POST   /api/notes          → create note (auth required)
-PUT    /api/notes/:id      → update note (owner or admin)
-DELETE /api/notes/:id      → delete note (owner or admin)
+GET    /api/notes          → all notes (populated with uploader name)
+POST   /api/notes          → create (auth required)
+PUT    /api/notes/:id      → update (owner or admin)
+DELETE /api/notes/:id      → delete (owner or admin)
 ```
-
-**Frontend:** Subject filter chips + text search runs entirely on the client side against the fetched list for instant filtering with no extra API calls.
 
 ---
 
 ### 3. Faculty Cabin Finder
 
-**How it works:**
-- Cabin records store: faculty name, cabin number, contact, department.
-- **Read** is open to all authenticated users (students, faculty, admin).
-- **Write (Add / Edit / Delete)** is restricted to `admin` only via `restrictTo('admin')` middleware.
-- Any user can submit a **feedback/complaint** (wrong cabin info, missing faculty, etc.) via the Report Issue modal, which posts to `/api/feedback`.
+- **371 VIT Bhopal cabin records** are pre-seeded via `node scripts/seedCabins.js`.
+- Cabin records store: faculty name, cabin number, contact. **Department is optional.**
+- The Department field was removed from the Add/Edit form — only faculty name + cabin number are required.
+- **Write** restricted to admin only; **Read** open to all authenticated users.
+- Search matches on faculty name, cabin number, or department.
+- Both the Add/Edit and Report Issue modals use the `Modal` portal component.
 
-**API flow:**
 ```
 GET    /api/cabins          → list all (auth required)
 POST   /api/cabins          → create (admin only)
@@ -260,177 +255,123 @@ POST   /api/feedback        → submit feedback (any auth user)
 
 ### 4. Anti-Proxy Attendance System
 
-This is the most complex feature. It prevents students from sharing screenshots or tokens to mark attendance on behalf of others.
-
 **Faculty flow:**
 ```
-1. Faculty uploads Excel — headers are **auto-detected** (any column order):
-
-   | Column | Recognised header variations |
-   |---|---|
-   | Registration number | `Reg No`, `regno`, `Reg. No.`, `Registration Number`, `Roll No`, `Roll Number`, `Student ID`, `Enrollment No` — plus common typos like `regestration no` |
-   | Student name | `Name`, `Student Name`, `Stu Name`, `SName`, `Full Name` |
-
-   Falls back to col A = reg, col B = name when no headers are found.  
-   **Round-trip safe:** the exported Excel uses `Registration Number` / `Name` headers, so re-uploading an exported sheet always works.
-   OR manually adds students one by one
-
-2. Clicks "Start Session"
-   → POST /api/attendance/session
-   → Server creates AttendanceSession with:
-       - a UUID qrToken
-       - expiresAt = now + 10 seconds
-       - list of students
-
-3. Frontend displays QR image (built from qrToken JSON)
-   setInterval every 10 seconds:
-   → POST /api/attendance/session/:id/refresh
-   → Server generates new UUID qrToken, updates expiresAt
-   → Frontend regenerates QR image
-
-4. Faculty sees live attendance list (green = present)
-   Can manually toggle any student Present/Absent
-
-5. Clicks "End Session"
-   → POST /api/attendance/session/:id/end
-   → Session marked ended, presentCount saved
-   
-6. Downloads Excel sheet of results
+1. Upload Excel (auto-detects any column order) or add students manually.
+2. Start Session → server creates AttendanceSession with UUID qrToken, expiresAt = now+10s.
+3. QR image displayed and refreshed every 10 seconds automatically.
+4. Faculty sees live attendance list, can manually toggle Present/Absent.
+5. End Session → presentCount saved.
+6. Download Excel of results.
 ```
 
 **Student flow:**
 ```
-1. Opens /attendance page
-   → Sees "StudentAttendance" component (role-dispatched)
-
-2. Enters Registration Number
-
-3. Clicks "Open Camera & Scan"
-   → html5-qrcode opens device camera
-   → Scans the QR code displayed by faculty
-
-4. QR decoded → POST /api/attendance/mark with:
-   { token, regNo, deviceId }
-   
-   deviceId = stable fingerprint stored in localStorage
-              (navigator.userAgent + random UUID, set once)
-
-5. Server validates:
-   ✅ Token matches an active session qrToken
-   ✅ Session not ended
-   ✅ Token not expired (within 10s window)
-   ✅ regNo is in the session's student list
-   ✅ deviceId not seen in last 20 minutes (any session)
-   ✅ regNo not already present in this session
-
-6. On success:
-   → Attendance record created in DB
-   → Frontend sets localStorage lock (mc_attendance_lock)
-     with until = now + 20 minutes
-   → UI shows "Device Locked — try after 20 min"
+1. Enter Registration Number.
+2. Open camera → scan QR → POST /api/attendance/mark { token, regNo, deviceId }
+3. Server validates token, expiry, regNo membership, device cooldown, duplicate checks.
+4. On success → localStorage lock set for 20 minutes.
 ```
 
 **Anti-proxy protections:**
 | Protection | How |
 |---|---|
 | QR refresh every 10s | Old screenshots are useless |
-| Token expiry (server-side) | Server rejects tokens older than 10s |
-| Device lock (20 min) | `deviceId` checked in Attendance collection |
-| Duplicate regNo block | DB unique index on (sessionId, studentRegNo) |
-| Duplicate device block | DB unique index on (sessionId, deviceId) |
+| Token expiry (server-side) | Tokens older than 10s are rejected |
+| Device lock (20 min) | deviceId checked in Attendance collection |
+| Duplicate regNo | DB unique index on (sessionId, studentRegNo) |
+| Duplicate device | DB unique index on (sessionId, deviceId) |
 
 ---
 
 ### 5. GPA & CGPA Calculator
 
-**Runs entirely on the frontend — no API calls needed.**
+Runs entirely on the frontend — no API calls.
 
-**VIT Bhopal grade → points mapping:**
+**VIT Bhopal grade → points:**
 
-| Grade | Points | Note |
-|---|---|---|
-| S | 10 | |
-| A | 9 | |
-| B | 8 | |
-| C | 7 | |
-| D | 6 | |
-| E | 5 | |
-| F | 0 | Fail |
-| N1 | 0 | Failed to clear one or more components |
-| N2 | 0 | Debarred — lack of attendance |
-| N3 | 0 | Absent in Final Assessment Test |
-| N4 | 0 | Debarred in FAT due to malpractice |
-| P | — | **Fully excluded** — credits and points both skipped |
+| Grade | Points |
+|---|---|
+| S | 10 |
+| A | 9 |
+| B | 8 |
+| C | 7 |
+| D | 6 |
+| E | 5 |
+| F / N1 / N2 / N3 / N4 | 0 |
+| P | Excluded entirely |
 
-**Formula:**
 ```
 GPA  = Σ(gradePoints × credits) / Σcredits
 CGPA = Σ(gradePoints × credits across all semesters) / Σcredits
 ```
 
-Each course entry requires only **Grade** and **Credits** (subject name not needed).  
-Credits allowed: `1, 1.5, 2, 3, 4, 5, 6`
-
-A live **Points** preview (grade × credits) is shown per course row.
-
-The result card is colour-coded:
-| CGPA / GPA | Label | Colour |
-|---|---|---|
-| ≥ 9.0 | Outstanding 🏆 | Green |
-| ≥ 8.0 | Excellent 🌟 | Green |
-| ≥ 7.0 | Good 👍 | Indigo |
-| ≥ 6.0 | Average | Amber |
-| < 6.0 | Needs improvement | Red |
-
-**GPA Tab** — calculates GPA for a single semester.  
-**CGPA Tab** — add multiple semesters dynamically; CGPA auto-recalculates across all.
+**GPA Tab** — single semester. **CGPA Tab** — multiple semesters, auto-recalculated.
 
 ---
 
 ### 6. Admin Dashboard
 
-**Access:** Only the single `admin` account created by `node scripts/seedAdmin.js`.  
-The system enforces that **exactly one admin can ever exist** across three independent layers (API, Mongoose model, block endpoint — see [Authentication & Role System](#1-authentication--role-system) above).
+**Access:** Single admin auto-created on first server startup.
 
-**Capabilities:**
-
-| Panel | What Admin Can Do |
+| Panel | Capabilities |
 |---|---|
-| Users | View all non-admin users filtered by role (All / Student / Faculty), search by name/email, Block / Unblock |
-| Notes | View all notes, delete any note |
-| Complaints | See all feedback/complaints submitted by users, mark resolved |
+| Users | Filter by role, search, Block / Unblock |
+| Notes | View all, delete any |
+| Complaints | View all feedback, mark resolved |
 
-**Stat cards** break down registered users by role: Students · Faculty · Admin (always 1) · Notes · Open Complaints.
+Stat cards show counts for Students, Faculty, Admin, Notes, Open Complaints.
 
-> The admin account itself **cannot be blocked** — the User model's `pre('save')` hook
-> silently resets `isBlocked` to `false` if someone attempts it, and the block API
-> endpoint rejects the request with 403 before it even reaches the DB.
+---
 
-**Blocking flow:**
-```
-Admin blocks a user
-    → PATCH /api/admin/users/:id/block  { isBlocked: true }
-    → Endpoint checks: target.role === 'admin'? → 403 (cannot block admin)
-    → Otherwise saves isBlocked = true
-    → User's next request hits protect middleware
-    → Middleware checks user.isBlocked → returns 403
-    → Axios interceptor clears session and redirects to /login
-    → ProtectedRoute checks isBlocked → redirects to /blocked
+## UI & Animation System
 
-User on /blocked page
-    → Submits an appeal message
-    → POST /api/feedback  { type: 'unblock_appeal', message }
-    → Admin sees it in Complaints panel
-    → Admin resolves it + manually unblocks the user
-```
+All animation classes are defined in `Frontend/src/index.css`.
+
+### Animation Classes
+
+| Class | Effect |
+|---|---|
+| `mc-page` | Fade + slide up on page enter |
+| `mc-fade-up` | Fade in from below (supports stagger) |
+| `mc-flip-up` | 3D flip card entrance |
+| `mc-bounce-drop` | Drop in with bounce |
+| `mc-rubber-in` | Rubber-band scale entrance |
+| `mc-scale-in` | Scale pop-in (used by modals) |
+| `mc-slide-bounce` | Slide from left with bounce |
+| `mc-float` | Gentle 4px vertical bob (4s loop) |
+| `mc-drift` | Slow circular orbit (6–11s, decorative dots) |
+| `mc-nudge` | Horizontal nudge (arrow icons) |
+| `mc-gradient-text` | Animated gradient text fill |
+| `mc-glow-border` | Animated indigo glow border |
+| `mc-card-hover` | Lift + shadow on hover |
+| `mc-btn` | Shine sweep on hover |
+| `mc-pulse-glow` | Pulsing glow ring (avatar) |
+| `mc-heartbeat` | Heartbeat scale pulse |
+| `mc-skeleton` | Shimmer loading skeleton |
+| `mc-stagger-1` … `mc-stagger-8` | Animation delay helpers |
+
+### Portal Modal (`Modal.jsx`)
+
+All modals render via `ReactDOM.createPortal` directly to `<body>`. This escapes the CSS stacking context created by layout animation transforms (`transform: translateY(0)` with `fill-mode: both`), preventing modals from appearing behind the sticky header. Features: backdrop-click dismiss, body scroll lock, `z-index: 9999`.
+
+### Avatar (`Avatar.jsx`)
+
+Profile photos removed. Always renders initials with deterministic gradient background (8 options, chosen by name hash). Uses inline `style={{ width, height }}` to avoid Tailwind JIT dynamic-class limitations.
+
+### Responsive Design
+
+- **Admin Dashboard** — tabs scroll horizontally; role filter buttons wrap; user table `min-w-[640px]` with `overflow-x-auto`
+- **Faculty Cabins** — `grid sm:grid-cols-2 lg:grid-cols-3`
+- **CGPA Calculator** — course rows use `grid grid-cols-2` for grade/credit inputs
+- **Notes** — `grid sm:grid-cols-2 lg:grid-cols-3`
+- **Attendance** — student panel `max-w-md mx-auto`; faculty table `overflow-x-auto`
 
 ---
 
 ## API Reference
 
-All routes are prefixed with `/api`.  
-Routes marked 🔒 require `Authorization: Bearer <token>` header.  
-Routes marked 👑 require `role = admin`.
+All routes prefixed with `/api`. 🔒 = JWT required. 👑 = admin only.
 
 ### Auth
 | Method | Path | Auth | Description |
@@ -439,15 +380,14 @@ Routes marked 👑 require `role = admin`.
 | POST | `/auth/login` | — | Login, returns JWT + user |
 | GET | `/auth/me` | 🔒 | Current user info |
 | PUT | `/auth/profile` | 🔒 | Update name, department, password |
-| PUT | `/auth/profile/photo` | 🔒 | Upload profile photo (multipart) |
 
 ### Notes
 | Method | Path | Auth | Description |
 |---|---|---|---|
 | GET | `/notes` | 🔒 | Get all notes |
 | POST | `/notes` | 🔒 | Create note |
-| PUT | `/notes/:id` | 🔒 | Update note (owner or admin) |
-| DELETE | `/notes/:id` | 🔒 | Delete note (owner or admin) |
+| PUT | `/notes/:id` | 🔒 | Update (owner or admin) |
+| DELETE | `/notes/:id` | 🔒 | Delete (owner or admin) |
 
 ### Faculty Cabins
 | Method | Path | Auth | Description |
@@ -465,13 +405,13 @@ Routes marked 👑 require `role = admin`.
 ### Attendance
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/attendance/session` | 🔒 faculty | Start session + initial QR |
-| POST | `/attendance/session/:id/refresh` | 🔒 faculty | Refresh QR token |
-| GET | `/attendance/session/:id` | 🔒 faculty | Live attendance list |
-| PATCH | `/attendance/session/:id/manual` | 🔒 faculty | Toggle student manually |
-| POST | `/attendance/session/:id/end` | 🔒 faculty | End session |
-| GET | `/attendance/history` | 🔒 faculty | Past sessions |
-| POST | `/attendance/mark` | 🔒 student | Mark attendance via QR token |
+| POST | `/attendance/session` | 🔒 | Start session |
+| POST | `/attendance/session/:id/refresh` | 🔒 | Refresh QR token |
+| GET | `/attendance/session/:id` | 🔒 | Live attendance list |
+| PATCH | `/attendance/session/:id/manual` | 🔒 | Toggle student manually |
+| POST | `/attendance/session/:id/end` | 🔒 | End session |
+| GET | `/attendance/history` | 🔒 | Past sessions |
+| POST | `/attendance/mark` | 🔒 | Mark attendance via QR |
 
 ### Admin
 | Method | Path | Auth | Description |
@@ -479,13 +419,13 @@ Routes marked 👑 require `role = admin`.
 | GET | `/admin/users` | 👑 | List all non-admin users |
 | PATCH | `/admin/users/:id/block` | 👑 | Block / unblock user |
 | GET | `/admin/complaints` | 👑 | All feedback/complaints |
-| PATCH | `/admin/complaints/:id/resolve` | 👑 | Mark complaint resolved |
+| PATCH | `/admin/complaints/:id/resolve` | 👑 | Mark resolved |
 
 ### Misc
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| GET | `/stats` | 🔒 | Notes, users (total + by role), cabins counts |
-| GET | `/health` | — | Server health check |
+| Method | Path | Description |
+|---|---|---|
+| GET | `/stats` | 🔒 Counts by role, notes, cabins |
+| GET | `/health` | Server health check |
 
 ---
 
@@ -496,8 +436,6 @@ Routes marked 👑 require `role = admin`.
 VITE_APP_NAME=My-Campus
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
-> `VITE_` prefix makes the variable accessible in browser code via `import.meta.env.VITE_*`.  
-> For production, change `VITE_API_BASE_URL` to your deployed backend URL.
 
 ### Backend — `Backend/.env`
 ```env
@@ -508,16 +446,12 @@ JWT_SECRET=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET
 JWT_EXPIRES_IN=7d
 CLIENT_URL=http://localhost:5173
 
-# Admin seed credentials — used only by node scripts/seedAdmin.js
+# Admin credentials — auto-seeded on first server startup
 ADMIN_NAME=Admin
 ADMIN_EMAIL=admin@mycampus.edu
-ADMIN_PASSWORD=CHANGE_BEFORE_SEEDING
+ADMIN_PASSWORD=CHANGE_BEFORE_DEPLOYING
 ADMIN_DEPT=Administration
 ```
-> `JWT_SECRET`, `MONGO_URI`, and `ADMIN_PASSWORD` must never be committed to git.  
-> Admin credentials are read from `.env` so **nothing is hardcoded** in source code.  
-> After seeding you may delete the `ADMIN_*` lines from `.env` — they are no longer needed.  
-> Use `.env.example` files as safe commitrable templates.
 
 ---
 
@@ -525,78 +459,89 @@ ADMIN_DEPT=Administration
 
 ### Prerequisites
 - Node.js ≥ 18
-- MongoDB running locally or a MongoDB Atlas cluster
+- MongoDB (local or Atlas)
 
 ### 1 — Clone & install
 ```bash
 git clone <repo-url>
 cd "My Campus"
-
-# Install frontend dependencies
-cd Frontend
-npm install
-
-# Install backend dependencies
-cd ../Backend
-npm install
+cd Frontend && npm install
+cd ../Backend && npm install
 ```
 
 ### 2 — Configure environment
 ```bash
-# Backend
 cp Backend/.env.example Backend/.env
-# Edit Backend/.env → set MONGO_URI and a strong JWT_SECRET
+# Set MONGO_URI, JWT_SECRET, ADMIN_PASSWORD
 
-# Frontend
 cp Frontend/.env.example Frontend/.env
-# Edit Frontend/.env → VITE_API_BASE_URL=http://localhost:5000/api
+# Set VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
-### 3 — Seed the admin account (run once)
-
-Before running the seed, set your desired admin credentials in `Backend/.env`:
-```env
-ADMIN_NAME=Admin
-ADMIN_EMAIL=admin@mycampus.edu
-ADMIN_PASSWORD=YourStrongPassword123
-ADMIN_DEPT=Administration
-```
-Then run:
+### 3 — Seed cabin data (run once)
 ```bash
 cd Backend
-node scripts/seedAdmin.js
+node scripts/seedCabins.js
+# Inserts 371 VIT Bhopal faculty cabin records
 ```
-The script will:
-- Check if an admin already exists (exits safely if one does)
-- Create the admin account using credentials from `.env`
-- Print a confirmation with the email used
 
-> Only **one** admin account can ever exist. The seed script, the API register endpoint, and
-> the Mongoose model all independently enforce this rule. Running the script a second time
-> prints a warning and exits without creating a duplicate.
+### 4 — Start servers
 
-### 4 — Start the servers
-
-**Backend (terminal 1):**
+**Backend:**
 ```bash
 cd Backend
-npm run dev          # uses nodemon — auto-restarts on file changes
-# or: npm start      # production start
+npm run dev    # nodemon
 ```
+On first start the server **automatically creates the admin account** from `ADMIN_*` env vars if none exists. Watch for `✅ Admin auto-seeded` in the console.
 
-**Frontend (terminal 2):**
+**Frontend:**
 ```bash
 cd Frontend
-npm run dev          # Vite dev server at http://localhost:5173
+npm run dev    # http://localhost:5173
 ```
 
 ### 5 — Build for production
 ```bash
 cd Frontend
-npm run build        # outputs to Frontend/dist/
+npm run build   # outputs to Frontend/dist/
 ```
-Serve `dist/` with any static host (Vercel, Netlify, Nginx).  
-Deploy the Backend to Railway, Render, or any Node.js host.
+
+---
+
+## Deployment
+
+### Backend → Render
+
+1. Push to GitHub.
+2. New **Web Service** → root directory: `Backend` → Start command: `node server.js`
+3. Add environment variables:
+
+| Key | Value |
+|---|---|
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `JWT_SECRET` | Long random string |
+| `ADMIN_EMAIL` | e.g. `admin@mycampus.edu` |
+| `ADMIN_PASSWORD` | Strong password |
+| `ADMIN_NAME` | `Admin` |
+| `CLIENT_URL` | Your Vercel frontend URL |
+
+Admin is auto-seeded on first deploy. No manual commands needed.
+
+### Frontend → Vercel
+
+1. Import repo → Root Directory: `Frontend`
+2. Add environment variable:
+
+| Key | Value |
+|---|---|
+| `VITE_API_BASE_URL` | e.g. `https://my-campus-api.onrender.com/api` |
+
+### Seed cabins on production
+
+Run once after deploying the backend (from Render Shell or locally with Atlas URI):
+```bash
+node scripts/seedCabins.js
+```
 
 ---
 
@@ -607,18 +552,18 @@ Deploy the Backend to Railway, Render, or any Node.js host.
 | Password storage | bcryptjs, 12 salt rounds |
 | API authentication | JWT (HS256), 7-day expiry |
 | Route protection | `protect` middleware on every private route |
-| Role-based access | `restrictTo(role)` middleware after `protect` |
-| Single admin — Layer 1 | Register API rejects `role=admin` with HTTP 403 |
-| Single admin — Layer 2 | Mongoose `pre('validate')` blocks a second admin at DB level |
-| Single admin — Layer 3 | Block endpoint checks `target.role` and returns 403 for admin |
-| Admin account unblockable | `pre('save')` hook resets `isBlocked` to false if role is admin |
-| Admin credentials | Seeded from `.env` variables — never hardcoded in source |
-| Blocked users | Checked inside `protect` — returns 403 immediately |
+| Role-based access | `restrictTo(role)` middleware |
+| Single admin — Layer 1 | Register API rejects `role=admin` with 403 |
+| Single admin — Layer 2 | Mongoose `pre('validate')` hook blocks second admin |
+| Single admin — Layer 3 | Block endpoint returns 403 for admin target |
+| Admin unblockable | `pre('save')` resets `isBlocked` to false for admin role |
+| Admin credentials | Auto-seeded from `.env` — never hardcoded |
+| Blocked users | `protect` middleware checks and returns 403 |
 | QR proxy prevention | Token expires server-side every 10s + device lock |
-| Device lock | `deviceId` fingerprint + 20-minute cooldown checked in DB |
-| File uploads | Multer: image-only, 2 MB limit, stored server-side |
+| Device lock | `deviceId` + 20-minute cooldown in DB |
 | CORS | Restricted to `CLIENT_URL` env value |
-| Secrets | Never in code — only read from `.env` at runtime |
+| Modal z-index | Portal renders to `<body>` — immune to layout stacking contexts |
+| Secrets | Never in source code — only read from `.env` at runtime |
 
 ---
 
@@ -626,14 +571,16 @@ Deploy the Backend to Railway, Render, or any Node.js host.
 
 ```
 User
-  name, email, password (hashed), role, department, profilePhoto, isBlocked
+  name, email, password (hashed), role, department, isBlocked
+  (profilePhoto removed)
 
 Note
   title, driveURL, subject, courseCode, faculty, slot, module, description
   uploadedBy → ref User
 
 FacultyCabin
-  facultyName, cabinNumber, contact, department
+  facultyName, cabinNumber, contact, department (optional, default '')
+  (371 VIT Bhopal records pre-seeded)
 
 Feedback
   userId → ref User, message, type, status
