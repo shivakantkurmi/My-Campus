@@ -4,24 +4,77 @@ import * as XLSX from 'xlsx';
 import { Upload, Users, QrCode, Download, RefreshCw, Check, X, Play, StopCircle, Clock, TrendingUp, FileSpreadsheet, PlusCircle, Trash2 } from 'lucide-react';
 
 // ── Flexible Excel column resolution ────────────────────────────────────────
-// Strips spaces / punctuation / casing so "Reg No", "reg no", "Reg. No.",
-// "REGNO", "Registration Number" etc. all match the same alias bucket.
+// slug() lowercases + strips ALL spaces/punctuation/special chars first, so
+// every alias below matches ANY capitalisation, spacing or punctuation variant:
+//   "REG. NO."  → "regno"     "Reg Num"     → "regnum"
+//   "reG nUmBer"→ "regnumber" "ROLL NUMBER" → "rollnumber"
 const slug = s => String(s ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 const REG_ALIASES = new Set([
-  'regno','regnumber','regnum','regnno',
-  'registrationno','registrationnumber','registration',
-  'regid','rollno','rollnumber','rollnum',
-  'studentid','studentregno','studentregnumber',
+  // ── reg / reg no / reg number ──────────────────────────────
+  'reg','regno','regnos','regno',
+  'regnum','regnumber','regnumbers',
+  'regnno','regnnumber',                    // common typos
+  'regid','regids',
+
+  // ── registration … ────────────────────────────────────────
+  'registration',
+  'registrationno','registrationnum','registrationnumber',
+  'registrationid',
+  'registrationno','registrationnos',
+
+  // ── typo: regestration / registeration ───────────────────
   'regestrationno','regestrationnumber',
-  'enrollmentno','enrollmentnumber',
-  'registrationnumber',            // exported header (round-trip safe)
+  'registerationno','registerationnumber',
+  'registrationnumber',                     // exported header (round-trip safe)
+
+  // ── roll no / roll number ──────────────────────────────────
+  'roll','rollno','rollnos',
+  'rollnum','rollnumber','rollnumbers',
+  'rollid',
+
+  // ── enroll / enrollment / enrolment ───────────────────────
+  'enrollno','enrollnum','enrollnumber',
+  'enrollmentno','enrollmentnum','enrollmentnumber',
+  'enrollmentid',
+  'enrolno','enrolnum','enrolnumber',
+  'enrolmentno','enrolmentnum','enrolmentnumber',
+
+  // ── admission ─────────────────────────────────────────────
+  'admissionno','admissionnum','admissionnumber',
+  'admissionid','admno','admnum','admid',
+
+  // ── student-prefixed ──────────────────────────────────────
+  'studentid','studentids',
+  'studentno','studentnum','studentnumber',
+  'studentregno','studentregnumber','studentregnum',
+  'studentrollno','studentrollnumber','studentrollnum',
+  'studentenrollno','studentenrollmentno',
+
+  // ── short shorthands ──────────────────────────────────────
+  'rno','rnum',
+  'srno','slno',                            // serial/student reg no in some sheets
 ]);
 
 const NAME_ALIASES = new Set([
-  'name','studentname','stuname','sname',
-  'fullname','studentsname','studentfullname',
-  'nameofsudent','nameofstudent',
+  // ── plain name ────────────────────────────────────────────
+  'name','names',
+
+  // ── student name ──────────────────────────────────────────
+  'studentname','studentsname','studentnames',
+  'studentfullname','stuname','stunames',
+  'sname','snames',
+
+  // ── full name ─────────────────────────────────────────────
+  'fullname','fullnames',
+  'firstname','lastname',                   // single-column first/last fallback
+
+  // ── common typos / alternate phrasings ────────────────────
+  'nameofstudent','nameofsudent',           // typos
+  'nameofstudents',
+  'studnam','stname',
+  'candidatename','candidatenames',
+  'participantname',
 ]);
 
 /** Scan a header row and return { regIdx, nameIdx } (-1 when not found). */
@@ -57,7 +110,7 @@ export default function FacultyAttendance() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const wb = XLSX.read(ev.target.result, { type: 'binary' });
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, { header: 1 });
       if (!rows.length) return;
@@ -78,7 +131,7 @@ export default function FacultyAttendance() {
         }));
       setStudents(parsed);
     };
-    reader.readAsBinaryString(file);
+    reader.readAsArrayBuffer(file);
   };
 
   // ── Manual add ───────────────────────────────────────────────
@@ -244,15 +297,15 @@ export default function FacultyAttendance() {
               </div>
               <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Manual Entry</h3>
             </div>
-            <div className="flex gap-2">
+            <div className="grid grid-cols-2 sm:flex gap-2">
               <input value={newReg} onChange={e => setNewReg(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addManual()}
-                placeholder="Reg No" className={inputCls + ' w-32'} />
+                placeholder="Reg No" className={inputCls + ' min-w-0 sm:w-32'} />
               <input value={newName} onChange={e => setNewName(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && addManual()}
-                placeholder="Student Name" className={inputCls + ' flex-1'} />
+                placeholder="Student Name" className={inputCls + ' min-w-0 sm:flex-1'} />
               <button onClick={addManual}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all active:scale-95">
+                className="col-span-2 sm:col-auto px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all active:scale-95">
                 Add
               </button>
             </div>
