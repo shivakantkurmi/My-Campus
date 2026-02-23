@@ -57,12 +57,12 @@ router.get('/session/:id', protect, restrictTo('faculty'), async (req, res) => {
     if (!session) return res.status(404).json({ message: 'Session not found' });
 
     const records = await Attendance.find({ sessionId: session._id });
-    const presentRegNos = new Set(records.map(r => r.studentRegNo));
+    const presentRegNos = new Set(records.map(r => r.studentRegNo.toUpperCase()));
 
     const list = session.students.map(s => ({
       regNo: s.regNo,
       name: s.name,
-      present: presentRegNos.has(s.regNo),
+      present: presentRegNos.has(s.regNo.trim().toUpperCase()),
     }));
 
     return res.json(list);
@@ -92,7 +92,9 @@ router.post('/session/:id/end', protect, restrictTo('faculty'), async (req, res)
 // Manually toggle a student's attendance
 router.patch('/session/:id/manual', protect, restrictTo('faculty'), async (req, res) => {
   try {
-    const { regNo, present } = req.body;
+    const { present } = req.body;
+    // Normalize to uppercase for consistency
+    const regNo = (req.body.regNo || '').trim().toUpperCase();
     const session = await AttendanceSession.findOne({ _id: req.params.id, facultyId: req.user._id });
     if (!session) return res.status(404).json({ message: 'Session not found' });
 
@@ -128,7 +130,10 @@ router.get('/history', protect, restrictTo('faculty'), async (req, res) => {
 // Anti-proxy: validates token, device-lock, session expiry
 router.post('/mark', protect, restrictTo('student'), async (req, res) => {
   try {
-    const { token, regNo, deviceId } = req.body;
+    const { token, deviceId } = req.body;
+    // Normalize regNo to uppercase to treat "23bcg10140" == "23BCG10140"
+    const regNo = (req.body.regNo || '').trim().toUpperCase();
+
     if (!token || !regNo || !deviceId)
       return res.status(400).json({ message: 'token, regNo and deviceId are required' });
 
@@ -141,9 +146,11 @@ router.post('/mark', protect, restrictTo('student'), async (req, res) => {
     if (new Date() > session.expiresAt)
       return res.status(400).json({ message: 'QR code expired. Please scan the latest QR.' });
 
-    // Check student is in session list
-    const inList = session.students.some(s => s.regNo === regNo);
-    if (!inList)
+    // Check student is in session list (case-insensitive)
+    const studentEntry = session.students.find(
+      s => s.regNo.trim().toUpperCase() === regNo
+    );
+    if (!studentEntry)
       return res.status(400).json({ message: 'Your registration number is not in this session.' });
 
     // ── Atomic insert — let unique indexes be the final guard ──
@@ -171,12 +178,18 @@ router.post('/mark', protect, restrictTo('student'), async (req, res) => {
             message: `This device already marked attendance recently. Try after ${minsLeft} minute(s).`,
           });
         }
-        return res.status(409).json({ message: 'Attendance already marked for this session.' });
+        // studentRegNo duplicate — already marked (covers localStorage-cleared re-attempts too)
+        return res.status(409).json({
+          message: `Attendance already marked for ${studentEntry.name || regNo} in this session.`,
+        });
       }
       throw insertErr; // re-throw unexpected errors
     }
 
-    return res.status(201).json({ message: 'Attendance marked successfully!' });
+    return res.status(201).json({
+      message: 'Attendance marked successfully!',
+      studentName: studentEntry.name || '',
+    });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }

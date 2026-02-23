@@ -4,28 +4,48 @@ import { Html5Qrcode } from 'html5-qrcode';
 import { Camera, CheckCircle, XCircle, Lock, ShieldCheck, Loader2, ScanLine, Info } from 'lucide-react';
 
 const LOCK_KEY = 'mc_attendance_lock';
+const DEVICE_KEY = 'mc_device_id';
 const LOCK_DURATION_MS = 20 * 60 * 1000;
 
+// ── Cookie helpers (survive localStorage clears) ──────────────
+function setCookie(name, value, ms) {
+  const expires = new Date(Date.now() + ms).toUTCString();
+  document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires};path=/;SameSite=Strict`;
+}
+function getCookie(name) {
+  const match = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+// ── Lock: read/write both localStorage AND cookie ─────────────
 function isLocked() {
-  const lock = localStorage.getItem(LOCK_KEY);
-  if (!lock) return false;
-  const { until } = JSON.parse(lock);
-  return Date.now() < until;
+  // localStorage
+  const ls = localStorage.getItem(LOCK_KEY);
+  if (ls) { try { if (Date.now() < JSON.parse(ls).until) return true; } catch {} }
+  // cookie fallback (survives localStorage clear)
+  const ck = getCookie(LOCK_KEY);
+  if (ck && Date.now() < parseInt(ck, 10)) return true;
+  return false;
 }
 
 function setLock() {
-  localStorage.setItem(LOCK_KEY, JSON.stringify({ until: Date.now() + LOCK_DURATION_MS }));
+  const until = Date.now() + LOCK_DURATION_MS;
+  localStorage.setItem(LOCK_KEY, JSON.stringify({ until }));
+  setCookie(LOCK_KEY, String(until), LOCK_DURATION_MS);
 }
 
 function getLockSeconds() {
-  const lock = localStorage.getItem(LOCK_KEY);
-  if (!lock) return 0;
-  const { until } = JSON.parse(lock);
+  let until = 0;
+  const ls = localStorage.getItem(LOCK_KEY);
+  if (ls) { try { until = Math.max(until, JSON.parse(ls).until); } catch {} }
+  const ck = getCookie(LOCK_KEY);
+  if (ck) until = Math.max(until, parseInt(ck, 10));
   return Math.max(0, Math.ceil((until - Date.now()) / 1000));
 }
 
 export default function StudentAttendance() {
   const [regNo, setRegNo] = useState('');
+  const [studentName, setStudentName] = useState('');
   const [scanning, setScanning] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [status, setStatus] = useState(null); // 'success'|'error'|null
@@ -89,9 +109,9 @@ export default function StudentAttendance() {
     setStatus(null);
     try {
       const payload = JSON.parse(decodedText);
-      await api.post('/attendance/mark', {
+      const res = await api.post('/attendance/mark', {
         token: payload.token,
-        regNo: regNo.trim(),
+        regNo: regNo.trim().toUpperCase(),
         deviceId: getDeviceId(),
       });
       // ── Lock ONLY after server confirms success ──
@@ -99,7 +119,11 @@ export default function StudentAttendance() {
       setLocked(true);
       setLockSecs(getLockSeconds());
       setStatus('success');
-      setMsg('Attendance marked successfully!');
+      const name = res.data?.studentName;
+      setStudentName(name || '');
+      setMsg(name
+        ? `Attendance marked present for ${name}!`
+        : 'Attendance marked successfully!');
     } catch (err) {
       setStatus('error');
       setMsg(err.response?.data?.message || 'Failed to mark attendance. Please try again.');
@@ -109,11 +133,14 @@ export default function StudentAttendance() {
   };
 
   function getDeviceId() {
-    let id = localStorage.getItem('mc_device_id');
+    // Check cookie first (survives localStorage clears), then localStorage, then generate
+    let id = getCookie(DEVICE_KEY) || localStorage.getItem(DEVICE_KEY);
     if (!id) {
       id = `${navigator.userAgent}_${Date.now()}_${Math.random()}`;
-      localStorage.setItem('mc_device_id', id);
     }
+    // Always persist in both places so they stay in sync
+    localStorage.setItem(DEVICE_KEY, id);
+    setCookie(DEVICE_KEY, id, 30 * 24 * 60 * 60 * 1000); // 30 days
     return id;
   }
 
