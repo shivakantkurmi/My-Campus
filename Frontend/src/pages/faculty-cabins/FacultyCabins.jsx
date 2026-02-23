@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
-import { Search, Plus, Pencil, Trash2, DoorOpen, MessageSquarePlus, X } from 'lucide-react';
+import useCabinsStore from '../../store/cabinsStore';
+import { Search, Plus, Pencil, Trash2, DoorOpen, MessageSquarePlus, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Modal from '../../components/common/Modal';
+
+const PAGE_SIZE = 30;
 
 export default function FacultyCabins() {
   const { user } = useAuthStore();
-  const [cabins, setCabins] = useState([]);
+  const { cabins, loading, fetchCabins, refresh } = useCabinsStore();
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
   const [form, setForm] = useState(null); // null | {} | cabin-obj
   const [feedback, setFeedback] = useState('');
   const [fbType, setFbType] = useState('missing_faculty');
@@ -15,31 +19,35 @@ export default function FacultyCabins() {
   const [fbSent, setFbSent] = useState(false);
   const isAdmin = user?.role === 'admin';
 
-  const fetch = async () => {
-    const res = await api.get('/cabins');
-    setCabins(res.data);
-  };
+  // Load once; subsequent visits reuse cache
+  useEffect(() => { fetchCabins(); }, []);
 
-  useEffect(() => { fetch(); }, []);
-
+  // Search across ALL cabins, then paginate the results
   const filtered = cabins.filter(c =>
     !search || c.facultyName.toLowerCase().includes(search.toLowerCase()) ||
     (c.cabinNumber || '').toLowerCase().includes(search.toLowerCase()) ||
     (c.department || '').toLowerCase().includes(search.toLowerCase())
   );
 
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // Reset to page 1 whenever search changes or total shrinks
+  const safePage = Math.min(page, totalPages);
+  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  const handleSearch = (val) => { setSearch(val); setPage(1); };
+
   const handleSave = async () => {
     if (!form.facultyName || !form.cabinNumber) return;
     if (form._id) await api.put(`/cabins/${form._id}`, form);
     else await api.post('/cabins', form);
     setForm(null);
-    fetch();
+    refresh(); // invalidate cache and re-fetch
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this cabin?')) return;
     await api.delete(`/cabins/${id}`);
-    fetch();
+    refresh(); // invalidate cache and re-fetch
   };
 
   const sendFeedback = async () => {
@@ -55,7 +63,7 @@ export default function FacultyCabins() {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search faculty or cabin number…"
+          <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search faculty or cabin number…"
             className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white" />
         </div>
         {isAdmin && (
@@ -69,8 +77,11 @@ export default function FacultyCabins() {
       </div>
 
       {/* Cabin cards */}
+      {loading && (
+        <p className="text-center text-sm text-gray-400 py-6">Loading cabins…</p>
+      )}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((c, i) => (
+        {!loading && paginated.map((c, i) => (
           <div key={c._id}
             className="mc-flip-up mc-card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4"
             style={{ animationDelay: `${i * 55}ms` }}>
@@ -99,6 +110,54 @@ export default function FacultyCabins() {
           </div>
         ))}
       </div>
+
+      {/* Pagination */}
+      {!loading && totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={safePage === 1}
+            className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            <ChevronLeft size={16} />
+          </button>
+
+          {/* Page number pills */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1)
+            .filter(n => n === 1 || n === totalPages || Math.abs(n - safePage) <= 2)
+            .reduce((acc, n, idx, arr) => {
+              if (idx > 0 && n - arr[idx - 1] > 1) acc.push('...');
+              acc.push(n);
+              return acc;
+            }, [])
+            .map((item, idx) =>
+              item === '...' ? (
+                <span key={`ellipsis-${idx}`} className="px-1 text-gray-400 text-sm select-none">…</span>
+              ) : (
+                <button
+                  key={item}
+                  onClick={() => setPage(item)}
+                  className={`min-w-[2rem] h-8 px-2 rounded-lg text-sm font-medium transition ${
+                    safePage === item
+                      ? 'bg-blue-600 text-white'
+                      : 'border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  }`}>
+                  {item}
+                </button>
+              )
+            )}
+
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={safePage === totalPages}
+            className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 disabled:opacity-40 hover:bg-gray-100 dark:hover:bg-gray-700 transition">
+            <ChevronRight size={16} />
+          </button>
+
+          <span className="text-xs text-gray-400 ml-1">
+            {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}
+          </span>
+        </div>
+      )}
 
       {/* Add/Edit Modal – portaled to <body> to escape layout stacking context */}
       {form !== null && (

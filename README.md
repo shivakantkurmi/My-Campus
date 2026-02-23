@@ -105,6 +105,7 @@ My-Campus/
 │       │   └── axios.js            ← Axios instance (reads VITE_API_BASE_URL)
 │       ├── store/
 │       │   ├── authStore.js        ← Zustand: user, token, logout
+│       │   ├── cabinsStore.js      ← Zustand: cabin cache (load-once + refresh)
 │       │   └── themeStore.js       ← Zustand: dark/light mode
 │       ├── components/
 │       │   ├── common/
@@ -240,6 +241,8 @@ DELETE /api/notes/:id      → delete (owner or admin)
 - Cabin records store: faculty name, cabin number, contact. **Department is optional.**
 - The Department field was removed from the Add/Edit form — only faculty name + cabin number are required.
 - **Write** restricted to admin only; **Read** open to all authenticated users.
+- **Client-side caching** via `cabinsStore.js` — all 371 records are fetched **once** on first visit and stored in Zustand. Navigating away and back is instant (no re-fetch). Cache is invalidated and refreshed only when an admin adds, edits, or deletes a cabin.
+- **Pagination** — 30 cabins per page. Search runs across **all** 371 records (not just the current page), then the matching results are paginated. Page resets to 1 on every new search.
 - Search matches on faculty name, cabin number, or department.
 - Both the Add/Edit and Report Issue modals use the `Modal` portal component.
 
@@ -290,23 +293,35 @@ Runs entirely on the frontend — no API calls.
 
 **VIT Bhopal grade → points:**
 
-| Grade | Points |
-|---|---|
-| S | 10 |
-| A | 9 |
-| B | 8 |
-| C | 7 |
-| D | 6 |
-| E | 5 |
-| F / N1 / N2 / N3 / N4 | 0 |
-| P | Excluded entirely |
+| Grade | Meaning | Points |
+|---|---|---|
+| S | Outstanding | 10 |
+| A | Excellent | 9 |
+| B | Good | 8 |
+| C | Average | 7 |
+| D | Pass | 6 |
+| E | Pass (low) | 5 |
+| F | Fail | 0 |
+| N1 | Failed a component | 0 |
+| N2 | Debarred: attendance | 0 |
+| N3 | Absent in FAT | 0 |
+| N4 | Debarred: malpractice | 0 |
+| P | Pass/Fail course | **Excluded entirely** |
+
+**Supported credit values:** 1, 1.5, 2, 3, 4, 5, 6, 10, 20, 40
 
 ```
 GPA  = Σ(gradePoints × credits) / Σcredits
 CGPA = Σ(gradePoints × credits across all semesters) / Σcredits
 ```
 
-**GPA Tab** — single semester. **CGPA Tab** — multiple semesters, auto-recalculated.
+**GPA Tab** — single semester. **CGPA Tab** — multiple semesters, each with an editable label and its own per-semester GPA badge.
+
+**Result display:**
+- Score is color-coded: ≥ 8.5 emerald, ≥ 7 indigo, ≥ 5.5 amber, < 5.5 red
+- Performance label shown below the score: Outstanding 🏆 / Excellent 🌟 / Good 👍 / Average / Needs improvement
+- Grade reference badge strip always visible so users can check point values at a glance
+- Each course row previews the weighted points it contributes before the total is computed
 
 ---
 

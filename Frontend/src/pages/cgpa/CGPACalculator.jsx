@@ -25,7 +25,7 @@ const GRADE_DESC = {
   P:  'P  — Pass/Fail  (not counted)',
 };
 
-const CREDIT_OPTIONS = [1, 1.5, 2, 3, 4, 5, 6];
+const CREDIT_OPTIONS = [1, 1.5, 2, 3, 4, 5, 6,10,20,40];
 const GRADES = Object.keys(GRADE_MAP);
 
 const emptyCourse = () => ({ id: Date.now() + Math.random(), grade: 'S', credits: 3 });
