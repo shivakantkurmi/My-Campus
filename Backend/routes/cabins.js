@@ -18,8 +18,8 @@ router.get('/', protect, async (req, res) => {
 router.post('/', protect, restrictTo('admin'), async (req, res) => {
   try {
     const { facultyName, cabinNumber, contact, department } = req.body;
-    if (!facultyName || !cabinNumber || !department)
-      return res.status(400).json({ message: 'Faculty name, cabin number and department are required' });
+    if (!facultyName || !cabinNumber)
+      return res.status(400).json({ message: 'Faculty name and cabin number are required' });
 
     const cabin = await FacultyCabin.create({ facultyName, cabinNumber, contact, department });
     return res.status(201).json(cabin);

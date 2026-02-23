@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import { useEffect } from 'react';
 import api from '../../api/axios';
 import { X } from 'lucide-react';
+import Modal from '../../components/common/Modal';
 
 const SUBJECTS = ['CN', 'OOPS', 'Operating Systems', 'CPP', 'DBMS', 'Maths', 'Physics', 'Other'];
 
@@ -37,8 +38,8 @@ export default function NoteForm({ editing, onClose, onSaved }) {
   const inputCls = 'w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white';
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+    <Modal onClose={onClose}>
+      <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="font-semibold text-gray-800 dark:text-white">{editing ? 'Edit Note' : 'Add Note'}</h2>
           <button onClick={onClose}><X size={20} className="text-gray-500" /></button>
@@ -88,6 +89,6 @@ export default function NoteForm({ editing, onClose, onSaved }) {
           </div>
         </form>
       </div>
-    </div>
+    </Modal>
   );
 }

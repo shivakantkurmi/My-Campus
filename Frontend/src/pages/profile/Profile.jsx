@@ -3,13 +3,12 @@ import { useForm } from 'react-hook-form';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
 import Avatar from '../../components/common/Avatar';
-import { Camera, Save } from 'lucide-react';
+import { Save } from 'lucide-react';
 
 export default function Profile() {
   const { user, updateUser } = useAuthStore();
   const [success, setSuccess] = useState('');
   const [err, setErr] = useState('');
-  const [uploading, setUploading] = useState(false);
 
   const { register, handleSubmit, formState: { isSubmitting } } = useForm({
     defaultValues: {
@@ -31,37 +30,13 @@ export default function Profile() {
     }
   };
 
-  const handlePhotoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const formData = new FormData();
-    formData.append('photo', file);
-    try {
-      setUploading(true);
-      const res = await api.put('/auth/profile/photo', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      updateUser(res.data.user);
-    } catch {
-      setErr('Photo upload failed');
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const inputCls = 'w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white';
 
   return (
     <div className="max-w-lg space-y-6">
       {/* Avatar */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-col items-center gap-4">
-        <div className="relative">
-          <Avatar name={user?.name} photo={user?.profilePhoto} size={20} />
-          <label className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 p-1.5 rounded-full cursor-pointer shadow">
-            <Camera size={14} className="text-white" />
-            <input type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} disabled={uploading} />
-          </label>
-        </div>
+      <div className="mc-fade-down bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 flex flex-col items-center gap-4">
+        <Avatar name={user?.name} size={20} />
         <div className="text-center">
           <p className="font-semibold text-gray-800 dark:text-white">{user?.name}</p>
           <p className="text-sm text-gray-400">{user?.email}</p>
@@ -72,7 +47,7 @@ export default function Profile() {
       </div>
 
       {/* Edit form */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
+      <div className="mc-fade-up mc-stagger-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
         <h3 className="font-semibold text-gray-800 dark:text-white">Edit Profile</h3>
 
         {success && <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-sm text-green-700 dark:text-green-400">{success}</div>}

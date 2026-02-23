@@ -3,9 +3,7 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
-const upload = require('../middleware/upload');
-const fs = require('fs');
-const path = require('path');
+
 
 // ── Generate JWT ──────────────────────────────────────────────
 const signToken = (id) =>
@@ -73,27 +71,6 @@ router.put('/profile', protect, async (req, res) => {
       user.password = newPassword; // pre-save hook will hash it
     }
 
-    await user.save();
-    return res.json({ user });
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-});
-
-// ── PUT /api/auth/profile/photo ───────────────────────────────
-router.put('/profile/photo', protect, upload.single('photo'), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-
-    const user = await User.findById(req.user._id);
-
-    // Remove old photo file if exists
-    if (user.profilePhoto && !user.profilePhoto.startsWith('http')) {
-      const oldPath = path.join(__dirname, '..', user.profilePhoto);
-      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
-    }
-
-    user.profilePhoto = `/uploads/${req.file.filename}`;
     await user.save();
     return res.json({ user });
   } catch (err) {

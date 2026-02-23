@@ -87,46 +87,45 @@ export default function CGPACalculator() {
     ));
 
   // ── Shared row component ─────────────────────────────────────
-  const select = 'px-2 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer';
+  const select = 'w-full px-2 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer';
 
-  const CourseRow = ({ course, onChange, onRemove, canRemove }) => (
-    <div className="flex items-center gap-2">
-      {/* Grade */}
-      <div className="flex-1">
-        <label className="text-xs text-gray-400 mb-1 block">Grade</label>
-        <select value={course.grade} onChange={e => onChange('grade', e.target.value)} className={select}>
-          {GRADES.map(g => (
-            <option key={g} value={g}>{GRADE_DESC[g]}</option>
-          ))}
-        </select>
+  const CourseRow = ({ course, onChange, onRemove, canRemove }) => {
+    const pts = GRADE_MAP[course.grade];
+    const pointsDisplay = pts === null
+      ? <span className="text-gray-400 text-xs">skip</span>
+      : <span className="font-semibold text-indigo-600 dark:text-indigo-400">{(pts * Number(course.credits)).toFixed(0)}</span>;
+
+    return (
+      <div className="space-y-2">
+        {/* Row 1: Grade + Credits */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Grade</label>
+            <select value={course.grade} onChange={e => onChange('grade', e.target.value)} className={select}>
+              {GRADES.map(g => (
+                <option key={g} value={g}>{GRADE_DESC[g]}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Credits</label>
+            <select value={course.credits} onChange={e => onChange('credits', e.target.value)} className={select}>
+              {CREDIT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+        </div>
+        {/* Row 2: Points preview + Remove */}
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs text-gray-400">Points: {pointsDisplay}</span>
+          {canRemove && (
+            <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition">
+              <Trash2 size={13} />
+            </button>
+          )}
+        </div>
       </div>
-      {/* Credits */}
-      <div className="flex-1">
-        <label className="text-xs text-gray-400 mb-1 block">Credits</label>
-        <select value={course.credits} onChange={e => onChange('credits', e.target.value)} className={select}>
-          {CREDIT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </div>
-      {/* Points preview */}
-      <div className="w-14 text-center">
-        <label className="text-xs text-gray-400 mb-1 block">Points</label>
-        <span className="text-sm font-semibold text-indigo-600 dark:text-indigo-400">
-          {GRADE_MAP[course.grade] === null
-            ? <span className="text-gray-400 font-normal text-xs">skip</span>
-            : (GRADE_MAP[course.grade] * Number(course.credits)).toFixed(0)
-          }
-        </span>
-      </div>
-      {/* Remove */}
-      <div className="w-8 pt-5">
-        {canRemove && (
-          <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition">
-            <Trash2 size={13} />
-          </button>
-        )}
-      </div>
-    </div>
-  );
+    );
+  };
 
   const resultVal = tab === 'gpa' ? computeGpa(gpaRows) : computeCgpa();
   const numResult = parseFloat(resultVal);
@@ -137,7 +136,7 @@ export default function CGPACalculator() {
     : 'text-red-500';
 
   return (
-    <div className="max-w-2xl space-y-5">
+    <div className="max-w-2xl mx-auto space-y-5">
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 bg-gray-100 dark:bg-gray-800 rounded-xl w-fit">
@@ -155,7 +154,7 @@ export default function CGPACalculator() {
       </div>
 
       {/* Result card */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5">
+      <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -193,7 +192,7 @@ export default function CGPACalculator() {
 
       {/* GPA tab */}
       {tab === 'gpa' && (
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3">
+        <div className="mc-fade-up bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2">
               <Calculator size={15} className="text-indigo-500" />
@@ -204,7 +203,9 @@ export default function CGPACalculator() {
 
           <div className="space-y-3">
             {gpaRows.map((r, i) => (
-              <div key={r.id} className="p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50">
+              <div key={r.id}
+                className="mc-fade-up p-3 rounded-xl bg-gray-50 dark:bg-gray-700/50"
+                style={{ animationDelay: `${i * 50}ms` }}>
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
                   <span className="text-xs text-gray-400">Course {i + 1}</span>
@@ -228,9 +229,11 @@ export default function CGPACalculator() {
 
       {/* CGPA tab */}
       {tab === 'cgpa' && (
-        <div className="space-y-4">
-          {semesters.map((sem) => (
-            <div key={sem.id} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3">
+        <div className="mc-fade-up space-y-4">
+          {semesters.map((sem, si) => (
+            <div key={sem.id}
+              className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-5 space-y-3"
+              style={{ animationDelay: `${si * 60}ms` }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <input

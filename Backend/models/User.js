@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true, minlength: 6 },
     role: { type: String, enum: ['student', 'faculty', 'admin'], default: 'student' },
     department: { type: String, required: true },
-    profilePhoto: { type: String, default: '' }, // URL or base64
     isBlocked: { type: Boolean, default: false },
   },
   { timestamps: true }

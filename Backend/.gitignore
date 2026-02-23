@@ -12,3 +12,4 @@ uploads/*
 # Build / logs
 dist/
 *.log
+seedCabins,js

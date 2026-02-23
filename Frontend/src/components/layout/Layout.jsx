@@ -26,7 +26,10 @@ export default function Layout() {
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header onMenuClick={() => setSidebarOpen(true)} title={title} />
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <Outlet />
+          {/* key={pathname} forces remount → triggers mc-page entrance on every navigation */}
+          <div key={pathname} className="mc-page">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

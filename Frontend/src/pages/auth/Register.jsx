@@ -55,37 +55,39 @@ export default function Register() {
     <div className="min-h-screen flex bg-white dark:bg-gray-950">
 
       {/* ── Left panel — branding ── */}
-      <div className="hidden lg:flex lg:w-[40%] bg-gradient-to-br from-violet-600 via-indigo-700 to-indigo-800 flex-col justify-between p-12 relative overflow-hidden">
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute bottom-16 -left-10 w-64 h-64 rounded-full bg-violet-400/15" />
+      <div className="mc-fade-right hidden lg:flex lg:w-[40%] bg-linear-to-br from-violet-600 via-indigo-700 to-indigo-800 flex-col justify-between p-12 relative overflow-hidden">
+        <div className="mc-blob absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5" />
+        <div className="mc-blob absolute bottom-16 -left-10 w-64 h-64 rounded-full bg-violet-400/15" style={{ animationDelay: '3s' }} />
+        <div className="mc-drift absolute top-20 right-12 w-2 h-2 rounded-full bg-white/25 pointer-events-none" style={{ animationDuration: '9s' }} />
+        <div className="mc-drift absolute bottom-40 left-16 w-1.5 h-1.5 rounded-full bg-white/20 pointer-events-none" style={{ animationDuration: '11s', animationDelay: '2s' }} />
 
         <div className="relative">
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+            <div className="mc-float w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center" style={{ animationDuration: '3.5s' }}>
               <GraduationCap size={22} className="text-white" />
             </div>
             <span className="text-xl font-bold text-white">My-Campus</span>
           </div>
-          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+          <h2 className="mc-bounce-drop text-4xl font-extrabold text-white leading-tight mb-4">
             Join your campus<br />community.
           </h2>
-          <p className="text-indigo-200 text-lg leading-relaxed max-w-sm">
+          <p className="mc-fade-up mc-stagger-3 text-indigo-200 text-lg leading-relaxed max-w-sm">
             Create your account and get instant access to notes, attendance tools, and more.
           </p>
         </div>
 
         <div className="relative">
-          <div className="p-5 rounded-2xl bg-white/10 backdrop-blur border border-white/20">
+          <div className="mc-scale-in p-5 rounded-2xl bg-white/10 backdrop-blur border border-white/20">
             <p className="text-white text-sm font-medium mb-3">Already a member?</p>
-            <Link to="/login" className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-lg transition">
-              Sign In Instead <ArrowRight size={14} />
+            <Link to="/login" className="mc-btn inline-flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-semibold rounded-lg transition active:scale-95">
+              Sign In Instead <ArrowRight size={14} className="mc-nudge" />
             </Link>
           </div>
         </div>
       </div>
 
       {/* ── Right panel — form ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-12 py-12 overflow-y-auto">
+      <div className="mc-fade-left flex-1 flex flex-col justify-center items-center px-6 sm:px-12 py-12 overflow-y-auto">
         {/* mobile logo */}
         <div className="lg:hidden flex items-center gap-2 mb-8">
           <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center">
@@ -96,8 +98,8 @@ export default function Register() {
 
         <div className="w-full max-w-md">
           <div className="mb-7">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Create account</h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <h1 className="mc-rubber-in text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Create account</h1>
+            <p className="mc-fade-up mc-stagger-2 text-gray-500 dark:text-gray-400">
               Already have one?{' '}
               <Link to="/login" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">Sign in</Link>
             </p>
@@ -184,12 +186,12 @@ export default function Register() {
             <button
               type="submit"
               disabled={isSubmitting || success}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 mt-1"
+              className="mc-btn w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 mc-glow-border hover:-translate-y-0.5 transition-all active:scale-95 mt-1"
             >
               {isSubmitting ? (
                 <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Creating account…</>
               ) : (
-                <>Create Account <ArrowRight size={16} /></>
+                <>Create Account <ArrowRight size={16} className="mc-nudge" /></>
               )}
             </button>
           </form>

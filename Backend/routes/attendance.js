@@ -146,24 +146,38 @@ router.post('/mark', protect, restrictTo('student'), async (req, res) => {
     if (!inList)
       return res.status(400).json({ message: 'Your registration number is not in this session.' });
 
-    // Check device lock (same device, any session within 20 mins)
-    const recentByDevice = await Attendance.findOne({
-      deviceId,
-      timestamp: { $gt: new Date(Date.now() - 20 * 60 * 1000) },
-    });
-    if (recentByDevice)
-      return res.status(429).json({ message: 'This device already marked attendance recently. Try after 20 minutes.' });
+    // ── Atomic insert — let unique indexes be the final guard ──
+    // This eliminates the read→check→write race window that exists
+    // under high concurrency (100+ simultaneous students).
+    // We skip pre-flight duplicate reads and go straight to insert;
+    // MongoDB's unique indexes on (sessionId,studentRegNo) and
+    // (sessionId,deviceId) enforce correctness atomically.
+    try {
+      await Attendance.create({ sessionId: session._id, studentRegNo: regNo, deviceId });
+    } catch (insertErr) {
+      if (insertErr.code === 11000) {
+        // Distinguish which unique constraint fired for a clear message
+        const key = Object.keys(insertErr.keyValue || {})[0] || '';
+        if (key.includes('deviceId')) {
+          // Check how many minutes remain on the device lock
+          const recent = await Attendance.findOne({
+            deviceId,
+            timestamp: { $gt: new Date(Date.now() - 20 * 60 * 1000) },
+          });
+          const minsLeft = recent
+            ? Math.ceil((recent.timestamp.getTime() + 20 * 60 * 1000 - Date.now()) / 60000)
+            : 0;
+          return res.status(429).json({
+            message: `This device already marked attendance recently. Try after ${minsLeft} minute(s).`,
+          });
+        }
+        return res.status(409).json({ message: 'Attendance already marked for this session.' });
+      }
+      throw insertErr; // re-throw unexpected errors
+    }
 
-    // Check duplicate for same student in same session
-    const duplicate = await Attendance.findOne({ sessionId: session._id, studentRegNo: regNo });
-    if (duplicate)
-      return res.status(409).json({ message: 'Attendance already marked for this session.' });
-
-    await Attendance.create({ sessionId: session._id, studentRegNo: regNo, deviceId });
     return res.status(201).json({ message: 'Attendance marked successfully!' });
   } catch (err) {
-    if (err.code === 11000)
-      return res.status(409).json({ message: 'Attendance already marked.' });
     return res.status(500).json({ message: err.message });
   }
 });

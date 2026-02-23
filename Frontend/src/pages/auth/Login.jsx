@@ -37,22 +37,24 @@ export default function Login() {
     <div className="min-h-screen flex bg-white dark:bg-gray-950">
 
       {/* ── Left panel — branding ── */}
-      <div className="hidden lg:flex lg:w-[45%] bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 flex-col justify-between p-12 relative overflow-hidden">
-        <div className="absolute -top-16 -left-16 w-72 h-72 rounded-full bg-white/5" />
-        <div className="absolute bottom-24 right-0 w-96 h-96 rounded-full bg-violet-500/20 translate-x-1/2" />
-        <div className="absolute top-1/3 -left-8 w-40 h-40 rounded-full bg-indigo-400/20" />
+      <div className="mc-fade-right hidden lg:flex lg:w-[45%] bg-linear-to-br from-indigo-600 via-indigo-700 to-violet-800 flex-col justify-between p-12 relative overflow-hidden">
+        <div className="mc-blob absolute -top-16 -left-16 w-72 h-72 rounded-full bg-white/5" />
+        <div className="mc-blob absolute bottom-24 right-0 w-96 h-96 rounded-full bg-violet-500/20 translate-x-1/2" style={{ animationDelay: '3s' }} />
+        <div className="mc-blob absolute top-1/3 -left-8 w-40 h-40 rounded-full bg-indigo-400/20" style={{ animationDelay: '5s' }} />
+        <div className="mc-drift absolute top-16 right-16 w-2 h-2 rounded-full bg-white/30 pointer-events-none" style={{ animationDuration: '9s' }} />
+        <div className="mc-drift absolute bottom-32 left-24 w-1.5 h-1.5 rounded-full bg-white/20 pointer-events-none" style={{ animationDuration: '12s', animationDelay: '2s' }} />
 
         <div className="relative">
           <div className="flex items-center gap-3 mb-16">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center">
+            <div className="mc-float w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center" style={{ animationDuration: '3.5s' }}>
               <GraduationCap size={22} className="text-white" />
             </div>
             <span className="text-xl font-bold text-white">My-Campus</span>
           </div>
-          <h2 className="text-4xl font-extrabold text-white leading-tight mb-4">
+          <h2 className="mc-bounce-drop text-4xl font-extrabold text-white leading-tight mb-4">
             Welcome back<br />to campus life.
           </h2>
-          <p className="text-indigo-200 text-lg leading-relaxed max-w-sm">
+          <p className="mc-fade-up mc-stagger-3 text-indigo-200 text-lg leading-relaxed max-w-sm">
             Access your notes, attendance, faculty finder and CGPA calculator — all in one place.
           </p>
         </div>
@@ -62,9 +64,9 @@ export default function Login() {
             { icon: '📚', text: 'Share & discover notes across departments' },
             { icon: '📱', text: 'Scan QR codes to mark attendance instantly' },
             { icon: '🎓', text: 'Track your CGPA in real time' },
-          ].map(({ icon, text }) => (
-            <div key={text} className="flex items-center gap-3">
-              <span className="text-xl">{icon}</span>
+          ].map(({ icon, text }, i) => (
+            <div key={text} className="mc-slide-bounce flex items-center gap-3" style={{ animationDelay: `${i * 100}ms` }}>
+              <span className="mc-float text-xl" style={{ animationDuration: `${3 + i * 0.5}s`, animationDelay: `${i * 0.4}s` }}>{icon}</span>
               <span className="text-indigo-100 text-sm">{text}</span>
             </div>
           ))}
@@ -72,7 +74,7 @@ export default function Login() {
       </div>
 
       {/* ── Right panel — form ── */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6 sm:px-12 py-12">
+      <div className="mc-fade-left flex-1 flex flex-col justify-center items-center px-6 sm:px-12 py-12">
         {/* mobile logo */}
         <div className="lg:hidden flex items-center gap-2 mb-10">
           <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center">
@@ -83,8 +85,8 @@ export default function Login() {
 
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Sign in</h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <h1 className="mc-rubber-in text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1">Sign in</h1>
+            <p className="mc-fade-up mc-stagger-2 text-gray-500 dark:text-gray-400">
               Don't have an account?{' '}
               <Link to="/register" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">Register</Link>
             </p>
@@ -133,12 +135,12 @@ export default function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5"
+              className="mc-btn w-full flex items-center justify-center gap-2 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-lg shadow-indigo-500/25 mc-glow-border hover:-translate-y-0.5 transition-all active:scale-95"
             >
               {isSubmitting ? (
                 <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Signing in…</>
               ) : (
-                <>Sign In <ArrowRight size={16} /></>
+                <>Sign In <ArrowRight size={16} className="mc-nudge" /></>
               )}
             </button>
           </form>

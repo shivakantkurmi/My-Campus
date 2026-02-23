@@ -118,8 +118,10 @@ export default function AdminDashboard() {
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {statCards.map(({ label, value, icon: Icon, color, ring }) => (
-          <div key={label} className={`bg-white dark:bg-gray-800 rounded-xl p-4 border ${ring} dark:border-gray-700`}>
+        {statCards.map(({ label, value, icon: Icon, color, ring }, i) => (
+          <div key={label}
+            className={`mc-fade-up bg-white dark:bg-gray-800 rounded-xl p-4 border ${ring} dark:border-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all`}
+            style={{ animationDelay: `${i * 60}ms` }}>
             <div className={`inline-flex items-center justify-center w-9 h-9 rounded-lg mb-3 ${color}`}>
               <Icon size={17} />
             </div>
@@ -130,7 +132,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* ── Tabs ── */}
-      <div className="flex gap-1 border-b border-gray-200 dark:border-gray-700">
+      <div className="overflow-x-auto flex gap-1 border-b border-gray-200 dark:border-gray-700">
         {tabs.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={() => setTab(id)}
             className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
@@ -165,7 +167,7 @@ export default function AdminDashboard() {
                 placeholder="Search by name or email…"
                 className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:text-white placeholder-gray-400" />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {ROLE_FILTERS.map(r => (
                 <button key={r} onClick={() => setRoleFilter(r)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition ${
@@ -210,7 +212,7 @@ export default function AdminDashboard() {
                   <tr key={u._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <Avatar name={u.name} photo={u.profilePhoto} size={8} />
+                        <Avatar name={u.name} size={8} />
                         <div>
                           <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{u.name}</p>
                           <p className="text-xs text-gray-400">{u.email}</p>
@@ -265,8 +267,10 @@ export default function AdminDashboard() {
       {tab === 'notes' && !loading && (
         <div className="space-y-3">
           {notes.length === 0 && <p className="text-center py-10 text-gray-400 text-sm">No notes uploaded yet.</p>}
-          {notes.map(note => (
-            <div key={note._id} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between gap-4">
+          {notes.map((note, i) => (
+            <div key={note._id}
+              className="mc-fade-up bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between gap-4 hover:shadow-sm transition-all"
+              style={{ animationDelay: `${i * 40}ms` }}>
               <div className="min-w-0">
                 <p className="font-medium text-gray-700 dark:text-white text-sm truncate">{note.title}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{note.subject} · By {note.uploadedBy?.name ?? 'Unknown'}</p>
@@ -284,10 +288,12 @@ export default function AdminDashboard() {
       {tab === 'complaints' && !loading && (
         <div className="space-y-3">
           {complaints.length === 0 && <p className="text-center py-10 text-gray-400 text-sm">No complaints yet.</p>}
-          {complaints.map(c => (
-            <div key={c._id} className={`bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 px-4 py-4 space-y-2 ${
-              c.status === 'resolved' ? 'border-gray-100 opacity-60' : 'border-amber-100 dark:border-amber-900/30'
-            }`}>
+          {complaints.map((c, i) => (
+            <div key={c._id}
+              className={`mc-fade-up bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 px-4 py-4 space-y-2 hover:shadow-sm transition-all ${
+                c.status === 'resolved' ? 'border-gray-100 opacity-60' : 'border-amber-100 dark:border-amber-900/30'
+              }`}
+              style={{ animationDelay: `${i * 45}ms` }}>
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${
                   c.type === 'unblock_appeal'

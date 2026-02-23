@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../../api/axios';
 import * as XLSX from 'xlsx';
-import { Upload, Users, QrCode, Download, RefreshCw, Check, X } from 'lucide-react';
+import { Upload, Users, QrCode, Download, RefreshCw, Check, X, Play, StopCircle, Clock, TrendingUp, FileSpreadsheet, PlusCircle, Trash2 } from 'lucide-react';
 
 // ── Flexible Excel column resolution ────────────────────────────────────────
 // Strips spaces / punctuation / casing so "Reg No", "reg no", "Reg. No.",
@@ -173,144 +173,318 @@ export default function FacultyAttendance() {
   };
 
   const presentCount = attendance.filter(s => s.present).length;
+  const totalCount = attendance.length;
+  const progressPct = totalCount ? Math.round((presentCount / totalCount) * 100) : 0;
+
+  // SVG QR countdown ring: cx=cy=110 r=104 circ≈653.3
+  const QR_CIRC = 653.3;
+  const qrRingOffset = QR_CIRC * (1 - countdown / 10);
+
+  const tabLabels = { setup: 'Setup', live: 'Live', history: 'History' };
+  const tabList = ['setup', 'live', 'history'];
+  const tabIdx = tabList.indexOf(tab);
 
   return (
-    <div className="space-y-4">
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
-        {['setup', 'live', 'history'].map(t => (
+    <div className="space-y-5">
+      <style>{`
+        @keyframes fadein { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes popIn  { 0%{opacity:0;transform:scale(0.8)} 70%{transform:scale(1.05)} 100%{opacity:1;transform:scale(1)} }
+        @keyframes pulse-ring { 0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.03)} }
+        .fadein    { animation: fadein 0.35s ease both; }
+        .pop-in    { animation: popIn 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        .pulse-qr  { animation: pulse-ring 2s ease-in-out infinite; }
+        .tab-pill  { transition: transform 0.25s cubic-bezier(.4,0,.2,1); }
+        .row-enter { animation: fadein 0.3s ease both; }
+      `}</style>
+
+      {/* ── Tab Bar ── */}
+      <div className="relative flex bg-gray-100 dark:bg-gray-800 rounded-2xl p-1">
+        {/* Sliding pill */}
+        <div className="tab-pill absolute top-1 bottom-1 rounded-xl bg-white dark:bg-gray-700 shadow-sm"
+          style={{ width: `${100 / 3}%`, transform: `translateX(${tabIdx * 100}%)` }} />
+        {tabList.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`px-4 py-2 capitalize text-sm font-medium border-b-2 transition ${tab === t ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 dark:text-gray-400'}`}>
-            {t}
+            className={`relative z-10 flex-1 py-2 text-sm font-medium rounded-xl transition-colors duration-200
+              ${tab === t ? 'text-gray-800 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>
+            {tabLabels[t]}
+            {t === 'live' && session && (
+              <span className="inline-block ml-1.5 w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            )}
           </button>
         ))}
       </div>
 
-      {/* Setup */}
+      {/* ══ SETUP ══ */}
       {tab === 'setup' && (
-        <div className="space-y-4">
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 space-y-3">
-            <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2"><Upload size={16}/> Upload Student List (Excel)</h3>
-            <p className="text-xs text-gray-400">
-              Headers are <span className="font-medium text-gray-500 dark:text-gray-300">auto-detected</span>.
-              Registration column: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">Reg No / Registration Number / Roll No / Student ID</code> (and common typos).
-              Name column: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">Name / Student Name / Stu Name / SName</code>.
-              Column order does not matter. No headers? Falls back to col A = reg, col B = name.
-            </p>
-            <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcel} className="text-sm text-gray-600 dark:text-gray-300" />
+        <div className="fadein space-y-4">
+          {/* Upload card */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 space-y-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                <FileSpreadsheet size={18} className="text-blue-500"/>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Upload Student List</h3>
+                <p className="text-xs text-gray-400">Excel / CSV — any column order</p>
+              </div>
+            </div>
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl py-6 px-4 cursor-pointer hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
+              <Upload size={22} className="text-gray-400"/>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Click to browse or drop file</span>
+              <span className="text-xs text-gray-400">Supported headers: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">Reg No, Registration Number, Roll No</code></span>
+              <input type="file" accept=".xlsx,.xls,.csv" onChange={handleExcel} className="hidden"/>
+            </label>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 space-y-3">
-            <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2"><Users size={16}/> Manual Entry</h3>
-            <div className="flex gap-2">
-              <input value={newReg} onChange={e => setNewReg(e.target.value)} placeholder="Reg No" className={inputCls} />
-              <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Student Name" className={inputCls + ' flex-1'} />
-              <button onClick={addManual} className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">Add</button>
+          {/* Manual entry card */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 space-y-3 shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+                <PlusCircle size={18} className="text-purple-500"/>
+              </div>
+              <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Manual Entry</h3>
             </div>
+            <div className="flex gap-2">
+              <input value={newReg} onChange={e => setNewReg(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addManual()}
+                placeholder="Reg No" className={inputCls + ' w-32'} />
+              <input value={newName} onChange={e => setNewName(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && addManual()}
+                placeholder="Student Name" className={inputCls + ' flex-1'} />
+              <button onClick={addManual}
+                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition-all active:scale-95">
+                Add
+              </button>
+            </div>
+          </div>
 
-            {students.length > 0 && (
-              <div className="space-y-1 max-h-48 overflow-y-auto">
+          {/* Student list */}
+          {students.length > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
+                <span className="text-sm font-semibold text-gray-700 dark:text-white flex items-center gap-2">
+                  <Users size={15} className="text-gray-400"/> {students.length} student{students.length !== 1 ? 's' : ''}
+                </span>
+                <button onClick={() => setStudents([])}
+                  className="text-xs text-red-400 hover:text-red-600 flex items-center gap-1 transition-colors">
+                  <Trash2 size={12}/> Clear all
+                </button>
+              </div>
+              <div className="max-h-56 overflow-y-auto divide-y divide-gray-50 dark:divide-gray-700">
                 {students.map((s, i) => (
-                  <div key={i} className="flex items-center justify-between text-sm px-2 py-1 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">{s.regNo} — {s.name}</span>
-                    <button onClick={() => setStudents(prev => prev.filter((_, j) => j !== i))} className="text-red-400 hover:text-red-600"><X size={14}/></button>
+                  <div key={i} className="row-enter flex items-center justify-between px-5 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}>
+                    <div>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{s.regNo}</span>
+                      <span className="text-xs text-gray-400 ml-2">{s.name}</span>
+                    </div>
+                    <button onClick={() => setStudents(prev => prev.filter((_, j) => j !== i))}
+                      className="text-gray-300 hover:text-red-500 transition-colors">
+                      <X size={14}/>
+                    </button>
                   </div>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           <button onClick={startSession} disabled={!students.length}
-            className="w-full py-3 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-semibold rounded-xl flex items-center justify-center gap-2">
-            <QrCode size={18}/> Start Attendance Session
+            className="w-full py-3.5 bg-linear-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-sm shadow-green-500/30 transition-all active:scale-[.98]">
+            <Play size={17}/>
+            Start Attendance Session
+            {students.length > 0 && <span className="bg-white/20 text-xs px-2 py-0.5 rounded-full">{students.length}</span>}
           </button>
         </div>
       )}
 
-      {/* Live */}
+      {/* ══ LIVE ══ */}
       {tab === 'live' && session && (
-        <div className="space-y-4">
+        <div className="fadein space-y-4">
           <div className="grid md:grid-cols-2 gap-4">
-            {/* QR Code */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col items-center gap-3">
-              <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2"><QrCode size={16}/> Live QR Code</h3>
-              {qrUrl && <img src={qrUrl} alt="QR" className="w-48 h-48 rounded-lg" />}
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <RefreshCw size={14} className="animate-spin" />
-                Refreshes in {countdown}s
+
+            {/* ── QR Code with ring ── */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col items-center gap-3 shadow-sm">
+              <div className="flex items-center gap-2 self-start">
+                <QrCode size={16} className="text-blue-500"/>
+                <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live QR Code</h3>
+                <span className="ml-auto text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"/>Active
+                </span>
+              </div>
+
+              {/* QR with SVG countdown ring */}
+              <div className="relative flex items-center justify-center">
+                <svg width="220" height="220" className="absolute -rotate-90 pulse-qr">
+                  <circle cx="110" cy="110" r="104" fill="none" strokeWidth="4"
+                    className="text-gray-100 dark:text-gray-700" stroke="currentColor"/>
+                  <circle cx="110" cy="110" r="104" fill="none" strokeWidth="4"
+                    stroke="url(#qrGrad)" strokeLinecap="round"
+                    strokeDasharray={QR_CIRC}
+                    strokeDashoffset={qrRingOffset}
+                    style={{ transition: 'stroke-dashoffset 0.9s linear' }}/>
+                  <defs>
+                    <linearGradient id="qrGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%"   stopColor="#3b82f6"/>
+                      <stop offset="100%" stopColor="#8b5cf6"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {qrUrl && <img src={qrUrl} alt="QR" className="w-48 h-48 rounded-xl relative z-10"/>}
+              </div>
+
+              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <RefreshCw size={13} className="animate-spin"/>
+                Refreshes in <span className="font-bold text-blue-500 tabular-nums w-4 text-center">{countdown}</span>s
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-100 dark:border-gray-700 space-y-3">
-              <h3 className="font-semibold text-gray-700 dark:text-white">Live Stats</h3>
-              <p className="text-4xl font-bold text-green-500">{presentCount} <span className="text-lg text-gray-400">/ {attendance.length}</span></p>
-              <p className="text-sm text-gray-400">Students Present</p>
-              <div className="flex gap-2 mt-3">
-                <button onClick={downloadExcel} className="flex-1 flex items-center justify-center gap-2 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-                  <Download size={14}/> Download
+            {/* ── Stats ── */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col gap-4 shadow-sm">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={16} className="text-green-500"/>
+                <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Stats</h3>
+              </div>
+
+              {/* Big number */}
+              <div className="text-center py-2">
+                <p className="text-5xl font-black text-green-500 tabular-nums">{presentCount}</p>
+                <p className="text-sm text-gray-400 mt-1">of <span className="font-medium text-gray-600 dark:text-gray-300">{totalCount}</span> students present</p>
+              </div>
+
+              {/* Progress bar */}
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs text-gray-400">
+                  <span>Attendance</span>
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">{progressPct}%</span>
+                </div>
+                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
+                  <div className="h-2.5 rounded-full bg-linear-to-r from-green-500 to-emerald-400 transition-all duration-700"
+                    style={{ width: `${progressPct}%` }}/>
+                </div>
+                <div className="flex justify-between text-xs text-gray-400 pt-0.5">
+                  <span className="text-green-600 dark:text-green-400">{presentCount} present</span>
+                  <span className="text-red-400">{totalCount - presentCount} absent</span>
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-auto">
+                <button onClick={downloadExcel}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-medium transition-all active:scale-95">
+                  <Download size={13}/> Export
                 </button>
-                <button onClick={endSession} className="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600">End Session</button>
+                <button onClick={endSession}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-medium transition-all active:scale-95">
+                  <StopCircle size={13}/> End
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Attendance list */}
-          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-300">Reg No</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-300">Name</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-300">Status</th>
-                  <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-300">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {attendance.map(s => (
-                  <tr key={s.regNo}>
-                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{s.regNo}</td>
-                    <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{s.name}</td>
-                    <td className="px-4 py-2.5">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${s.present ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'}`}>
-                        {s.present ? 'Present' : 'Absent'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2.5">
-                      <button onClick={() => togglePresent(s.regNo, s.present)}
-                        className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700">
-                        {s.present ? <><X size={12}/> Mark Absent</> : <><Check size={12}/> Mark Present</>}
-                      </button>
-                    </td>
+          {/* ── Attendance list ── */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+            <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
+              <Users size={15} className="text-gray-400"/>
+              <span className="text-sm font-semibold text-gray-700 dark:text-white">Students</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-700/50">
+                  <tr>
+                    {['Reg No', 'Name', 'Status', 'Override'].map(h => (
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{h}</th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
+                  {attendance.map((s, i) => (
+                    <tr key={s.regNo}
+                      className={`transition-colors duration-500 ${s.present ? 'bg-green-50/60 dark:bg-green-900/10' : ''}`}
+                      style={{ animationDelay: `${i * 20}ms` }}>
+                      <td className="px-4 py-2.5">
+                        <span className="font-mono text-xs font-medium text-gray-700 dark:text-gray-300">{s.regNo}</span>
+                      </td>
+                      <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{s.name}</td>
+                      <td className="px-4 py-2.5">
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all duration-300
+                          ${s.present
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
+                            : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${s.present ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}/>
+                          {s.present ? 'Present' : 'Absent'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <button onClick={() => togglePresent(s.regNo, s.present)}
+                          className={`flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-lg transition-all active:scale-95
+                            ${s.present
+                              ? 'text-red-500 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40'
+                              : 'text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-900/20 dark:hover:bg-green-900/40'}`}>
+                          {s.present ? <><X size={11}/> Absent</> : <><Check size={11}/> Present</>}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}
 
-      {/* History */}
+      {/* no session but live tab selected */}
+      {tab === 'live' && !session && (
+        <div className="fadein flex flex-col items-center gap-3 py-16 text-center">
+          <QrCode size={40} className="text-gray-300"/>
+          <p className="font-medium text-gray-400">No active session</p>
+          <p className="text-xs text-gray-400">Go to <button onClick={() => setTab('setup')} className="text-blue-500 underline">Setup</button> and start one.</p>
+        </div>
+      )}
+
+      {/* ══ HISTORY ══ */}
       {tab === 'history' && (
-        <div className="space-y-3">
+        <div className="fadein space-y-3">
           {history.length === 0 ? (
-            <p className="text-center py-10 text-gray-400">No session history yet.</p>
+            <div className="flex flex-col items-center gap-3 py-16 text-center">
+              <Clock size={40} className="text-gray-300"/>
+              <p className="font-medium text-gray-400">No session history yet.</p>
+            </div>
           ) : (
-            history.map(h => (
-              <div key={h._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl px-5 py-4">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium text-gray-700 dark:text-white text-sm">{new Date(h.createdAt).toLocaleString()}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {h.presentCount ?? '?'} / {h.totalStudents ?? '?'} present
-                    </p>
+            history.map((h, i) => {
+              const pct = h.totalStudents ? Math.round(((h.presentCount ?? 0) / h.totalStudents) * 100) : 0;
+              const color = pct >= 75 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+              return (
+                <div key={h._id} className="row-enter bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-5 py-4 shadow-sm"
+                  style={{ animationDelay: `${i * 40}ms` }}>
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <p className="font-semibold text-gray-800 dark:text-white text-sm">
+                        {new Date(h.createdAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {new Date(h.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
+                        {' · '}{h.totalStudents ?? 0} students
+                      </p>
+                    </div>
+                    <span className={`text-xs px-2.5 py-1 rounded-full font-medium
+                      ${h.ended ? 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                                : 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'}`}>
+                      {h.ended ? 'Ended' : 'Active'}
+                    </span>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${h.ended ? 'bg-gray-100 text-gray-500' : 'bg-green-100 text-green-700'}`}>
-                    {h.ended ? 'Ended' : 'Active'}
-                  </span>
+                  {/* Attendance bar */}
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>{h.presentCount ?? '?'} / {h.totalStudents ?? '?'} present</span>
+                      <span className="font-semibold">{pct}%</span>
+                    </div>
+                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+                      <div className={`h-2 rounded-full ${color} transition-all duration-700`}
+                        style={{ width: `${pct}%` }}/>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       )}

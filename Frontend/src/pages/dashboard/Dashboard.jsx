@@ -26,9 +26,15 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-blue-700 to-indigo-700 rounded-2xl p-6 flex items-center gap-4 shadow">
-        <Avatar name={user?.name} photo={user?.profilePhoto} size={16} />
-        <div>
+      <div className="mc-bounce-drop relative overflow-hidden bg-linear-to-r from-blue-700 to-indigo-700 rounded-2xl p-6 flex items-center gap-4 shadow-xl shadow-indigo-500/20 mc-glow-border">
+        {/* floating particles in banner */}
+        <div className="mc-drift absolute top-3 right-10 w-2 h-2 rounded-full bg-white/20 pointer-events-none" style={{ animationDuration: '8s' }} />
+        <div className="mc-drift absolute bottom-4 right-24 w-1.5 h-1.5 rounded-full bg-white/15 pointer-events-none" style={{ animationDuration: '11s', animationDelay: '2s' }} />
+        <div className="mc-drift absolute top-5 left-1/2 w-1 h-1 rounded-full bg-white/20 pointer-events-none" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+        <div className="mc-pulse-glow rounded-full">
+          <Avatar name={user?.name} size={16} />
+        </div>
+        <div className="relative">
           <h2 className="text-2xl font-bold text-white">Welcome, {user?.name?.split(' ')[0]}! 👋</h2>
           <p className="text-blue-200 capitalize">{user?.role} · {user?.department}</p>
         </div>
@@ -37,12 +43,14 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {[
-          { label: 'Notes Available', value: stats.notes },
-          { label: 'Faculty Cabins', value: stats.cabins },
-          { label: 'Registered Users', value: stats.users },
-        ].map(s => (
-          <div key={s.label} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
-            <p className="text-3xl font-bold text-blue-600">{s.value}</p>
+          { label: 'Notes Available', value: stats.notes, color: 'text-blue-600 dark:text-blue-400' },
+          { label: 'Faculty Cabins', value: stats.cabins, color: 'text-green-600 dark:text-green-400' },
+          { label: 'Registered Users', value: stats.users, color: 'text-purple-600 dark:text-purple-400' },
+        ].map((s, i) => (
+          <div key={s.label}
+            className="mc-flip-up mc-card-hover bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
+            style={{ animationDelay: `${60 + i * 70}ms` }}>
+            <p className={`text-3xl font-bold ${s.color}`}>{s.value}</p>
             <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{s.label}</p>
           </div>
         ))}
@@ -50,18 +58,19 @@ export default function Dashboard() {
 
       {/* Quick Access */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Quick Access</h3>
+        <h3 className="mc-fade-right text-lg font-semibold text-gray-700 dark:text-gray-200 mb-3">Quick Access</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {visible.map(({ to, icon: Icon, label, color }) => (
+          {visible.map(({ to, icon: Icon, label, color }, i) => (
             <Link
               key={to}
               to={to}
-              className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-5 flex flex-col items-center gap-3 hover:shadow-md transition group"
+              className="mc-fade-up mc-card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-5 flex flex-col items-center gap-3 hover:border-indigo-300 dark:hover:border-indigo-600 group"
+              style={{ animationDelay: `${180 + i * 70}ms` }}
             >
-              <div className={`${color} p-3 rounded-xl group-hover:scale-110 transition`}>
+              <div className={`mc-hover-spin ${color} p-3 rounded-xl group-hover:scale-115 group-hover:shadow-lg group-hover:shadow-black/20 transition-all duration-300`}>
                 <Icon size={22} className="text-white" />
               </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{label}</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{label}</span>
             </Link>
           ))}
         </div>

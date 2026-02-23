@@ -20,7 +20,7 @@ export default function BlockedPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
-      <div className="w-full max-w-md bg-gray-900 rounded-2xl p-8 border border-red-800 text-center">
+      <div className="mc-pop-in w-full max-w-md bg-gray-900 rounded-2xl p-8 border border-red-800 text-center">
         <div className="text-5xl mb-4">🚫</div>
         <h2 className="text-2xl font-bold text-red-400 mb-2">Account Blocked</h2>
         <p className="text-gray-400 mb-6">

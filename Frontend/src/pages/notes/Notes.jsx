@@ -82,16 +82,22 @@ export default function Notes() {
 
       {/* Grid */}
       {loading ? (
-        <p className="text-gray-500 text-center py-10">Loading…</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="mc-skeleton rounded-xl h-44" style={{ animationDelay: `${i * 80}ms` }} />
+          ))}
+        </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="mc-fade-up text-center py-16 text-gray-400">
           <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
           <p>No notes found.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(note => (
-            <div key={note._id} className="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 hover:shadow-md transition flex flex-col gap-2">
+          {filtered.map((note, i) => (
+            <div key={note._id}
+              className="mc-flip-up mc-card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-2"
+              style={{ animationDelay: `${i * 55}ms` }}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className="text-xs font-semibold uppercase text-blue-500 tracking-wide">{note.subject}</span>
