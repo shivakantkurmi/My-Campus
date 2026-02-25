@@ -1,6 +1,62 @@
 ﻿# 🎓 My-Campus
 
-A production-ready full-stack campus management web application built with **React + Vite** (frontend) and **Node.js + Express + MongoDB** (backend).
+**My-Campus** is a full-stack campus-life management platform built for **VIT Bhopal** students and faculty. It replaces the scattered, manual workflows that slow down daily campus life — attendance sheets, hunting for professors, keeping track of grades, and finding study material — with a single, fast, role-aware web application.
+
+---
+
+## 🧭 What Is This App?
+
+Think of My-Campus as a digital campus companion. Instead of:
+
+- Passing physical attendance sheets that can be forged or proxy-signed …
+- Walking across campus to check whether a professor is in their cabin …
+- Hunting WhatsApp groups for someone's semester notes …
+- Manually calculating your GPA at the end of every term …
+
+… My-Campus handles all of it in one place, accessible from any device with a browser.
+
+---
+
+## 👥 Who Uses It?
+
+| User Type | How They Use It |
+|---|---|
+| **Student** | Mark attendance by scanning a QR code in class, browse and upload study notes, look up faculty cabin locations, calculate GPA/CGPA, view their profile |
+| **Faculty** | Generate a live QR-code attendance session for their class, monitor who is present in real time, manually override attendance, download results as Excel |
+| **Admin** | One designated admin (auto-created at startup) manages the platform — moderate users (block/unblock), oversee notes, review complaints/feedback, view platform-wide statistics |
+
+---
+
+## 🚀 Core Features at a Glance
+
+### 1 — Anti-Proxy QR Attendance
+Faculty start a session; a QR code appears on their screen and refreshes every **10 seconds**. Students scan it with their phone inside the classroom. The system ties each scan to a **hardware device fingerprint** (derived from GPU, canvas, and screen metrics — not clearable from browser storage), enforces a **20-minute global device lock**, and uses **duplicate database indexes** so the same student or device can never mark twice per session. Screenshots and shared tokens are therefore useless.
+
+### 2 — Notes Sharing
+Any authenticated user can post a study note — a title, subject, course code, semester slot, and a Google Drive / OneDrive link. All 371 VIT Bhopal notes are searchable and filterable. Owners and the admin can edit or delete. No file uploads — links only, so the server stays lightweight.
+
+### 3 — Faculty Cabin Finder
+All **371 VIT Bhopal faculty cabin records** are pre-loaded. Students can search by name or cabin number to find exactly where a professor sits, with no authentication barrier once logged in. Admin can add, edit, or remove records at any time. Results are cached client-side so navigating back to the page is instant.
+
+### 4 — GPA & CGPA Calculator
+A fully client-side calculator that uses **VIT Bhopal's official grade scale** (S=10, A=9 … F/N1-N4=0, P excluded). Supports both single-semester GPA and multi-semester CGPA. Each semester can be labelled; results are color-coded and labeled (Outstanding 🏆 / Excellent / Good / Average / Needs Improvement).
+
+### 5 — Admin Dashboard
+A single protected panel where the admin can search and filter all users, block or unblock accounts, review every uploaded note, and respond to feedback/complaints submitted through the app.
+
+### 6 — Profile Management
+Every user can update their display name, department, and password. Avatars are always initials-based — no photo uploads, keeping storage requirements minimal.
+
+---
+
+## 🔐 Security Highlights
+
+- Passwords hashed with **bcryptjs** (12 salt rounds) — plain-text passwords never stored.
+- Every private API route is protected by **JWT middleware**; blocked users get a 403 before any data is returned.
+- The admin account is the only account that can **never be blocked or duplicated** — enforced at the API layer, the Mongoose model layer, and the block endpoint independently.
+- QR tokens expire **server-side** every 10 seconds; no client manipulation can extend them.
+- Hardware device IDs are computed from physical hardware (WebGL GPU renderer + canvas fingerprint + screen dimensions) and are therefore **storage-clear-resistant**.
+
 
 ---
 

@@ -11,17 +11,17 @@ const GRADE_MAP = {
 
 // Descriptions shown in the grade dropdown
 const GRADE_DESC = {
-  S:  'S  — 10 pts',
-  A:  'A  — 9 pts',
-  B:  'B  — 8 pts',
-  C:  'C  — 7 pts',
-  D:  'D  — 6 pts',
-  E:  'E  — 5 pts',
-  F:  'F  — 0 pts  (Fail)',
-  N1: 'N1 — 0 pts  (Failed a component)',
-  N2: 'N2 — 0 pts  (Debarred: attendance)',
-  N3: 'N3 — 0 pts  (Absent in FAT)',
-  N4: 'N4 — 0 pts  (Debarred: malpractice)',
+  S:  'S',
+  A:  'A',
+  B:  'B',
+  C:  'C',
+  D:  'D',
+  E:  'E',
+  F:  'F(Fail)',
+  N1: 'N1 — (Failed a component)',
+  N2: 'N2 — (Debarred: attendance)',
+  N3: 'N3 — (Absent in FAT)',
+  N4: 'N4 — (Debarred: malpractice)',
   P:  'P  — Pass/Fail  (not counted)',
 };
 
