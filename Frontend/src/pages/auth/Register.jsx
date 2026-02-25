@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, GraduationCap, Building2 } from 'lucide-react';
 import api from '../../api/axios';
+import useAdminStore from '../../store/adminStore';
 
 const schema = yup.object({
   name: yup.string().min(2, 'Min 2 chars').required('Name required'),
@@ -42,6 +43,8 @@ export default function Register() {
     try {
       setServerErr('');
       await api.post('/auth/register', data);
+      // Mark admin store stale so the admin panel re-fetches the updated user list
+      useAdminStore.getState().invalidate();
       setSuccess(true);
       setTimeout(() => navigate('/login'), 1800);
     } catch (err) {

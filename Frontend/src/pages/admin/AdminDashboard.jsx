@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import Avatar from '../../components/common/Avatar';
+import useAdminStore from '../../store/adminStore';
 import {
   Search, UserX, UserCheck, Trash2, MessageSquare,
   FileText, Users, GraduationCap, BookOpen, ShieldCheck,
@@ -10,38 +11,18 @@ const ROLE_FILTERS = ['all', 'student', 'faculty'];
 
 export default function AdminDashboard() {
   const [tab, setTab] = useState('users');
-  const [users, setUsers] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [complaints, setComplaints] = useState([]);
-  const [stats, setStats] = useState({});
-  const [loading, setLoading] = useState(false);
   const [userSearch, setUserSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
 
-  useEffect(() => { fetchAll(); }, []);
+  const { users, notes, complaints, stats, loading, fetchAll, refresh } = useAdminStore();
 
-  const fetchAll = async () => {
-    setLoading(true);
-    try {
-      const [u, n, c, s] = await Promise.all([
-        api.get('/admin/users'),
-        api.get('/notes'),
-        api.get('/admin/complaints'),
-        api.get('/stats'),
-      ]);
-      setUsers(u.data);
-      setNotes(n.data);
-      setComplaints(c.data);
-      setStats(s.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Fetch once per session; subsequent visits use cached data
+  useEffect(() => { fetchAll(); }, []);
 
   const toggleBlock = async (id, blocked) => {
     try {
       await api.patch(`/admin/users/${id}/block`, { isBlocked: !blocked });
-      setUsers(prev => prev.map(u => u._id === id ? { ...u, isBlocked: !blocked } : u));
+      await refresh();
     } catch (err) {
       alert(err.response?.data?.message || 'Action failed');
     }
@@ -50,12 +31,12 @@ export default function AdminDashboard() {
   const deleteNote = async (id) => {
     if (!window.confirm('Delete this note permanently?')) return;
     await api.delete(`/notes/${id}`);
-    setNotes(prev => prev.filter(n => n._id !== id));
+    await refresh();
   };
 
   const resolveComplaint = async (id) => {
     await api.patch(`/admin/complaints/${id}/resolve`);
-    setComplaints(prev => prev.map(c => c._id === id ? { ...c, status: 'resolved' } : c));
+    await refresh();
   };
 
   const filteredUsers = users.filter(u => {
