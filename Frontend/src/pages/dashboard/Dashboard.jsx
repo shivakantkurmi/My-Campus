@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, DoorOpen, CalendarCheck, Calculator, ShieldCheck } from 'lucide-react';
+import { BookOpen, DoorOpen, CalendarCheck, Calculator, ShieldCheck, Megaphone } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import api from '../../api/axios';
 import Avatar from '../../components/common/Avatar';
 
 const cards = [
+  { to: '/announcements', icon: Megaphone, label: 'Announcements', color: 'bg-indigo-600', roles: ['student','faculty','admin'] },
   { to: '/notes', icon: BookOpen, label: 'Notes Sharing', color: 'bg-blue-600', roles: ['student','faculty','admin'] },
   { to: '/faculty-cabins', icon: DoorOpen, label: 'Faculty Cabins', color: 'bg-green-600', roles: ['student','faculty','admin'] },
   { to: '/attendance', icon: CalendarCheck, label: 'Attendance', color: 'bg-purple-600', roles: ['student','faculty'] },

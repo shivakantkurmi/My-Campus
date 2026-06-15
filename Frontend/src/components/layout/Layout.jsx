@@ -5,6 +5,7 @@ import Header from './Header';
 
 const TITLES = {
   '/dashboard': 'Dashboard',
+  '/announcements': 'Announcement Board',
   '/notes': 'Notes Sharing',
   '/faculty-cabins': 'Faculty Cabin Finder',
   '/attendance': 'Attendance',

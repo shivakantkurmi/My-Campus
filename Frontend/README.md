@@ -1,16 +1,37 @@
-# React + Vite
+# My-Campus Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite client for the My-Campus campus platform.
 
-Currently, two official plugins are available:
+## What It Contains
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Role-aware routing and protected pages
+- Shared announcement board for students and faculty
+- Notes sharing with search and filters
+- Faculty cabin finder
+- Attendance tools and CGPA calculator
+- Admin dashboard for moderation and content management
 
-## React Compiler
+## Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19
+- Vite
+- React Router DOM
+- Zustand
+- Axios
+- React Hook Form + Yup
+- Tailwind CSS v4 utility classes
+- Lucide React icons
 
-## Expanding the ESLint configuration
+## Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Create a Frontend/.env file with:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+## Scripts
+
+- `npm run dev` starts the local dev server.
+- `npm run build` creates a production build.
+- `npm run lint` runs ESLint.

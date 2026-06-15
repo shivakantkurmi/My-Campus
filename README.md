@@ -21,9 +21,9 @@ Think of My-Campus as a digital campus companion. Instead of:
 
 | User Type | How They Use It |
 |---|---|
-| **Student** | Mark attendance by scanning a QR code in class, browse and upload study notes, look up faculty cabin locations, calculate GPA/CGPA, view their profile |
-| **Faculty** | Generate a live QR-code attendance session for their class, monitor who is present in real time, manually override attendance, download results as Excel |
-| **Admin** | One designated admin (auto-created at startup) manages the platform — moderate users (block/unblock), oversee notes, review complaints/feedback, view platform-wide statistics |
+| **Student** | Mark attendance by scanning a QR code in class, browse announcements and study notes, look up faculty cabin locations, calculate GPA/CGPA, view their profile |
+| **Faculty** | Generate a live QR-code attendance session for their class, monitor who is present in real time, browse announcements, manually override attendance, download results as Excel |
+| **Admin** | One designated admin (auto-created at startup) manages the platform — create, edit, and discard announcements, moderate users (block/unblock), oversee notes, review complaints/feedback, view platform-wide statistics |
 
 ---
 
@@ -35,16 +35,19 @@ Faculty start a session; a QR code appears on their screen and refreshes every *
 ### 2 — Notes Sharing
 Any authenticated user can post a study note — a title, subject, course code, semester slot, and a Google Drive / OneDrive link. All 371 VIT Bhopal notes are searchable and filterable. Owners and the admin can edit or delete. No file uploads — links only, so the server stays lightweight.
 
-### 3 — Faculty Cabin Finder
+### 3 — Announcement Board
+All authenticated users can view campus announcements in one shared feed. Each post has a name, description, optional deadline, and priority. The board supports sorting by priority, name, and created date. Admin can create, edit, or discard announcements, and any post with a deadline is removed automatically after that time.
+
+### 4 — Faculty Cabin Finder
 All **371 VIT Bhopal faculty cabin records** are pre-loaded. Students can search by name or cabin number to find exactly where a professor sits, with no authentication barrier once logged in. Admin can add, edit, or remove records at any time. Results are cached client-side so navigating back to the page is instant.
 
-### 4 — GPA & CGPA Calculator
+### 5 — GPA & CGPA Calculator
 A fully client-side calculator that uses **VIT Bhopal's official grade scale** (S=10, A=9 … F/N1-N4=0, P excluded). Supports both single-semester GPA and multi-semester CGPA. Each semester can be labelled; results are color-coded and labeled (Outstanding 🏆 / Excellent / Good / Average / Needs Improvement).
 
-### 5 — Admin Dashboard
+### 6 — Admin Dashboard
 A single protected panel where the admin can search and filter all users, block or unblock accounts, review every uploaded note, and respond to feedback/complaints submitted through the app.
 
-### 6 — Profile Management
+### 7 — Profile Management
 Every user can update their display name, department, and password. Avatars are always initials-based — no photo uploads, keeping storage requirements minimal.
 
 ---
@@ -68,10 +71,11 @@ Every user can update their display name, department, and password. Avatars are 
 4. [How Each Feature Works](#how-each-feature-works)
    - [Authentication & Role System](#1-authentication--role-system)
    - [Notes Sharing](#2-notes-sharing)
-   - [Faculty Cabin Finder](#3-faculty-cabin-finder)
-   - [Anti-Proxy Attendance](#4-anti-proxy-attendance-system)
-   - [CGPA Calculator](#5-gpa--cgpa-calculator)
-   - [Admin Dashboard](#6-admin-dashboard)
+   - [Announcement Board](#3-announcement-board)
+   - [Faculty Cabin Finder](#4-faculty-cabin-finder)
+   - [Anti-Proxy Attendance](#5-anti-proxy-attendance-system)
+   - [CGPA Calculator](#6-gpa--cgpa-calculator)
+   - [Admin Dashboard](#7-admin-dashboard)
 5. [UI & Animation System](#ui--animation-system)
 6. [API Reference](#api-reference)
 7. [Environment Variables](#environment-variables)
@@ -95,14 +99,14 @@ Every user can update their display name, department, and password. Avatars are 
 ┌──────────────────────────────────────────────────────┐
 │           Node.js + Express  (port 5000)             │
 │   JWT Auth Middleware  │  Role Middleware             │
-│   /api/auth  /api/notes  /api/cabins                 │
-│   /api/attendance  /api/admin  /api/stats            │
+│   /api/auth  /api/notes  /api/announcements          │
+│   /api/cabins  /api/attendance  /api/admin  /api/stats│
 └──────────────┬───────────────────────────────────────┘
                │  Mongoose ODM
                ▼
 ┌──────────────────────────────────────────────────────┐
 │              MongoDB                                 │
-│   Users │ Notes │ FacultyCabins │ Feedback           │
+│   Users │ Notes │ Announcements │ FacultyCabins │ Feedback │
 │   AttendanceSessions │ Attendances                   │
 └──────────────────────────────────────────────────────┘
 ```
@@ -179,6 +183,7 @@ My-Campus/
 │           ├── auth/               ← Login, Register, BlockedPage
 │           ├── dashboard/          ← Stats cards + quick access grid
 │           ├── notes/              ← Notes list, search, add/edit modal
+│           ├── announcements/      ← Shared announcement board + admin form
 │           ├── faculty-cabins/     ← Cabin finder + feedback modal
 │           ├── attendance/
 │           │   ├── Attendance.jsx         ← Role dispatcher
@@ -198,6 +203,7 @@ My-Campus/
     ├── models/
     │   ├── User.js
     │   ├── Note.js
+    │   ├── Announcement.js
     │   ├── FacultyCabin.js
     │   ├── Feedback.js
     │   ├── AttendanceSession.js
@@ -209,6 +215,7 @@ My-Campus/
     ├── routes/
     │   ├── auth.js
     │   ├── notes.js
+    │   ├── announcements.js
     │   ├── cabins.js
     │   ├── feedback.js
     │   ├── attendance.js
@@ -291,7 +298,39 @@ DELETE /api/notes/:id      → delete (owner or admin)
 
 ---
 
-### 3. Faculty Cabin Finder
+### 3. Announcement Board
+
+- All authenticated users can read the live announcement feed.
+- Admins can create, edit, and discard announcements.
+- Optional deadlines remove posts automatically after expiry.
+- Sorting supports priority, name, and created date.
+
+```
+GET    /api/announcements     → list active announcements
+POST   /api/announcements     → create announcement (admin only)
+PUT    /api/announcements/:id → update announcement (admin only)
+DELETE /api/announcements/:id → discard announcement (admin only)
+```
+
+---
+
+### 3. Announcement Board
+
+- All authenticated users can read the live announcement feed.
+- Admins can create, edit, and discard announcements.
+- Optional deadlines remove posts automatically after expiry.
+- Sorting supports priority, name, and created date.
+
+```
+GET    /api/announcements     → list active announcements
+POST   /api/announcements     → create announcement (admin only)
+PUT    /api/announcements/:id → update announcement (admin only)
+DELETE /api/announcements/:id → discard announcement (admin only)
+```
+
+---
+
+### 4. Faculty Cabin Finder
 
 - **371 VIT Bhopal cabin records** are pre-seeded via `node scripts/seedCabins.js`.
 - Cabin records store: faculty name, cabin number, contact. **Department is optional.**
@@ -312,7 +351,7 @@ POST   /api/feedback        → submit feedback (any auth user)
 
 ---
 
-### 4. Anti-Proxy Attendance System
+### 5. Anti-Proxy Attendance System
 
 **Faculty flow:**
 ```
@@ -350,7 +389,7 @@ POST   /api/feedback        → submit feedback (any auth user)
 
 ---
 
-### 5. GPA & CGPA Calculator
+### 6. GPA & CGPA Calculator
 
 Runs entirely on the frontend — no API calls.
 
@@ -388,7 +427,7 @@ CGPA = Σ(gradePoints × credits across all semesters) / Σcredits
 
 ---
 
-### 6. Admin Dashboard
+### 7. Admin Dashboard
 
 **Access:** Single admin auto-created on first server startup.
 
@@ -466,6 +505,14 @@ All routes prefixed with `/api`. 🔒 = JWT required. 👑 = admin only.
 | POST | `/notes` | 🔒 | Create note |
 | PUT | `/notes/:id` | 🔒 | Update (owner or admin) |
 | DELETE | `/notes/:id` | 🔒 | Delete (owner or admin) |
+
+### Announcements
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| GET | `/announcements` | 🔒 | Get active announcements |
+| POST | `/announcements` | 👑 | Create announcement |
+| PUT | `/announcements/:id` | 👑 | Update announcement |
+| DELETE | `/announcements/:id` | 👑 | Discard announcement |
 
 ### Faculty Cabins
 | Method | Path | Auth | Description |
@@ -658,6 +705,9 @@ User
 Note
   title, driveURL, subject, courseCode, faculty, slot, module, description
   uploadedBy → ref User
+
+Announcement
+  title, description, priority, deadline, createdBy → ref User
 
 FacultyCabin
   facultyName, cabinNumber, contact, department (optional, default '')

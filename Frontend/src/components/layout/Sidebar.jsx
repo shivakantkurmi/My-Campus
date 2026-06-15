@@ -2,12 +2,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, DoorOpen, CalendarCheck,
   Calculator, ShieldCheck, User, LogOut, X,
+  Megaphone,
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import Avatar from '../common/Avatar';
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['student', 'faculty', 'admin'] },
+  { to: '/announcements', label: 'Announcements', icon: Megaphone, roles: ['student', 'faculty', 'admin'] },
   { to: '/notes', label: 'Notes', icon: BookOpen, roles: ['student', 'faculty', 'admin'] },
   { to: '/faculty-cabins', label: 'Faculty Cabins', icon: DoorOpen, roles: ['student', 'faculty', 'admin'] },
   { to: '/attendance', label: 'Attendance', icon: CalendarCheck, roles: ['student', 'faculty'] },

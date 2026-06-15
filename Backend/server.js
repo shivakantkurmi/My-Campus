@@ -38,6 +38,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // ── API Routes ────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));
+app.use('/api/announcements', require('./routes/announcements'));
 app.use('/api/cabins', require('./routes/cabins'));
 app.use('/api/feedback', require('./routes/feedback'));
 app.use('/api/attendance', require('./routes/attendance'));

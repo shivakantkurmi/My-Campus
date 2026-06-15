@@ -11,6 +11,7 @@ import Register from './pages/auth/Register';
 import BlockedPage from './pages/auth/BlockedPage';
 import Dashboard from './pages/dashboard/Dashboard';
 import Notes from './pages/notes/Notes';
+import Announcements from './pages/announcements/Announcements';
 import FacultyCabins from './pages/faculty-cabins/FacultyCabins';
 import Attendance from './pages/attendance/Attendance';
 import CGPACalculator from './pages/cgpa/CGPACalculator';
@@ -40,6 +41,7 @@ export default function App() {
         >
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/notes" element={<Notes />} />
+          <Route path="/announcements" element={<Announcements />} />
           <Route path="/faculty-cabins" element={<FacultyCabins />} />
           <Route
             path="/attendance"
