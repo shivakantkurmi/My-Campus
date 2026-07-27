@@ -37,5 +37,4 @@ yarn-error.log*
 pnpm-debug.log*
 
 # ── Private / local-only documents ───────────
-# Interview prep notes — NEVER push to GitHub
 INTERVIEW_PREP.md
