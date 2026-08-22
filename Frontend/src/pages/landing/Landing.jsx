@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import {
   BookOpen, QrCode, DoorOpen, Calculator,
-  ShieldCheck, Moon, Sun, ArrowRight, GraduationCap, Sparkles,
+  ShieldCheck, Moon, Sun, ArrowRight, GraduationCap, Sparkles, MapPin,
 } from 'lucide-react';
 import useThemeStore from '../../store/themeStore';
-import { useAuroraCanvas } from '../auth/Login';
+import { useAuroraCanvas } from '../../components/common/AuroraCanvas';
 
 /* ── Mini typewriter hook ── */
 function useTypewriter(words, speed = 90, pause = 1600) {
@@ -32,105 +32,79 @@ function useTypewriter(words, speed = 90, pause = 1600) {
   return displayed;
 }
 
+/* ── Campus image cards (like the circular cards in reference) ── */
+const CAMPUS_CARDS = [
+  { img: '/Images/VIT2.png',    label: 'VIT Bhopal',       sub: 'Main Campus — Night',    delay: '0s' },
+  { img: '/Images/VIT1.jpg',    label: 'Academic Block',   sub: 'VIT Bhopal Campus',      delay: '0.3s' },
+  { img: '/Images/images.jpg',  label: 'VIT Gate',         sub: 'VIT Bhopal University',  delay: '0.6s' },
+];
+
 const features = [
-  { icon: BookOpen,     title: 'Notes Sharing',       desc: 'Upload and browse notes from peers across departments. Download in one tap.',                     color: 'bg-indigo-500/10 text-indigo-500' },
-  { icon: QrCode,       title: 'QR Attendance',        desc: 'Faculty generate a time-limited QR; students scan to mark themselves present — no proxies.',     color: 'bg-violet-500/10 text-violet-500' },
-  { icon: DoorOpen,     title: 'Faculty Cabin Finder', desc: 'Check which professors are in their cabin right now before making the trip.',                     color: 'bg-sky-500/10 text-sky-500' },
-  { icon: Calculator,   title: 'CGPA Calculator',      desc: 'Enter your semester grades and get a pinpoint GPA/CGPA calculation instantly.',                  color: 'bg-emerald-500/10 text-emerald-500' },
-  { icon: ShieldCheck,  title: 'Admin Dashboard',      desc: 'One admin manages the entire platform — user moderation, notes oversight, complaints.',          color: 'bg-rose-500/10 text-rose-500' },
-  { icon: GraduationCap,title: 'Built for VIT',        desc: 'Designed specifically for VIT Bhopal students and faculty. Log in with your campus credentials.',color: 'bg-amber-500/10 text-amber-500' },
+  { icon: BookOpen,      title: 'Notes Sharing',       desc: 'Upload and browse notes from peers across departments.',          color: 'from-indigo-500 to-blue-600' },
+  { icon: QrCode,        title: 'QR Attendance',        desc: 'Anti-proxy QR scan with time limit — no more proxy attendance.', color: 'from-violet-500 to-purple-600' },
+  { icon: DoorOpen,      title: 'Faculty Cabin Finder', desc: 'Check which professors are in their cabin right now.',           color: 'from-sky-400 to-cyan-600' },
+  { icon: Calculator,    title: 'CGPA Calculator',      desc: 'Enter semester grades and get GPA/CGPA instantly.',              color: 'from-emerald-500 to-teal-600' },
+  { icon: ShieldCheck,   title: 'Admin Dashboard',      desc: 'Full platform moderation — users, notes, complaints.',          color: 'from-rose-500 to-red-600' },
+  { icon: GraduationCap, title: 'Built for VIT',        desc: 'Designed specifically for VIT Bhopal students and faculty.',    color: 'from-amber-500 to-orange-600' },
 ];
 
 const typeWords = ['campus life.', 'your grades.', 'your attendance.', 'your notes.'];
-
-/*
-  ─────────────────────────────────────────────────
-  KEY FIX: lines arrays live OUTSIDE the component
-  so their reference is stable across re-renders.
-  This prevents the useEffect from re-running on
-  every typewriter tick (every 90 ms).
-  ─────────────────────────────────────────────────
-*/
 const HERO_LINES = ['MY', 'CAMPUS'];
 
 /* ─────────────────────────────────────────────────
-   Shared Particle Text Convergence Hook
-   • Uses ResizeObserver (works inside flex panels)
-   • Waits for fonts.ready before sampling pixels
-   • Stable cleanup on unmount
+   Particle Canvas Hook
 ───────────────────────────────────────────────── */
 export function useParticleCanvas(canvasRef, isDark, lines) {
-  // Serialize lines so the dep array comparison is by VALUE, not reference
   const linesKey = lines.join('|');
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     let animId;
     let particles = [];
     const mouse = { x: null, y: null };
-
     const PARTICLE_GAP = 3;
     const EASE         = 0.055;
     const MOUSE_RADIUS = 5000;
-
-    const clr = isDark
-      ? { r: 165, g: 180, b: 252 }  // indigo-300
-      : { r: 99,  g: 102, b: 241 }; // indigo-500
+    const clr = isDark ? { r: 201, g: 168, b: 76 } : { r: 99, g: 102, b: 241 };
 
     class Particle {
       constructor(x, y) {
-        this.x       = Math.random() * canvas.width;
-        this.y       = Math.random() * canvas.height;
-        this.targetX = x;
-        this.targetY = y;
-        this.size    = Math.random() * 1.6 + 0.7;
+        this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+        this.targetX = x; this.targetY = y;
+        this.size = Math.random() * 1.6 + 0.7;
         this.density = Math.random() * 20 + 5;
-        this.alpha   = Math.random() * 0.35 + 0.65;
+        this.alpha = Math.random() * 0.35 + 0.65;
       }
       update() {
         if (mouse.x !== null) {
           const dx = mouse.x - this.x, dy = mouse.y - this.y;
           const d2 = dx * dx + dy * dy;
           if (d2 < MOUSE_RADIUS) {
-            const d = Math.sqrt(d2) || 1;
-            const f = (MOUSE_RADIUS - d2) / MOUSE_RADIUS;
-            this.x -= (dx / d) * f * this.density;
-            this.y -= (dy / d) * f * this.density;
-            return;
+            const d = Math.sqrt(d2) || 1, f = (MOUSE_RADIUS - d2) / MOUSE_RADIUS;
+            this.x -= (dx / d) * f * this.density; this.y -= (dy / d) * f * this.density; return;
           }
         }
-        this.x += (this.targetX - this.x) * EASE;
-        this.y += (this.targetY - this.y) * EASE;
+        this.x += (this.targetX - this.x) * EASE; this.y += (this.targetY - this.y) * EASE;
       }
       draw() {
         ctx.fillStyle = `rgba(${clr.r},${clr.g},${clr.b},${this.alpha.toFixed(2)})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
       }
     }
 
     const buildParticles = (W, H) => {
       particles = [];
-      const fontSize   = W < 480 ? W * 0.17 : W < 768 ? W * 0.14 : W * 0.115;
+      const fontSize = W < 480 ? W * 0.17 : W < 768 ? W * 0.14 : W * 0.115;
       const lineHeight = fontSize * 1.1;
-      const totalH     = lines.length * lineHeight;
-
+      const totalH = lines.length * lineHeight;
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle    = `rgba(${clr.r},${clr.g},${clr.b},1)`;
-      ctx.textAlign    = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font         = `900 ${fontSize}px 'Inter', system-ui, sans-serif`;
-
+      ctx.fillStyle = `rgba(${clr.r},${clr.g},${clr.b},1)`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `900 ${fontSize}px 'Inter', system-ui, sans-serif`;
       const startY = (H - totalH) / 2 + lineHeight / 2;
       lines.forEach((ln, i) => ctx.fillText(ln, W / 2, startY + i * lineHeight));
-
-      const img = ctx.getImageData(0, 0, W, H);
-      ctx.clearRect(0, 0, W, H);
-
+      const img = ctx.getImageData(0, 0, W, H); ctx.clearRect(0, 0, W, H);
       for (let y = 0; y < img.height; y += PARTICLE_GAP)
         for (let x = 0; x < img.width; x += PARTICLE_GAP)
           if (img.data[(y * 4 * img.width) + (x * 4) + 3] > 128)
@@ -148,14 +122,11 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseleave', onLeave);
 
-    // ResizeObserver fires with real layout size (unlike offsetWidth at mount time)
     const ro = new ResizeObserver((entries) => {
       for (const e of entries) {
         const { width, height } = e.contentRect;
         if (width > 0 && height > 0) {
-          canvas.width  = Math.round(width);
-          canvas.height = Math.round(height);
-          // Wait for Inter font to load before pixel-sampling the text
+          canvas.width = Math.round(width); canvas.height = Math.round(height);
           document.fonts.ready.then(() => buildParticles(canvas.width, canvas.height));
         }
       }
@@ -164,13 +135,12 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
     animate();
 
     return () => {
-      cancelAnimationFrame(animId);
-      ro.disconnect();
+      cancelAnimationFrame(animId); ro.disconnect();
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canvasRef, isDark, linesKey]); // linesKey = serialized string, stable across renders
+  }, [canvasRef, isDark, linesKey]);
 }
 
 /* ─────────────────────────────────────────────────
@@ -179,165 +149,265 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
 export default function Landing() {
   const { dark, toggleTheme, initTheme } = useThemeStore();
   const [scrolled, setScrolled] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const typed      = useTypewriter(typeWords);
   const canvasRef  = useRef(null);
   const bgCanvasRef = useRef(null);
 
-  // HERO_LINES is a module-level const → stable reference → no loop!
   useParticleCanvas(canvasRef, dark, HERO_LINES);
-
-  // Full-page aurora background — sparse & very low alpha so content stays readable
-  useAuroraCanvas(bgCanvasRef, dark, { density: 14000, maxAlpha: 0.30 });
+  useAuroraCanvas(bgCanvasRef, dark, { density: 14000, maxAlpha: 0.25 });
 
   useEffect(() => {
     initTheme();
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', onScroll);
+    setTimeout(() => setImgLoaded(true), 100);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 text-gray-900 dark:text-white">
+  /* ── Hero background image state ── */
+  const defaultBg = dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg';
+  const [heroBg, setHeroBg] = useState(defaultBg);
+  
+  // Reset when theme changes if they haven't explicitly picked one, or just keep it simple
+  useEffect(() => {
+    setHeroBg(dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg');
+  }, [dark]);
 
-      {/* ── Full-page aurora constellation background ── */}
+  return (
+    <div className={`min-h-screen text-gray-900 dark:text-white overflow-hidden`}
+      style={{ background: dark ? '#07070f' : '#eef2ff' }}>
+
+      {/* Aurora canvas — fixed bg layer */}
       <canvas
         ref={bgCanvasRef}
         className="fixed inset-0 w-full h-full pointer-events-none"
-        style={{ display: 'block', zIndex: 0, opacity: dark ? 1 : 0.7 }}
+        style={{ zIndex: 0, opacity: dark ? 0.8 : 0.5 }}
       />
 
-      {/* ── Navbar ── */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 shadow-sm'
-          : 'bg-transparent'
-      }`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <GraduationCap size={18} className="text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight">My-Campus</span>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button onClick={toggleTheme} className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Toggle theme">
-              {dark ? <Sun size={18} className="text-yellow-400" /> : <Moon size={18} />}
-            </button>
-            <Link to="/login" className="hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-              Sign In
-            </Link>
-            <Link to="/register" className="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors">
-              Get Started <ArrowRight size={15} />
-            </Link>
-          </div>
-        </div>
-      </nav>
-
       {/* ════════════════════════════════════════════
-          HERO — three stacked zones, zero overlap
-          Zone 1: Badge pill (own row, above canvas)
-          Zone 2: Particle canvas 420px
-          Zone 3: Typewriter + CTA + stats
+          HERO — Full-bleed image background
       ════════════════════════════════════════════ */}
-      <section className="relative overflow-hidden">
+      <section className="relative min-h-screen flex flex-col overflow-hidden">
 
-        {/* 1 – Badge — entirely above canvas zone */}
-        <div className="flex justify-center pt-10 pb-4">
-          <span className="mc-bounce-drop mc-stagger-1 inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-            <Sparkles size={11} className="mc-heartbeat" />
-            VIT Bhopal Campus Platform
-          </span>
-        </div>
-
-        {/* 2 – Particle canvas zone — nothing else inside */}
-        <div className="relative w-full" style={{ height: '420px' }}>
-          <div className="mc-drift absolute top-4  left-[12%]  w-2   h-2   rounded-full bg-indigo-400/40 pointer-events-none" style={{ animationDuration: '7s' }} />
-          <div className="mc-drift absolute top-10 right-[14%] w-1.5 h-1.5 rounded-full bg-violet-400/40 pointer-events-none" style={{ animationDuration: '9s',  animationDelay: '1.5s' }} />
-          <div className="mc-drift absolute bottom-6 left-[30%] w-2  h-2   rounded-full bg-sky-400/30    pointer-events-none" style={{ animationDuration: '11s', animationDelay: '0.7s' }} />
-
-          <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" style={{ cursor: 'none' }} />
-
-          <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none" style={{
+        {/* Full-bleed background image */}
+        <div className="absolute inset-0 z-0">
+          <img
+            key={heroBg} // Force re-render for transition
+            src={heroBg}
+            alt="VIT Bhopal Campus"
+            className={`hero-img w-full h-full object-cover transition-opacity duration-1000 opacity-100`}
+          />
+          {/* Overlay gradient for readability */}
+          <div className="absolute inset-0" style={{
             background: dark
-              ? 'linear-gradient(to bottom, transparent, rgb(3,7,18))'
-              : 'linear-gradient(to bottom, transparent, rgb(255,255,255))',
+              ? 'linear-gradient(135deg, rgba(7,7,15,0.88) 0%, rgba(7,7,15,0.60) 40%, rgba(7,7,15,0.30) 70%, rgba(7,7,15,0.50) 100%)'
+              : 'linear-gradient(135deg, rgba(238,242,255,0.92) 0%, rgba(220,225,255,0.70) 40%, rgba(200,210,255,0.30) 65%, rgba(220,230,255,0.55) 100%)',
           }} />
         </div>
 
-        {/* 3 – Content — sits below canvas, normal flow */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-24 text-center">
-          <h1 className="mc-fade-up mc-stagger-2 text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
-            Everything your<br />
-            <span className="mc-gradient-text">{typed}<span className="mc-caret" /></span>
-          </h1>
-          <p className="mc-fade-up mc-stagger-3 text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Notes sharing, anti-proxy QR attendance, faculty cabin finder,
-            CGPA calculator — all in one place, built for VITians.
-          </p>
-          <div className="mc-fade-up mc-stagger-4 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link to="/register" className="mc-btn inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-lg shadow-indigo-500/30 mc-glow-border hover:-translate-y-1 transition-all duration-200">
-              Join My-Campus <ArrowRight size={18} className="mc-nudge" />
-            </Link>
-            <Link to="/login" className="mc-btn inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500 transition-all hover:-translate-y-0.5">
-              Sign In
-            </Link>
+        {/* ── Sticky Navbar ── */}
+        <nav className={`sticky top-0 z-50 transition-all duration-500 ${
+          scrolled
+            ? dark
+              ? 'bg-[#07070f]/80 backdrop-blur-xl border-b border-[#c9a84c]/12 shadow-xl shadow-black/40'
+              : 'bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-lg shadow-indigo-500/10'
+            : 'bg-transparent'
+        }`}>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+
+            {/* Logo */}
+            <div className="flex items-center gap-2.5">
+              <div className={`mc-glass-float w-9 h-9 rounded-xl flex items-center justify-center shadow-lg ${
+                dark
+                  ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] shadow-[#c9a84c]/40'
+                  : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-500/40'
+              }`}>
+                <GraduationCap size={18} className="text-white" />
+              </div>
+              <span className={`text-lg font-bold tracking-tight drop-shadow-lg ${
+                dark ? 'text-[#c9a84c]' : 'text-white'
+              }`}>My-Campus</span>
+            </div>
+
+            {/* Nav right */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <button onClick={toggleTheme}
+                className={`p-2 rounded-xl transition-all active:scale-90 backdrop-blur-sm ${
+                  dark
+                    ? 'text-[#c9a84c] hover:bg-[#c9a84c]/15 border border-[#c9a84c]/25'
+                    : 'text-white hover:bg-white/20 border border-white/30'
+                }`}>
+                {dark ? <Sun size={18} className="mc-heartbeat" /> : <Moon size={18} />}
+              </button>
+
+              <Link to="/login" className={`hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl border backdrop-blur-sm transition-all ${
+                dark
+                  ? 'text-[#c9a84c]/80 border-[#c9a84c]/25 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c]'
+                  : 'text-white border-white/35 hover:bg-white/20'
+              }`}>Sign In</Link>
+
+              <Link to="/register" className={`mc-btn inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl backdrop-blur-sm transition-all shadow-lg ${
+                dark
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/30'
+                  : 'bg-white/25 border border-white/50 text-white hover:bg-white/35 shadow-white/20'
+              }`}>
+                Get Started <ArrowRight size={14} className="mc-nudge" />
+              </Link>
+            </div>
           </div>
-          <div className="mc-fade-up mc-stagger-5 mt-16 flex flex-wrap justify-center gap-8 sm:gap-16 text-center">
-            {[{ val: '5+', label: 'Core Features' }, { val: '3', label: 'User Roles' }, { val: '1', label: 'Campus Admin' }].map(({ val, label }, i) => (
-              <div key={label} className="group" style={{ animationDelay: `${i * 0.4}s` }}>
-                <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">{val}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">{label}</div>
+        </nav>
+
+        {/* ── Hero Content — Two Column Layout ── */}
+        <div className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 flex flex-col lg:flex-row items-center justify-between py-12 lg:py-0 gap-12 lg:gap-0" style={{ minHeight: 'calc(100vh - 64px)' }}>
+
+          {/* LEFT — Text + Particle canvas + CTAs */}
+          <div className="flex-1 flex flex-col justify-center max-w-xl">
+
+            {/* Badge */}
+            <div className={`mc-bounce-drop inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-full border w-fit mb-6 backdrop-blur-sm ${
+              dark
+                ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]'
+                : 'bg-white/25 border-white/40 text-white'
+            }`}>
+              <Sparkles size={10} className="mc-heartbeat" />
+              VIT Bhopal University · Campus Platform
+            </div>
+
+            {/* Particle canvas — "MY CAMPUS" text */}
+            <div className="relative w-full mb-4" style={{ height: '220px' }}>
+              <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" style={{ cursor: 'none' }} />
+            </div>
+
+            {/* Typewriter subtitle */}
+            <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-white'}`}>
+              Everything for your{' '}
+              <span className={dark ? 'mc-gold-shimmer' : ''} style={!dark ? {
+                background: 'linear-gradient(90deg,#ffffff,#c7d2fe,#a5b4fc,#ffffff)',
+                backgroundSize: '200% auto',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                animation: 'gradientShift 3s linear infinite',
+              } : {}}>{typed}<span className="mc-caret" /></span>
+            </h1>
+
+            <p className={`text-base sm:text-lg leading-relaxed mb-8 max-w-md drop-shadow ${
+              dark ? 'text-gray-300' : 'text-white/85'
+            }`}>
+              Notes sharing, anti-proxy QR attendance, faculty cabin finder,
+              CGPA calculator — all in one place, built for VITians.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${
+                dark
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
+                  : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
+              }`}>
+                Join My-Campus <ArrowRight size={18} className="mc-nudge" />
+              </Link>
+
+              <Link to="/login" className={`mc-btn inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold rounded-2xl backdrop-blur-md border transition-all hover:-translate-y-0.5 ${
+                dark
+                  ? 'border-[#c9a84c]/30 text-[#c9a84c]/90 hover:bg-[#c9a84c]/8 hover:border-[#c9a84c]/50'
+                  : 'border-white/40 text-white hover:bg-white/20'
+              }`}>
+                Sign In
+              </Link>
+            </div>
+
+            {/* Stats row */}
+            <div className="mt-10 flex gap-6 sm:gap-10">
+              {[{ val: '5+', label: 'Features' }, { val: '3', label: 'User Roles' }, { val: '1', label: 'Campus Admin' }].map(({ val, label }) => (
+                <div key={label} className="group">
+                  <div className={`text-2xl font-bold drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-white'}`}>{val}</div>
+                  <div className={`text-xs mt-0.5 ${dark ? 'text-gray-400' : 'text-white/70'}`}>{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT — Floating campus image cards (like reference circular cards) */}
+          <div className="lg:w-[380px] xl:w-[420px] flex-shrink-0 relative hidden lg:flex flex-col gap-4 items-end pr-4">
+            {CAMPUS_CARDS.map(({ img, label, sub, delay }, i) => (
+              <div
+                key={label}
+                onClick={() => setHeroBg(img)}
+                className={`mc-glass-float group relative overflow-hidden cursor-pointer w-full transition-transform active:scale-95`}
+                style={{
+                  animationDelay: delay,
+                  animationDuration: `${4 + i * 1.5}s`,
+                  borderRadius: i === 1 ? '50%' : '20px',
+                  width: i === 1 ? '200px' : i === 0 ? '340px' : '280px',
+                  height: i === 1 ? '200px' : '160px',
+                  alignSelf: i === 0 ? 'flex-end' : i === 1 ? 'center' : 'flex-start',
+                  border: dark ? '2px solid rgba(201,168,76,0.35)' : '2px solid rgba(255,255,255,0.50)',
+                  boxShadow: dark
+                    ? `0 20px 60px rgba(0,0,0,0.70), 0 0 30px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.06)`
+                    : `0 20px 60px rgba(99,102,241,0.25), 0 0 30px rgba(255,255,255,0.20), inset 0 1px 0 rgba(255,255,255,0.60)`,
+                }}
+              >
+                <img
+                  src={img}
+                  alt={label}
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                {/* Glass label overlay */}
+                <div className="absolute inset-x-0 bottom-0 px-3 py-2"
+                  style={{
+                    background: dark
+                      ? 'linear-gradient(to top, rgba(7,7,15,0.88) 0%, transparent 100%)'
+                      : 'linear-gradient(to top, rgba(30,40,100,0.70) 0%, transparent 100%)',
+                  }}>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin size={10} className={dark ? 'text-[#c9a84c]' : 'text-white'} />
+                    <p className={`text-xs font-bold ${dark ? 'text-[#c9a84c]' : 'text-white'}`}>{label}</p>
+                  </div>
+                  <p className={`text-[10px] ${dark ? 'text-gray-400' : 'text-white/70'}`}>{sub}</p>
+                </div>
+
+                {/* Glass shimmer overlay */}
+                <div className="absolute inset-0 pointer-events-none" style={{
+                  background: dark
+                    ? 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 60%)'
+                    : 'linear-gradient(135deg, rgba(255,255,255,0.30) 0%, transparent 60%)',
+                }} />
               </div>
             ))}
+
+            {/* Decorative floating dot */}
+            <div className="mc-drift absolute -top-6 -left-4 w-3 h-3 rounded-full"
+              style={{ background: dark ? 'rgba(201,168,76,0.50)' : 'rgba(255,255,255,0.60)', animationDuration: '7s' }} />
+            <div className="mc-drift absolute bottom-8 -right-2 w-2 h-2 rounded-full"
+              style={{ background: dark ? 'rgba(201,168,76,0.35)' : 'rgba(200,210,255,0.70)', animationDuration: '9s', animationDelay: '2s' }} />
           </div>
         </div>
-      </section>
 
-      {/* ── Features ── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-3">What's inside</h2>
-          <p className="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">Everything you need to navigate campus life, in one clean dashboard.</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map(({ icon: Icon, title, desc, color }, i) => (
-            <div key={title} className="mc-flip-up group p-6 rounded-2xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-xl hover:-translate-y-2 mc-card-hover transition-all duration-300 cursor-pointer" style={{ animationDelay: `${80 + i * 90}ms` }}>
-              <div className={`inline-flex items-center justify-center w-11 h-11 rounded-xl mb-4 ${color} group-hover:scale-115 group-hover:-translate-y-1 transition-all duration-300`}>
-                <Icon size={22} />
-              </div>
-              <h3 className="text-base font-semibold mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{title}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CTA ── */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-24">
-        <div className="mc-scale-in relative overflow-hidden rounded-3xl bg-linear-to-br from-indigo-600 to-violet-700 p-10 sm:p-14 text-center">
-          <div className="mc-blob absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/5" />
-          <div className="mc-blob absolute -bottom-10 -left-10 w-48 h-48 rounded-full bg-white/5" style={{ animationDelay: '3s' }} />
-          <div className="relative">
-            <h2 className="mc-rubber-in text-3xl sm:text-4xl font-bold text-white mb-3">Ready to get started?</h2>
-            <p className="mc-fade-up mc-stagger-2 text-indigo-200 mb-8 text-lg">Create your account in under a minute.</p>
-            <Link to="/register" className="mc-btn mc-pop-in mc-stagger-3 inline-flex items-center gap-2 px-8 py-3 text-base font-semibold bg-white text-indigo-700 rounded-xl hover:bg-indigo-50 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all">
-              Create Free Account <ArrowRight size={18} className="mc-nudge" />
-            </Link>
-          </div>
-        </div>
+        {/* Bottom fade into next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 pointer-events-none" style={{
+          background: dark
+            ? 'linear-gradient(to bottom, transparent, rgba(7,7,15,0.9))'
+            : 'linear-gradient(to bottom, transparent, rgba(238,242,255,0.9))',
+        }} />
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-gray-200 dark:border-gray-800 py-8 px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
+      <footer className={`absolute bottom-0 w-full z-10 border-t py-6 px-6 backdrop-blur-md ${dark ? 'border-[#c9a84c]/20 bg-[#07070f]/80' : 'border-indigo-200/40 bg-white/60'}`}>
+        <div className={`max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center"><GraduationCap size={13} className="text-white" /></div>
-            <span className="font-semibold text-gray-700 dark:text-gray-300">My-Campus</span>
+            <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
+              dark ? 'bg-gradient-to-br from-[#c9a84c] to-[#a87c30]' : 'bg-indigo-600'
+            }`}>
+              <GraduationCap size={12} className="text-white" />
+            </div>
+            <span className={`font-semibold ${dark ? 'text-[#c9a84c]' : 'text-gray-800'}`}>My-Campus</span>
           </div>
-          <p>©Shivaknt Kurmi 2026 My-Campus · VIT Bhopal</p>
+          <p>© Shivakant Kurmi 2026 · VIT Bhopal</p>
           <div className="flex gap-4">
-            <Link to="/login"    className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Sign In</Link>
-            <Link to="/register" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Register</Link>
+            <Link to="/login"    className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
+            <Link to="/register" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Register</Link>
           </div>
         </div>
       </footer>

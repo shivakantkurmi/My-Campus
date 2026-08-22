@@ -2,26 +2,32 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
+import useThemeStore from '../../store/themeStore';
 
 const TITLES = {
-  '/dashboard': 'Dashboard',
-  '/announcements': 'Announcement Board',
-  '/notes': 'Notes Sharing',
-  '/faculty-cabins': 'Faculty Cabin Finder',
-  '/attendance': 'Attendance',
+  '/dashboard':       'Dashboard',
+  '/announcements':   'Announcement Board',
+  '/notes':           'Notes Sharing',
+  '/faculty-cabins':  'Faculty Cabin Finder',
+  '/attendance':      'Attendance',
   '/cgpa-calculator': 'CGPA Calculator',
-  '/admin': 'Admin Dashboard',
-  '/profile': 'My Profile',
+  '/admin':           'Admin Dashboard',
+  '/profile':         'My Profile',
 };
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { pathname } = useLocation();
+  const { dark } = useThemeStore();
 
   const title = TITLES[pathname] ?? 'My-Campus';
 
   return (
-    <div className="flex h-screen bg-gray-100 dark:bg-gray-950 overflow-hidden">
+    <div className={`flex h-screen overflow-hidden ${
+      dark
+        ? 'bg-[#07070f]'
+        : 'bg-gradient-to-br from-[#eef2ff] via-[#f0f4ff] to-[#f5f3ff]'
+    }`}>
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="flex flex-col flex-1 overflow-hidden">

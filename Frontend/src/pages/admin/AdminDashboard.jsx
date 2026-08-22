@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import Avatar from '../../components/common/Avatar';
 import useAdminStore from '../../store/adminStore';
+import useThemeStore from '../../store/themeStore';
 import {
   Search, UserX, UserCheck, Trash2, MessageSquare,
   FileText, Users, GraduationCap, BookOpen, ShieldCheck,
@@ -13,10 +14,9 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState('users');
   const [userSearch, setUserSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const { dark } = useThemeStore();
 
   const { users, notes, complaints, stats, loading, fetchAll, refresh } = useAdminStore();
-
-  // Fetch once per session; subsequent visits use cached data
   useEffect(() => { fetchAll(); }, []);
 
   const toggleBlock = async (id, blocked) => {
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
   };
 
   const filteredUsers = users.filter(u => {
-    if (u.role === 'admin') return false; // admin never shows in managed list
+    if (u.role === 'admin') return false;
     const matchRole = roleFilter === 'all' || u.role === roleFilter;
     const matchSearch = !userSearch
       || u.name.toLowerCase().includes(userSearch.toLowerCase())
@@ -51,79 +51,71 @@ export default function AdminDashboard() {
   const openComplaints = complaints.filter(c => c.status !== 'resolved').length;
 
   const statCards = [
-    {
-      label: 'Students',
-      value: stats.students ?? 0,
-      icon: GraduationCap,
-      color: 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400',
-      ring: 'border-indigo-100 dark:border-indigo-800',
-    },
-    {
-      label: 'Faculty',
-      value: stats.faculty ?? 0,
-      icon: BookOpen,
-      color: 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400',
-      ring: 'border-violet-100 dark:border-violet-800',
-    },
-    {
-      label: 'Admin',
-      value: stats.admins ?? 1,
-      icon: ShieldCheck,
-      color: 'bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400',
-      ring: 'border-rose-100 dark:border-rose-800',
-    },
-    {
-      label: 'Notes',
-      value: stats.notes ?? 0,
-      icon: FileText,
-      color: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400',
-      ring: 'border-emerald-100 dark:border-emerald-800',
-    },
-    {
-      label: 'Open Complaints',
-      value: openComplaints,
-      icon: MessageSquare,
-      color: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
-      ring: 'border-amber-100 dark:border-amber-800',
-    },
+    { label: 'Students',       value: stats.students ?? 0, icon: GraduationCap, lightCls: 'bg-indigo-50 text-indigo-600',  darkCls: 'bg-[#c9a84c]/10 text-[#c9a84c]' },
+    { label: 'Faculty',        value: stats.faculty  ?? 0, icon: BookOpen,       lightCls: 'bg-violet-50 text-violet-600',  darkCls: 'bg-violet-500/12 text-violet-400' },
+    { label: 'Admin',          value: stats.admins   ?? 1, icon: ShieldCheck,    lightCls: 'bg-rose-50 text-rose-600',      darkCls: 'bg-rose-500/12 text-rose-400' },
+    { label: 'Notes',          value: stats.notes    ?? 0, icon: FileText,       lightCls: 'bg-emerald-50 text-emerald-600',darkCls: 'bg-emerald-500/12 text-emerald-400' },
+    { label: 'Open Complaints',value: openComplaints,       icon: MessageSquare,  lightCls: 'bg-amber-50 text-amber-600',    darkCls: 'bg-amber-500/12 text-amber-400' },
   ];
 
   const tabs = [
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'notes', label: 'Notes', icon: FileText },
+    { id: 'users',      label: 'Users',      icon: Users },
+    { id: 'notes',      label: 'Notes',      icon: FileText },
     { id: 'complaints', label: 'Complaints', icon: MessageSquare },
   ];
+
+  /* ── Shared styles ── */
+  const cardBase = dark
+    ? 'dk-card rounded-xl p-4'
+    : 'glass-card rounded-xl p-4 border-white/70';
+
+  const inputBase = `w-full pl-9 pr-4 py-2.5 rounded-xl text-sm transition-all ${
+    dark
+      ? 'bg-[#1a1a2e]/80 border border-[#c9a84c]/18 text-white placeholder-gray-600 focus:outline-none focus:border-[#c9a84c]/50 focus:ring-2 focus:ring-[#c9a84c]/18'
+      : 'bg-white/80 border border-indigo-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 backdrop-blur-sm'
+  }`;
 
   return (
     <div className="space-y-6">
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-        {statCards.map(({ label, value, icon: Icon, color, ring }, i) => (
-          <div key={label}
-            className={`mc-fade-up bg-white dark:bg-gray-800 rounded-xl p-4 border ${ring} dark:border-gray-700 hover:shadow-md hover:-translate-y-0.5 transition-all`}
-            style={{ animationDelay: `${i * 60}ms` }}>
-            <div className={`inline-flex items-center justify-center w-9 h-9 rounded-lg mb-3 ${color}`}>
+        {statCards.map(({ label, value, icon: Icon, lightCls, darkCls }, i) => (
+          <div
+            key={label}
+            className={`mc-fade-up mc-liquid-hover ${cardBase} hover:-translate-y-1 transition-all cursor-default`}
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            <div className={`inline-flex items-center justify-center w-9 h-9 rounded-xl mb-3 ${dark ? darkCls : lightCls}`}>
               <Icon size={17} />
             </div>
-            <p className="text-2xl font-bold text-gray-800 dark:text-white">{value}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{label}</p>
+            <p className={`text-2xl font-bold ${dark ? 'text-white' : 'text-gray-800'}`}>{value}</p>
+            <p className={`text-xs mt-0.5 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{label}</p>
           </div>
         ))}
       </div>
 
       {/* ── Tabs ── */}
-      <div className="overflow-x-auto flex gap-1 border-b border-gray-200 dark:border-gray-700">
+      <div className={`flex gap-1 border-b overflow-x-auto ${dark ? 'border-[#c9a84c]/12' : 'border-gray-200'}`}>
         {tabs.map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition ${
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-all whitespace-nowrap ${
               tab === id
-                ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}>
+                ? dark
+                  ? 'border-[#c9a84c] text-[#c9a84c]'
+                  : 'border-indigo-500 text-indigo-600'
+                : dark
+                  ? 'border-transparent text-gray-500 hover:text-gray-300'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
             <Icon size={15} />{label}
             {id === 'complaints' && openComplaints > 0 && (
-              <span className="ml-1 px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full font-semibold">
+              <span className={`ml-1 px-1.5 py-0.5 text-xs rounded-full font-semibold ${
+                dark ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-700'
+              }`}>
                 {openComplaints}
               </span>
             )}
@@ -131,92 +123,104 @@ export default function AdminDashboard() {
         ))}
       </div>
 
+      {/* Loading */}
       {loading && (
         <div className="flex justify-center py-12">
-          <span className="w-6 h-6 border-2 border-indigo-300 border-t-indigo-600 rounded-full animate-spin" />
+          <span className={`w-6 h-6 border-2 rounded-full animate-spin ${
+            dark ? 'border-[#c9a84c]/30 border-t-[#c9a84c]' : 'border-indigo-200 border-t-indigo-600'
+          }`} />
         </div>
       )}
 
       {/* ── Users Tab ── */}
       {tab === 'users' && !loading && (
         <div className="space-y-4">
-          {/* Search + role filter */}
+          {/* Search + filter */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input value={userSearch} onChange={e => setUserSearch(e.target.value)}
+              <input
+                value={userSearch}
+                onChange={e => setUserSearch(e.target.value)}
                 placeholder="Search by name or email…"
-                className="w-full pl-9 pr-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:text-white placeholder-gray-400" />
+                className={inputBase}
+              />
             </div>
             <div className="flex gap-2 flex-wrap">
               {ROLE_FILTERS.map(r => (
-                <button key={r} onClick={() => setRoleFilter(r)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition ${
+                <button
+                  key={r}
+                  onClick={() => setRoleFilter(r)}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
                     roleFilter === r
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-300'
-                  }`}>
+                      ? dark
+                        ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-sm'
+                        : 'bg-indigo-600 text-white shadow-sm'
+                      : dark
+                        ? 'bg-[#1a1a2e]/60 border border-[#c9a84c]/15 text-gray-400 hover:border-[#c9a84c]/30'
+                        : 'bg-white/80 border border-indigo-100 text-gray-600 hover:border-indigo-300 backdrop-blur-sm'
+                  }`}
+                >
                   {r === 'all' ? `All (${users.filter(u => u.role !== 'admin').length})` : `${r === 'student' ? '🎓' : '👨‍🏫'} ${r}`}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* User count summary */}
-          <p className="text-xs text-gray-400">
+          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
             Showing {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
             {roleFilter !== 'all' ? ` · ${roleFilter}s` : ''}
             {userSearch ? ` matching "${userSearch}"` : ''}
           </p>
 
           {/* Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-x-auto">
+          <div className={`rounded-2xl border overflow-x-auto ${
+            dark ? 'bg-[#0f0f1e]/80 border-[#c9a84c]/10 backdrop-blur-xl' : 'glass-card border-white/70'
+          }`}>
             <table className="w-full text-sm min-w-[640px]">
               <thead>
-                <tr className="bg-gray-50 dark:bg-gray-700/60">
+                <tr className={dark ? 'border-b border-[#c9a84c]/10' : 'border-b border-gray-100'}>
                   {['User', 'Role', 'Department', 'Status', 'Action'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                      {h}
-                    </th>
+                    <th key={h} className={`text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide ${
+                      dark ? 'text-[#c9a84c]/50' : 'text-gray-400'
+                    }`}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              <tbody className={`divide-y ${dark ? 'divide-[#c9a84c]/8' : 'divide-gray-100'}`}>
                 {filteredUsers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="text-center py-10 text-gray-400 text-sm">
+                    <td colSpan={5} className={`text-center py-10 text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
                       No users found.
                     </td>
                   </tr>
                 )}
                 {filteredUsers.map(u => (
-                  <tr key={u._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                  <tr key={u._id} className={`transition-colors ${dark ? 'hover:bg-[#c9a84c]/4' : 'hover:bg-indigo-50/50'}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <Avatar name={u.name} size={8} />
                         <div>
-                          <p className="font-medium text-gray-800 dark:text-gray-100 text-sm">{u.name}</p>
-                          <p className="text-xs text-gray-400">{u.email}</p>
+                          <p className={`font-medium text-sm ${dark ? 'text-gray-200' : 'text-gray-800'}`}>{u.name}</p>
+                          <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>{u.email}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-medium capitalize ${
                         u.role === 'faculty'
-                          ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-700 dark:text-violet-400'
-                          : 'bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400'
-                      }`}>
-                        {u.role}
-                      </span>
+                          ? dark ? 'bg-violet-500/15 text-violet-400' : 'bg-violet-50 text-violet-700'
+                          : dark ? 'bg-[#c9a84c]/12 text-[#c9a84c]/80' : 'bg-indigo-50 text-indigo-700'
+                      }`}>{u.role}</span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-400 max-w-[180px] truncate">
+                    <td className={`px-4 py-3 text-xs max-w-[160px] truncate ${dark ? 'text-gray-500' : 'text-gray-500'}`}>
                       {u.department}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium ${
                         u.isBlocked
-                          ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
-                          : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400'
+                          ? dark ? 'bg-red-500/15 text-red-400' : 'bg-red-50 text-red-600'
+                          : dark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${u.isBlocked ? 'bg-red-500' : 'bg-emerald-500'}`} />
                         {u.isBlocked ? 'Blocked' : 'Active'}
@@ -225,15 +229,13 @@ export default function AdminDashboard() {
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleBlock(u._id, u.isBlocked)}
-                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition ${
+                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
                           u.isBlocked
-                            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-900/40'
-                            : 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/40'
-                        }`}>
-                        {u.isBlocked
-                          ? <><UserCheck size={13} /> Unblock</>
-                          : <><UserX size={13} /> Block</>
-                        }
+                            ? dark ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                            : dark ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25' : 'bg-red-50 text-red-500 hover:bg-red-100'
+                        }`}
+                      >
+                        {u.isBlocked ? <><UserCheck size={13} /> Unblock</> : <><UserX size={13} /> Block</>}
                       </button>
                     </td>
                   </tr>
@@ -247,17 +249,29 @@ export default function AdminDashboard() {
       {/* ── Notes Tab ── */}
       {tab === 'notes' && !loading && (
         <div className="space-y-3">
-          {notes.length === 0 && <p className="text-center py-10 text-gray-400 text-sm">No notes uploaded yet.</p>}
+          {notes.length === 0 && (
+            <p className={`text-center py-10 text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>No notes uploaded yet.</p>
+          )}
           {notes.map((note, i) => (
-            <div key={note._id}
-              className="mc-fade-up bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 px-4 py-3 flex items-center justify-between gap-4 hover:shadow-sm transition-all"
-              style={{ animationDelay: `${i * 40}ms` }}>
+            <div
+              key={note._id}
+              className={`mc-fade-up flex items-center justify-between gap-4 px-4 py-3 rounded-xl border transition-all hover:-translate-y-0.5 ${
+                dark ? 'dk-card' : 'glass-card border-white/70'
+              }`}
+              style={{ animationDelay: `${i * 40}ms` }}
+            >
               <div className="min-w-0">
-                <p className="font-medium text-gray-700 dark:text-white text-sm truncate">{note.title}</p>
-                <p className="text-xs text-gray-400 mt-0.5">{note.subject} · By {note.uploadedBy?.name ?? 'Unknown'}</p>
+                <p className={`font-medium text-sm truncate ${dark ? 'text-gray-200' : 'text-gray-700'}`}>{note.title}</p>
+                <p className={`text-xs mt-0.5 ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                  {note.subject} · By {note.uploadedBy?.name ?? 'Unknown'}
+                </p>
               </div>
-              <button onClick={() => deleteNote(note._id)}
-                className="p-2 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition shrink-0">
+              <button
+                onClick={() => deleteNote(note._id)}
+                className={`p-2 rounded-lg transition shrink-0 ${
+                  dark ? 'text-gray-600 hover:bg-red-500/15 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'
+                }`}
+              >
                 <Trash2 size={15} />
               </button>
             </div>
@@ -268,18 +282,24 @@ export default function AdminDashboard() {
       {/* ── Complaints Tab ── */}
       {tab === 'complaints' && !loading && (
         <div className="space-y-3">
-          {complaints.length === 0 && <p className="text-center py-10 text-gray-400 text-sm">No complaints yet.</p>}
+          {complaints.length === 0 && (
+            <p className={`text-center py-10 text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>No complaints yet.</p>
+          )}
           {complaints.map((c, i) => (
-            <div key={c._id}
-              className={`mc-fade-up bg-white dark:bg-gray-800 rounded-xl border dark:border-gray-700 px-4 py-4 space-y-2 hover:shadow-sm transition-all ${
-                c.status === 'resolved' ? 'border-gray-100 opacity-60' : 'border-amber-100 dark:border-amber-900/30'
+            <div
+              key={c._id}
+              className={`mc-fade-up rounded-xl border px-4 py-4 space-y-2 transition-all ${
+                dark
+                  ? `${c.status === 'resolved' ? 'dk-card opacity-50' : 'dk-card border-amber-500/20'}`
+                  : `glass-card ${c.status === 'resolved' ? 'opacity-60 border-gray-100' : 'border-amber-100'}`
               }`}
-              style={{ animationDelay: `${i * 45}ms` }}>
+              style={{ animationDelay: `${i * 45}ms` }}
+            >
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${
                   c.type === 'unblock_appeal'
-                    ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'
-                    : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                    ? dark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-50 text-amber-700'
+                    : dark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-700'
                 }`}>
                   {c.type?.replace(/_/g, ' ')}
                 </span>
@@ -287,12 +307,16 @@ export default function AdminDashboard() {
                   {c.status}
                 </span>
               </div>
-              <p className="text-sm text-gray-700 dark:text-gray-200">{c.message}</p>
+              <p className={`text-sm ${dark ? 'text-gray-300' : 'text-gray-700'}`}>{c.message}</p>
               <div className="flex items-center justify-between">
-                <p className="text-xs text-gray-400">By: {c.userId?.name ?? 'Unknown'} · {c.userId?.email}</p>
+                <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                  By: {c.userId?.name ?? 'Unknown'} · {c.userId?.email}
+                </p>
                 {c.status !== 'resolved' && (
-                  <button onClick={() => resolveComplaint(c._id)}
-                    className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
+                  <button
+                    onClick={() => resolveComplaint(c._id)}
+                    className={`text-xs font-semibold hover:underline ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}
+                  >
                     Mark Resolved
                   </button>
                 )}

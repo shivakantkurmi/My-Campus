@@ -6,8 +6,7 @@ import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
 import Landing from './pages/landing/Landing';
-import Login from './pages/auth/Login';
-import Register from './pages/auth/Register';
+import AuthPage from './pages/auth/AuthPage';
 import BlockedPage from './pages/auth/BlockedPage';
 import Dashboard from './pages/dashboard/Dashboard';
 import Notes from './pages/notes/Notes';
@@ -27,8 +26,11 @@ export default function App() {
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Auth routes wrapped to prevent unmounting during 3D flip */}
+        <Route element={<AuthPage />}>
+          <Route path="/login" element={<div />} />
+          <Route path="/register" element={<div />} />
+        </Route>
         <Route path="/blocked" element={<BlockedPage />} />
 
         {/* Protected layout — outer guard */}
