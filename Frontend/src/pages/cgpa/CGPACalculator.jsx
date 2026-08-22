@@ -154,7 +154,7 @@ export default function CGPACalculator() {
       </div>
 
       {/* Result card */}
-      <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5">
+      <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -192,7 +192,7 @@ export default function CGPACalculator() {
 
       {/* GPA tab */}
       {tab === 'gpa' && (
-        <div className="mc-fade-up bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3">
+        <div className="mc-fade-up bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2">
               <Calculator size={15} className="text-indigo-500" />
@@ -232,7 +232,7 @@ export default function CGPACalculator() {
         <div className="mc-fade-up space-y-4">
           {semesters.map((sem, si) => (
             <div key={sem.id}
-              className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3"
+              className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3"
               style={{ animationDelay: `${si * 60}ms` }}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

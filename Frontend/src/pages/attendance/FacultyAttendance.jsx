@@ -271,7 +271,7 @@ export default function FacultyAttendance() {
       {tab === 'setup' && (
         <div className="fadein space-y-4">
           {/* Upload card */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
               <div className="p-2 bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/15 ">
                 <FileSpreadsheet size={18} className="text-indigo-600 dark:text-[#c9a84c]"/>
@@ -290,7 +290,7 @@ export default function FacultyAttendance() {
           </div>
 
           {/* Manual entry card */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
               <div className="p-2 bg-purple-50 dark:bg-purple-900/30 ">
                 <PlusCircle size={18} className="text-purple-500"/>
@@ -313,7 +313,7 @@ export default function FacultyAttendance() {
 
           {/* Student list */}
           {students.length > 0 && (
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-sm font-semibold text-gray-700 dark:text-white flex items-center gap-2">
                   <Users size={15} className="text-gray-400"/> {students.length} student{students.length !== 1 ? 's' : ''}
@@ -356,7 +356,7 @@ export default function FacultyAttendance() {
           <div className="grid md:grid-cols-2 gap-4">
 
             {/* ── QR Code with ring ── */}
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col items-center gap-3 shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col items-center gap-3 shadow-sm">
               <div className="flex items-center gap-2 self-start">
                 <QrCode size={16} className="text-indigo-600 dark:text-[#c9a84c]"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live QR Code</h3>
@@ -392,7 +392,7 @@ export default function FacultyAttendance() {
             </div>
 
             {/* ── Stats ── */}
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col gap-4 shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col gap-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp size={16} className="text-green-500"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Stats</h3>
@@ -434,7 +434,7 @@ export default function FacultyAttendance() {
           </div>
 
           {/* ── Attendance list ── */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
             <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
               <Users size={15} className="text-gray-400"/>
               <span className="text-sm font-semibold text-gray-700 dark:text-white">Students</span>
@@ -506,7 +506,7 @@ export default function FacultyAttendance() {
               const pct = h.totalStudents ? Math.round(((h.presentCount ?? 0) / h.totalStudents) * 100) : 0;
               const color = pct >= 75 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
               return (
-                <div key={h._id} className="row-enter bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  rounded-2xl px-5 py-4 shadow-sm"
+                <div key={h._id} className="row-enter bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  rounded-2xl px-5 py-4 shadow-sm"
                   style={{ animationDelay: `${i * 40}ms` }}>
                   <div className="flex justify-between items-start mb-3">
                     <div>

@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, DoorOpen, CalendarCheck,
   Calculator, ShieldCheck, User, LogOut, X,
@@ -16,6 +16,7 @@ const navItems = [
   { to: '/attendance',      label: 'Attendance',     icon: CalendarCheck,   roles: ['student', 'faculty'] },
   { to: '/cgpa-calculator', label: 'CGPA Calculator',icon: Calculator,      roles: ['student', 'faculty', 'admin'] },
   { to: '/admin',           label: 'Admin Panel',    icon: ShieldCheck,     roles: ['admin'] },
+  { to: '/profile',         label: 'Profile',        icon: User,            roles: ['student', 'faculty', 'admin'] },
 ];
 
 /* =========================================
@@ -24,7 +25,7 @@ const navItems = [
 function LightSidebar({ user, onClose, handleLogout, filtered }) {
   return (
     <aside className="w-[100px] h-full py-6 pl-6 lg:flex flex-col hidden z-30 transition-all">
-      <div className="bg-white/85 backdrop-blur-[40px] border border-white rounded-[2rem] w-[80px] h-full flex flex-col items-center py-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] shadow-indigo-500/10 relative">
+      <div className="bg-white/60 backdrop-blur-[40px] border-[2px] border-white/90 rounded-[2rem] w-[80px] h-full flex flex-col items-center py-8 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] relative">
         
         {/* Top Logo */}
         <div className="w-10 h-10 rounded-2xl bg-gray-900 text-white flex items-center justify-center mb-10 shadow-lg">
@@ -53,9 +54,10 @@ function LightSidebar({ user, onClose, handleLogout, filtered }) {
 
         {/* Bottom Profile */}
         <div className="mt-auto flex flex-col items-center gap-4">
-          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform cursor-pointer" onClick={handleLogout} title="Logout">
-            <Avatar name={user?.name || "User"} size={40} />
-          </div>
+          {/* Explicit Logout Icon */}
+          <button onClick={handleLogout} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors" title="Logout">
+            <LogOut size={18} />
+          </button>
         </div>
       </div>
     </aside>
@@ -113,8 +115,8 @@ function DarkSidebar({ user, onClose, handleLogout, filtered }) {
 
       {/* Bottom Profile / Settings */}
       <div className="px-4 py-8 flex flex-col gap-2 mt-auto">
-        <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3 text-sm font-bold text-gray-500 hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 rounded-2xl transition-colors">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5"><ArrowLeftRight size={16} /></div>
+        <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3 text-sm font-bold text-gray-500 hover:text-rose-400 hover:bg-white/5 rounded-2xl transition-colors">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5"><LogOut size={16} /></div>
           Log out
         </button>
       </div>

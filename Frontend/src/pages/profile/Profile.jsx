@@ -52,29 +52,25 @@ export default function Profile() {
   const RoleIcon = roleMeta.icon;
   const roleColorCls = dark ? roleMeta.darkColor : roleMeta.lightColor;
 
-  /* ── Shared input class ── */
-  const inputCls = `w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-all ${
-    dark
-      ? 'bg-[#1a1a2e]/80 border border-[#c9a84c]/18 text-white placeholder-gray-600 focus:outline-none focus:border-[#c9a84c]/50 focus:ring-2 focus:ring-[#c9a84c]/18'
-      : 'bg-white/80 border border-indigo-100 text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-500/20 backdrop-blur-sm'
+  /* ── Liquid Glass / Dark Premium Theme Classes ── */
+  const glassCard = dark 
+    ? 'bg-[#121220] rounded-[2.5rem] border border-[#232336]' 
+    : 'bg-white/80 backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)]';
+  
+  const glassInput = dark
+    ? 'bg-[#1c1c2e] border-[#2a2a40] text-white placeholder-gray-500 focus:border-[#c9a84c]'
+    : 'bg-white/50 border-white/60 text-gray-900 placeholder-gray-400 focus:border-indigo-400 backdrop-blur-md shadow-sm';
+
+  const inputCls = `w-full pl-10 pr-4 py-3 rounded-[1.5rem] text-sm outline-none transition-all border ${glassInput}`;
+
+  const readonlyCls = `w-full pl-10 pr-4 py-3 rounded-[1.5rem] text-sm cursor-not-allowed ${
+    dark ? 'bg-[#12121e]/60 border border-[#2a2a40] text-gray-600' : 'bg-gray-50 border border-gray-200 text-gray-400'
   }`;
 
-  const readonlyCls = `w-full pl-10 pr-4 py-2.5 rounded-xl text-sm cursor-not-allowed ${
-    dark
-      ? 'bg-[#12121e]/60 border border-[#c9a84c]/10 text-gray-600'
-      : 'bg-gray-50 border border-gray-200 text-gray-400'
-  }`;
-
-  const labelCls = `block text-xs font-medium mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-600'}`;
-
-  const sectionCard = `rounded-2xl border p-6 ${
-    dark
-      ? 'dk-card'
-      : 'glass-card border-white/70'
-  }`;
+  const labelCls = `block text-xs font-bold mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-600'}`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start">
+    <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start pb-10">
 
       {/* ═══════════════════════════════════════
           LEFT — Identity card
@@ -82,19 +78,17 @@ export default function Profile() {
       <div className="space-y-4">
 
         {/* Profile card */}
-        <div className={`mc-fade-down relative overflow-hidden rounded-2xl border ${
-          dark ? 'dk-card' : 'glass-card border-white/70'
-        }`}>
+        <div className={`mc-fade-down relative overflow-hidden transition-all ${glassCard}`}>
 
           {/* Decorative banner */}
-          <div className={`h-24 relative overflow-hidden ${
+          <div className={`h-32 relative overflow-hidden ${
             dark
               ? 'bg-gradient-to-br from-[#1c1408] via-[#241a08] to-[#100e04]'
               : 'bg-gradient-to-br from-indigo-600 via-violet-600 to-sky-500'
           }`}>
-            <div className="mc-blob absolute -top-6 -right-6 w-24 h-24 rounded-full"
+            <div className="mc-blob absolute -top-6 -right-6 w-32 h-32 rounded-full"
               style={{ background: dark ? 'rgba(201,168,76,0.10)' : 'rgba(255,255,255,0.10)' }} />
-            <div className="mc-blob absolute -bottom-3 left-10 w-16 h-16 rounded-full"
+            <div className="mc-blob absolute -bottom-3 left-10 w-24 h-24 rounded-full"
               style={{ animationDelay: '2s', background: dark ? 'rgba(201,168,76,0.08)' : 'rgba(255,255,255,0.08)' }} />
           </div>
 
@@ -133,9 +127,7 @@ export default function Profile() {
         </div>
 
         {/* Account info card */}
-        <div className={`mc-fade-up mc-stagger-2 rounded-2xl border p-5 space-y-1 ${
-          dark ? 'dk-card' : 'glass-card border-white/70'
-        }`}>
+        <div className={`mc-fade-up mc-stagger-2 p-6 space-y-2 overflow-hidden transition-all ${glassCard}`}>
           <h3 className={`text-xs font-semibold uppercase tracking-widest mb-3 ${
             dark ? 'text-[#c9a84c]/60' : 'text-gray-400'
           }`}>Account Info</h3>
@@ -153,7 +145,7 @@ export default function Profile() {
               }`}>
                 <Icon size={13} className={dark ? 'text-[#c9a84c]/70' : 'text-indigo-600'} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1 overflow-hidden">
                 <p className={`text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>{label}</p>
                 <p className={`text-sm font-medium truncate capitalize ${dark ? 'text-gray-200' : 'text-gray-800'}`}>
                   {value || '—'}
@@ -184,7 +176,7 @@ export default function Profile() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
           {/* ── Personal Info ── */}
-          <div className={`mc-fade-up ${sectionCard}`}>
+          <div className={`mc-fade-up p-6 md:p-8 ${glassCard}`}>
             <div className="flex items-center gap-3 mb-5">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                 dark ? 'bg-[#c9a84c]/12' : 'bg-indigo-100'
@@ -241,7 +233,7 @@ export default function Profile() {
           </div>
 
           {/* ── Change Password ── */}
-          <div className={`mc-fade-up mc-stagger-2 ${sectionCard}`}>
+          <div className={`mc-fade-up mc-stagger-2 p-6 md:p-8 ${glassCard}`}>
             <div className="flex items-center gap-3 mb-5">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                 dark ? 'bg-violet-500/12' : 'bg-violet-100'

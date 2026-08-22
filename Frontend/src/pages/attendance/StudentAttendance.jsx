@@ -207,7 +207,7 @@ export default function StudentAttendance() {
       `}</style>
 
       {/* ── Main Card ── */}
-      <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-6 space-y-5 shadow-sm">
+      <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-6 space-y-5 shadow-sm">
 
         {/* Header */}
         <div className="flex items-center justify-between">

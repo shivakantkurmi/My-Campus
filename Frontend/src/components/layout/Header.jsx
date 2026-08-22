@@ -1,4 +1,5 @@
 import { Menu, Sun, Moon, Bell } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import useThemeStore from '../../store/themeStore';
 import useAuthStore from '../../store/authStore';
 import Avatar from '../common/Avatar';
@@ -11,7 +12,7 @@ export default function Header({ onMenuClick, title = 'Dashboard' }) {
     <header className={`mc-fade-down sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 transition-all ${
       dark
         ? 'bg-[#050508]/60 border-b border-[#c9a84c]/20 backdrop-blur-[30px]'
-        : 'bg-white/40 border-b border-white/80 backdrop-blur-[40px]'
+        : 'bg-white/40 border-b border-white/80 backdrop-blur-[40px] rounded-l-[2rem] ml-2 lg:ml-4 mt-4 lg:mt-6 border border-r-0'
     }`}
     >
       {/* Left — hamburger + page title */}
@@ -45,8 +46,7 @@ export default function Header({ onMenuClick, title = 'Dashboard' }) {
       </div>
 
       {/* Right — actions */}
-      <div className="flex items-center gap-2">
-
+      <div className="flex items-center gap-3">
         {/* Bell (decorative but styled) */}
         <button className={`relative p-2 rounded-xl transition-all active:scale-90 ${
           dark
