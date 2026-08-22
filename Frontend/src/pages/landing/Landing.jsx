@@ -40,7 +40,7 @@ const CAMPUS_CARDS = [
 ];
 
 const features = [
-  { icon: BookOpen,      title: 'Notes Sharing',       desc: 'Upload and browse notes from peers across departments.',          color: 'from-indigo-500 to-blue-600' },
+  { icon: BookOpen,      title: 'Notes Sharing',       desc: 'Upload and browse notes from peers across departments.',          color: 'from-indigo-500 to-indigo-600' },
   { icon: QrCode,        title: 'QR Attendance',        desc: 'Anti-proxy QR scan with time limit — no more proxy attendance.', color: 'from-violet-500 to-purple-600' },
   { icon: DoorOpen,      title: 'Faculty Cabin Finder', desc: 'Check which professors are in their cabin right now.',           color: 'from-sky-400 to-cyan-600' },
   { icon: Calculator,    title: 'CGPA Calculator',      desc: 'Enter semester grades and get GPA/CGPA instantly.',              color: 'from-emerald-500 to-teal-600' },
@@ -225,33 +225,33 @@ export default function Landing() {
               }`}>
                 <GraduationCap size={18} className="text-white" />
               </div>
-              <span className={`text-lg font-bold tracking-tight drop-shadow-lg ${
-                dark ? 'text-[#c9a84c]' : 'text-white'
+              <span className={`text-xl font-bold tracking-tight drop-shadow-md transition-colors ${
+                dark ? 'text-[#c9a84c]' : 'text-gray-900'
               }`}>My-Campus</span>
             </div>
 
             {/* Nav right */}
             <div className="flex items-center gap-2 sm:gap-3">
               <button onClick={toggleTheme}
-                className={`p-2 rounded-xl transition-all active:scale-90 backdrop-blur-sm ${
-                  dark
-                    ? 'text-[#c9a84c] hover:bg-[#c9a84c]/15 border border-[#c9a84c]/25'
-                    : 'text-white hover:bg-white/20 border border-white/30'
-                }`}>
+                  className={`px-5 py-2 rounded-full font-medium text-sm transition-all ${
+                    dark
+                    ? 'text-gray-300 hover:text-white hover:bg-[#c9a84c]/10'
+                    : 'text-gray-800 hover:bg-white/40 border border-indigo-200/50'
+                  }`}>
                 {dark ? <Sun size={18} className="mc-heartbeat" /> : <Moon size={18} />}
               </button>
 
-              <Link to="/login" className={`hidden sm:inline-flex items-center px-4 py-2 text-sm font-medium rounded-xl border backdrop-blur-sm transition-all ${
-                dark
-                  ? 'text-[#c9a84c]/80 border-[#c9a84c]/25 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c]'
-                  : 'text-white border-white/35 hover:bg-white/20'
-              }`}>Sign In</Link>
+              <Link to="/login" className={`p-2 rounded-full border transition-all ${
+                  dark 
+                  ? 'text-gray-400 border-gray-700 hover:text-white hover:border-[#c9a84c]' 
+                  : 'text-gray-700 border-indigo-200 hover:bg-white/40'
+                }`}>Sign In</Link>
 
-              <Link to="/register" className={`mc-btn inline-flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-xl backdrop-blur-sm transition-all shadow-lg ${
-                dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/30'
-                  : 'bg-white/25 border border-white/50 text-white hover:bg-white/35 shadow-white/20'
-              }`}>
+              <Link to="/register" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${
+                  dark 
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
+                  : 'bg-white/60 border border-indigo-200 text-indigo-700 hover:bg-white shadow-[0_4px_16px_rgba(99,102,241,0.2)]'
+                }`}>
                 Get Started <ArrowRight size={14} className="mc-nudge" />
               </Link>
             </div>
@@ -265,11 +265,11 @@ export default function Landing() {
           <div className="flex-1 flex flex-col justify-center max-w-xl">
 
             {/* Badge */}
-            <div className={`mc-bounce-drop inline-flex items-center gap-2 px-4 py-1.5 text-xs font-semibold rounded-full border w-fit mb-6 backdrop-blur-sm ${
-              dark
-                ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]'
-                : 'bg-white/25 border-white/40 text-white'
-            }`}>
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border ${
+                dark 
+                ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]' 
+                : 'bg-indigo-50/80 border-indigo-200 text-indigo-700'
+              }`}>
               <Sparkles size={10} className="mc-heartbeat" />
               VIT Bhopal University · Campus Platform
             </div>
@@ -280,8 +280,8 @@ export default function Landing() {
             </div>
 
             {/* Typewriter subtitle */}
-            <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-white'}`}>
-              Everything for your{' '}
+            <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-gray-900'}`}>
+              One Portal for Everything<br/> for your{' '}
               <span className={dark ? 'mc-gold-shimmer' : ''} style={!dark ? {
                 background: 'linear-gradient(90deg,#ffffff,#c7d2fe,#a5b4fc,#ffffff)',
                 backgroundSize: '200% auto',
@@ -292,8 +292,8 @@ export default function Landing() {
               } : {}}>{typed}<span className="mc-caret" /></span>
             </h1>
 
-            <p className={`text-base sm:text-lg leading-relaxed mb-8 max-w-md drop-shadow ${
-              dark ? 'text-gray-300' : 'text-white/85'
+            <p className={`text-sm sm:text-base leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 drop-shadow-md ${
+              dark ? 'text-gray-300' : 'text-gray-700 font-medium'
             }`}>
               Notes sharing, anti-proxy QR attendance, faculty cabin finder,
               CGPA calculator — all in one place, built for VITians.
@@ -309,11 +309,11 @@ export default function Landing() {
                 Join My-Campus <ArrowRight size={18} className="mc-nudge" />
               </Link>
 
-              <Link to="/login" className={`mc-btn inline-flex items-center justify-center px-7 py-3.5 text-base font-semibold rounded-2xl backdrop-blur-md border transition-all hover:-translate-y-0.5 ${
-                dark
-                  ? 'border-[#c9a84c]/30 text-[#c9a84c]/90 hover:bg-[#c9a84c]/8 hover:border-[#c9a84c]/50'
-                  : 'border-white/40 text-white hover:bg-white/20'
-              }`}>
+              <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${
+                  dark 
+                  ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400' 
+                  : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
+                }`}>
                 Sign In
               </Link>
             </div>
@@ -321,9 +321,9 @@ export default function Landing() {
             {/* Stats row */}
             <div className="mt-10 flex gap-6 sm:gap-10">
               {[{ val: '5+', label: 'Features' }, { val: '3', label: 'User Roles' }, { val: '1', label: 'Campus Admin' }].map(({ val, label }) => (
-                <div key={label} className="group">
-                  <div className={`text-2xl font-bold drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-white'}`}>{val}</div>
-                  <div className={`text-xs mt-0.5 ${dark ? 'text-gray-400' : 'text-white/70'}`}>{label}</div>
+                <div className="text-center">
+                  <div className={`text-2xl font-bold drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>{val}</div>
+                  <div className={`text-xs mt-0.5 ${dark ? 'text-gray-400' : 'text-gray-600 font-medium'}`}>{label}</div>
                 </div>
               ))}
             </div>
@@ -354,18 +354,12 @@ export default function Landing() {
                   alt={label}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                {/* Glass label overlay */}
-                <div className="absolute inset-x-0 bottom-0 px-3 py-2"
-                  style={{
-                    background: dark
-                      ? 'linear-gradient(to top, rgba(7,7,15,0.88) 0%, transparent 100%)'
-                      : 'linear-gradient(to top, rgba(30,40,100,0.70) 0%, transparent 100%)',
-                  }}>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin size={10} className={dark ? 'text-[#c9a84c]' : 'text-white'} />
-                    <p className={`text-xs font-bold ${dark ? 'text-[#c9a84c]' : 'text-white'}`}>{label}</p>
+                <div className="absolute bottom-4 left-4 right-4 z-20">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <MapPin size={10} className={dark ? 'text-[#c9a84c]' : 'text-gray-800'} />
+                    <p className={`text-xs font-bold ${dark ? 'text-[#c9a84c]' : 'text-gray-900'}`}>{label}</p>
                   </div>
-                  <p className={`text-[10px] ${dark ? 'text-gray-400' : 'text-white/70'}`}>{sub}</p>
+                  <p className={`text-[10px] ${dark ? 'text-gray-400' : 'text-gray-700 font-medium'}`}>{sub}</p>
                 </div>
 
                 {/* Glass shimmer overlay */}

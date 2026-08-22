@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, BookOpen, DoorOpen, CalendarCheck,
   Calculator, ShieldCheck, User, LogOut, X,
-  Megaphone, GraduationCap,
+  Megaphone, GraduationCap, Settings, ArrowLeftRight
 } from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
@@ -16,8 +16,166 @@ const navItems = [
   { to: '/attendance',      label: 'Attendance',     icon: CalendarCheck,   roles: ['student', 'faculty'] },
   { to: '/cgpa-calculator', label: 'CGPA Calculator',icon: Calculator,      roles: ['student', 'faculty', 'admin'] },
   { to: '/admin',           label: 'Admin Panel',    icon: ShieldCheck,     roles: ['admin'] },
-  { to: '/profile',         label: 'Profile',        icon: User,            roles: ['student', 'faculty', 'admin'] },
 ];
+
+/* =========================================
+   LIGHT THEME: FLOATING PILL SIDEBAR
+   ========================================= */
+function LightSidebar({ user, onClose, handleLogout, filtered }) {
+  return (
+    <aside className="w-[100px] h-full py-6 pl-6 lg:flex flex-col hidden z-30 transition-all">
+      <div className="bg-white/85 backdrop-blur-[40px] border border-white rounded-[2rem] w-[80px] h-full flex flex-col items-center py-8 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] shadow-indigo-500/10 relative">
+        
+        {/* Top Logo */}
+        <div className="w-10 h-10 rounded-2xl bg-gray-900 text-white flex items-center justify-center mb-10 shadow-lg">
+          <GraduationCap size={20} />
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col gap-4 items-center w-full">
+          {filtered.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              title={label}
+              className={({ isActive }) =>
+                `w-12 h-12 rounded-[1.25rem] flex items-center justify-center transition-all duration-300 group relative
+                ${isActive
+                  ? 'bg-gray-900 text-white shadow-md'
+                  : 'text-gray-400 hover:text-gray-900 hover:bg-gray-100/50'
+                }`
+              }
+            >
+              <Icon size={20} className="transition-transform group-hover:scale-110" />
+            </NavLink>
+          ))}
+        </nav>
+
+        {/* Bottom Profile */}
+        <div className="mt-auto flex flex-col items-center gap-4">
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm hover:scale-105 transition-transform cursor-pointer" onClick={handleLogout} title="Logout">
+            <Avatar name={user?.name || "User"} size={40} />
+          </div>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+
+/* =========================================
+   DARK THEME: MAKE THINGS SIMPLE SIDEBAR
+   ========================================= */
+function DarkSidebar({ user, onClose, handleLogout, filtered }) {
+  return (
+    <aside className="w-64 h-full bg-[#08080f]/95 backdrop-blur-xl border-r border-[#c9a84c]/10 flex flex-col lg:flex hidden z-30 transition-all shadow-[4px_0_32px_rgba(0,0,0,0.6)]">
+      
+      {/* Top Logo */}
+      <div className="flex items-center gap-3 px-8 py-10">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#c9a84c] to-[#8a6020] text-[#07070f] flex items-center justify-center shadow-[0_0_15px_rgba(201,168,76,0.4)]">
+          <GraduationCap size={18} />
+        </div>
+        <h1 className="text-xl font-black text-white tracking-tight">
+          <span className="mc-gold-shimmer">My-Campus</span>
+        </h1>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 flex flex-col px-4 gap-2 mt-4">
+        {filtered.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              `flex items-center gap-4 px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300 relative group
+              ${isActive
+                ? 'bg-gradient-to-r from-[#c9a84c]/20 to-transparent text-white'
+                : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {/* Active Indicator Glow */}
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-[#c9a84c] rounded-r-full shadow-[0_0_10px_rgba(201,168,76,0.8)]" />
+                )}
+                
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isActive ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] text-[#07070f] shadow-[0_0_15px_rgba(201,168,76,0.3)]' : 'bg-transparent group-hover:text-gray-200'}`}>
+                  <Icon size={16} />
+                </div>
+                <span>{label}</span>
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Bottom Profile / Settings */}
+      <div className="px-4 py-8 flex flex-col gap-2 mt-auto">
+        <button onClick={handleLogout} className="flex items-center gap-4 px-4 py-3 text-sm font-bold text-gray-500 hover:text-[#c9a84c] hover:bg-[#c9a84c]/5 rounded-2xl transition-colors">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/5"><ArrowLeftRight size={16} /></div>
+          Log out
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+
+/* =========================================
+   MOBILE SIDEBAR (Unified for both themes)
+   ========================================= */
+function MobileSidebar({ user, open, onClose, handleLogout, filtered, dark }) {
+  if (!open) return null;
+  return (
+    <>
+      <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden" onClick={onClose} />
+      <aside className={`fixed top-0 left-0 h-full w-64 z-50 flex flex-col transition-transform duration-300 lg:hidden ${
+        dark ? 'bg-[#08080f] border-r border-[#c9a84c]/10' : 'bg-white border-r border-gray-200'
+      }`}>
+        <div className={`flex items-center justify-between px-5 py-4 border-b ${dark ? 'border-[#c9a84c]/10' : 'border-gray-100'}`}>
+          <div className="flex items-center gap-2.5">
+            <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${dark ? 'bg-[#c9a84c] text-[#07070f]' : 'bg-gray-900 text-white'}`}>
+              <GraduationCap size={16} />
+            </div>
+            <h1 className={`text-base font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>My-Campus</h1>
+          </div>
+          <button onClick={onClose} className={`p-1.5 rounded-lg ${dark ? 'text-gray-400 hover:bg-white/10' : 'text-gray-500 hover:bg-gray-100'}`}>
+            <X size={18} />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+          {filtered.map(({ to, label, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold transition-all
+                ${isActive
+                  ? dark ? 'bg-[#c9a84c]/20 text-white' : 'bg-gray-100 text-gray-900'
+                  : dark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'
+                }`
+              }
+            >
+              <Icon size={18} />
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className={`px-4 py-6 border-t ${dark ? 'border-[#c9a84c]/10' : 'border-gray-100'}`}>
+           <button onClick={handleLogout} className={`flex items-center gap-3 w-full px-3 py-3 rounded-xl text-sm font-bold ${dark ? 'text-rose-400 hover:bg-white/5' : 'text-red-500 hover:bg-red-50'}`}>
+             <LogOut size={18} /> Logout
+           </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
 
 export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuthStore();
@@ -31,141 +189,17 @@ export default function Sidebar({ open, onClose }) {
 
   const filtered = navItems.filter((n) => n.roles.includes(user?.role));
 
-  /* ── Role color badge ── */
-  const roleBadge = {
-    student: dark ? 'bg-[#c9a84c]/12 text-[#c9a84c]/80 border-[#c9a84c]/20' : 'bg-indigo-50 text-indigo-600 border-indigo-200',
-    faculty: dark ? 'bg-emerald-500/12 text-emerald-400 border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 border-emerald-200',
-    admin:   dark ? 'bg-rose-500/12 text-rose-400 border-rose-500/20' : 'bg-rose-50 text-rose-600 border-rose-200',
-  }[user?.role] || '';
-
   return (
     <>
-      {/* Mobile overlay */}
-      {open && (
-        <div
-          className="fixed inset-0 z-20 lg:hidden"
-          style={{ background: 'rgba(0,0,0,0.55)', backdropFilter: 'blur(4px)' }}
-          onClick={onClose}
-        />
+      {/* Mobile Drawer */}
+      <MobileSidebar user={user} open={open} onClose={onClose} handleLogout={handleLogout} filtered={filtered} dark={dark} />
+      
+      {/* Desktop sidebars */}
+      {dark ? (
+        <DarkSidebar user={user} onClose={onClose} handleLogout={handleLogout} filtered={filtered} />
+      ) : (
+        <LightSidebar user={user} onClose={onClose} handleLogout={handleLogout} filtered={filtered} />
       )}
-
-      <aside className={`
-        fixed top-0 left-0 h-full w-64 z-30 flex flex-col
-        transition-transform duration-300
-        ${open ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
-        ${dark
-          ? 'bg-[#08080f]/95 border-r border-[#c9a84c]/10 backdrop-blur-xl'
-          : 'bg-white/85 border-r border-indigo-100/60 backdrop-blur-xl'
-        }
-      `}
-      style={{
-        boxShadow: dark
-          ? '4px 0 32px rgba(0,0,0,0.60), inset -1px 0 0 rgba(201,168,76,0.08)'
-          : '4px 0 24px rgba(99,102,241,0.08)',
-      }}
-      >
-
-        {/* ── Logo / Brand ── */}
-        <div className={`flex items-center justify-between px-5 py-4 border-b ${
-          dark ? 'border-[#c9a84c]/10' : 'border-indigo-100/60'
-        }`}>
-          <div className="flex items-center gap-2.5">
-            <div className={`mc-glass-float w-8 h-8 rounded-xl flex items-center justify-center shadow-lg ${
-              dark
-                ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] shadow-[#c9a84c]/30'
-                : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-500/30'
-            }`} style={{ animationDuration: '4s' }}>
-              <GraduationCap size={16} className="text-white" />
-            </div>
-            <div>
-              <h1 className="text-base font-bold tracking-tight leading-none">
-                {dark
-                  ? <span className="mc-gold-shimmer">My-Campus</span>
-                  : <span className="mc-gradient-text">My-Campus</span>
-                }
-              </h1>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className={`lg:hidden p-1.5 rounded-lg transition-all active:scale-90 ${
-              dark
-                ? 'text-[#c9a84c]/60 hover:text-[#c9a84c] hover:bg-[#c9a84c]/10'
-                : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-            }`}
-          >
-            <X size={18} />
-          </button>
-        </div>
-
-        {/* ── User info card ── */}
-        <div className={`mx-3 my-3 p-3 rounded-2xl border ${
-          dark
-            ? 'bg-[#c9a84c]/5 border-[#c9a84c]/12'
-            : 'bg-indigo-50/60 border-indigo-100/80'
-        }`}>
-          <div className="flex items-center gap-3">
-            <div className="mc-pulse-glow rounded-full shrink-0">
-              <Avatar name={user?.name} size={9} />
-            </div>
-            <div className="overflow-hidden flex-1">
-              <p className={`text-sm font-semibold truncate ${dark ? 'text-white' : 'text-gray-900'}`}>
-                {user?.name}
-              </p>
-              <p className={`text-xs truncate ${dark ? 'text-gray-500' : 'text-gray-400'}`}>
-                {user?.email}
-              </p>
-            </div>
-          </div>
-          <div className="mt-2.5">
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border capitalize ${roleBadge}`}>
-              {user?.role}
-            </span>
-          </div>
-        </div>
-
-        {/* ── Navigation ── */}
-        <nav className="flex-1 overflow-y-auto px-3 py-2 space-y-0.5">
-          {filtered.map(({ to, label, icon: Icon }, idx) => (
-            <NavLink
-              key={to}
-              to={to}
-              onClick={onClose}
-              style={{ animationDelay: `${idx * 45}ms` }}
-              className={({ isActive }) =>
-                `mc-slide-bounce flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group
-                ${isActive
-                  ? dark
-                    ? 'bg-gradient-to-r from-[#c9a84c]/18 to-[#c9a84c]/8 border border-[#c9a84c]/35 text-[#c9a84c] shadow-sm'
-                    : 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/30'
-                  : dark
-                    ? 'text-gray-500 hover:bg-[#c9a84c]/6 hover:text-[#c9a84c]/80 hover:translate-x-1'
-                    : 'text-gray-500 hover:bg-indigo-50/80 hover:text-indigo-600 hover:translate-x-1'
-                }`
-              }
-            >
-              <Icon size={17} className="shrink-0 transition-transform group-hover:scale-110" />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-
-        {/* ── Logout ── */}
-        <div className={`px-3 py-4 border-t ${dark ? 'border-[#c9a84c]/10' : 'border-indigo-100/60'}`}>
-          <button
-            onClick={handleLogout}
-            className={`mc-btn flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium transition-all active:scale-95 group ${
-              dark
-                ? 'text-rose-400/80 hover:bg-rose-500/10 hover:text-rose-400 hover:translate-x-1'
-                : 'text-red-500 hover:bg-red-50 hover:text-red-600 hover:translate-x-1'
-            }`}
-          >
-            <LogOut size={17} className="mc-hover-spin shrink-0" />
-            Logout
-          </button>
-        </div>
-      </aside>
     </>
   );
 }

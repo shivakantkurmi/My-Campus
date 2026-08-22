@@ -8,25 +8,20 @@ export default function Header({ onMenuClick, title = 'Dashboard' }) {
   const { user } = useAuthStore();
 
   return (
-    <header className={`mc-fade-down sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-3 transition-all ${
+    <header className={`mc-fade-down sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 transition-all ${
       dark
-        ? 'bg-[#08080f]/90 border-b border-[#c9a84c]/10 backdrop-blur-xl'
-        : 'bg-white/85 border-b border-indigo-100/60 backdrop-blur-xl'
+        ? 'bg-[#050508]/60 border-b border-[#c9a84c]/20 backdrop-blur-[30px]'
+        : 'bg-white/40 border-b border-white/80 backdrop-blur-[40px]'
     }`}
-    style={{
-      boxShadow: dark
-        ? '0 2px 20px rgba(0,0,0,0.50)'
-        : '0 2px 12px rgba(99,102,241,0.06)',
-    }}
     >
       {/* Left — hamburger + page title */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className={`lg:hidden p-2 rounded-xl transition-all active:scale-90 ${
+          className={`lg:hidden p-2.5 rounded-2xl transition-all active:scale-90 ${
             dark
-              ? 'text-[#c9a84c]/70 hover:bg-[#c9a84c]/10 hover:text-[#c9a84c] border border-[#c9a84c]/15'
-              : 'text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 border border-indigo-100'
+              ? 'text-[#c9a84c] bg-[#c9a84c]/10 hover:bg-[#c9a84c]/20 border border-[#c9a84c]/20 shadow-[0_0_15px_rgba(201,168,76,0.2)]'
+              : 'text-gray-900 bg-white/70 hover:bg-white border border-white shadow-sm'
           }`}
         >
           <Menu size={19} />

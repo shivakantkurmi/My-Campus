@@ -207,26 +207,26 @@ export default function StudentAttendance() {
       `}</style>
 
       {/* ── Main Card ── */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-5 shadow-sm">
+      <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-6 space-y-5 shadow-sm">
 
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-            <ScanLine size={18} className="text-blue-500" /> Mark Attendance
+          <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <ScanLine size={18} className="text-indigo-600 dark:text-[#c9a84c]" /> Mark Attendance
           </h3>
           <button onClick={() => setShowInfo(v => !v)}
-            className="text-gray-400 hover:text-blue-500 transition-colors">
+            className="text-gray-400 hover:text-indigo-600 dark:text-[#c9a84c] transition-colors">
             <Info size={16} />
           </button>
         </div>
 
         {/* Info panel */}
         {showInfo && (
-          <div className="pop-in bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-3 text-xs text-blue-700 dark:text-blue-300 space-y-1">
+          <div className="pop-in bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/10 border border-indigo-200 dark:border-[#c9a84c]/30 dark:border-indigo-700 dark:border-[#8a6020]  p-3 text-xs text-indigo-800 dark:text-[#a87c30] dark:text-indigo-400 dark:text-[#e8c76b] space-y-1">
             <p className="font-semibold flex items-center gap-1"><ShieldCheck size={13}/> How the device lock works</p>
             <p>
               When your attendance is confirmed by the server, a timestamp is saved in this browser
-              (<code className="bg-blue-100 dark:bg-blue-800/50 px-1 rounded">localStorage</code>) set to expire 20 minutes from now.
+              (<code className="bg-indigo-100 dark:bg-[#c9a84c]/20 dark:bg-[#c9a84c]/20 px-1 rounded">localStorage</code>) set to expire 20 minutes from now.
               The scan UI is hidden until that timer expires.
             </p>
             <p>
@@ -278,7 +278,7 @@ export default function StudentAttendance() {
             </div>
 
             {/* Anti-proxy explanation */}
-            <div className="w-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 text-xs text-amber-700 dark:text-amber-300 space-y-1">
+            <div className="w-full bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700  p-3 text-xs text-amber-700 dark:text-amber-300 space-y-1">
               <p className="font-semibold flex items-center gap-1"><ShieldCheck size={12}/> Why can't I bypass this?</p>
               <p>Even if you open Incognito or clear storage, the <strong>server stores your device fingerprint</strong> in MongoDB. Every scan attempt is checked against it for 20 minutes.</p>
             </div>
@@ -297,27 +297,27 @@ export default function StudentAttendance() {
                 onKeyDown={e => e.key === 'Enter' && startScan()}
                 placeholder="e.g. 22BCE0001"
                 disabled={scanning || submitting}
-                className="w-full px-3 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 dark:text-white transition-all placeholder:text-gray-300 dark:placeholder:text-gray-500"
+                className="w-full px-3 py-2.5 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40]  text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/40 dark:ring-[#c9a84c]/40 focus:border-indigo-400 dark:border-[#c9a84c]/50 dark:text-white transition-all placeholder:text-gray-300 dark:placeholder:text-gray-500"
               />
             </div>
 
             {/* QR Scanner with animated border */}
-            <div className={`relative w-full rounded-xl overflow-hidden transition-all duration-300 ${scanning ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-gray-800 shadow-lg shadow-blue-500/20' : ''} ${!scanning ? 'hidden' : ''}`}
+            <div className={`relative w-full  overflow-hidden transition-all duration-300 ${scanning ? 'ring-2 ring-indigo-500 dark:ring-[#c9a84c] ring-offset-2 dark:ring-offset-gray-800 shadow-lg shadow-indigo-500/20 dark:shadow-[#c9a84c]/20' : ''} ${!scanning ? 'hidden' : ''}`}
               style={{ minHeight: 240 }}>
               <div id="qr-reader" className="w-full" style={{ minHeight: 240 }} />
               {/* Animated scan line */}
               {scanning && (
-                <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-xl">
-                  <div className="scan-pulse absolute left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-blue-400 to-transparent opacity-70"/>
+                <div className="absolute inset-0 pointer-events-none overflow-hidden ">
+                  <div className="scan-pulse absolute left-0 right-0 h-0.5 bg-linear-to-r from-transparent via-indigo-400 to-transparent opacity-70"/>
                 </div>
               )}
             </div>
 
             {/* Submitting overlay */}
             {submitting && (
-              <div className="pop-in flex items-center justify-center gap-3 py-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
-                <Loader2 size={20} className="animate-spin text-blue-500"/>
-                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">Verifying with server…</span>
+              <div className="pop-in flex items-center justify-center gap-3 py-4 bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/10  border border-indigo-200 dark:border-[#c9a84c]/30 dark:border-indigo-700 dark:border-[#8a6020]">
+                <Loader2 size={20} className="animate-spin text-indigo-600 dark:text-[#c9a84c]"/>
+                <span className="text-sm font-medium text-indigo-700 dark:text-[#c9a84c] dark:text-indigo-500 dark:text-[#e8c76b]">Verifying with server…</span>
               </div>
             )}
 
@@ -326,12 +326,12 @@ export default function StudentAttendance() {
               <div className="flex gap-3">
                 {!scanning ? (
                   <button onClick={startScan}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-linear-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white rounded-xl font-medium text-sm shadow-sm shadow-blue-500/30 transition-all active:scale-95">
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white  font-medium text-sm shadow-sm shadow-indigo-500/30 dark:shadow-[#c9a84c]/30 transition-all active:scale-95">
                     <Camera size={16} /> Open Camera &amp; Scan
                   </button>
                 ) : (
                   <button onClick={stopScan}
-                    className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium text-sm transition-all active:scale-95">
+                    className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white  font-medium text-sm transition-all active:scale-95">
                     Stop Scanning
                   </button>
                 )}
@@ -342,12 +342,12 @@ export default function StudentAttendance() {
 
         {/* ── Status message ── */}
         {msg && !submitting && (
-          <div className={`pop-in flex items-start gap-2.5 p-3 rounded-xl text-sm font-medium border ${
+          <div className={`pop-in flex items-start gap-2.5 p-3  text-sm font-medium border ${
             status === 'success'
               ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border-green-200 dark:border-green-700'
               : status === 'error'
               ? 'bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400 border-red-200 dark:border-red-700'
-              : 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600'
+              : 'bg-gray-50 text-gray-600 dark:bg-gray-700 dark:text-gray-300 border-white/60 dark:border-[#2a2a40]'
           }`}>
             {status === 'success'
               ? <CheckCircle size={17} className="mt-0.5 shrink-0"/>
@@ -361,7 +361,7 @@ export default function StudentAttendance() {
 
       {/* ── Anti-Proxy Rules ── */}
       {!locked && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-700 text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20  p-4 border border-yellow-200 dark:border-yellow-700 text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
           <p className="font-semibold">Anti-Proxy Rules:</p>
           <p>• QR refreshes every 10 seconds — sharing is futile.</p>
           <p>• Each device is server-locked for 20 minutes after one successful mark.</p>

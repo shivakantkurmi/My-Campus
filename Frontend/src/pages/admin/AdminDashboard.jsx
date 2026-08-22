@@ -299,7 +299,7 @@ export default function AdminDashboard() {
                 <span className={`text-xs px-2.5 py-0.5 rounded-full font-medium capitalize ${
                   c.type === 'unblock_appeal'
                     ? dark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-50 text-amber-700'
-                    : dark ? 'bg-blue-500/15 text-blue-400' : 'bg-blue-50 text-blue-700'
+                    : dark ? 'bg-indigo-50 dark:bg-[#c9a84c]/100/15 text-indigo-500 dark:text-[#e8c76b]' : 'bg-indigo-50 dark:bg-[#c9a84c]/10 text-indigo-800 dark:text-[#a87c30]'
                 }`}>
                   {c.type?.replace(/_/g, ' ')}
                 </span>

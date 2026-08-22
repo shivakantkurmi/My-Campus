@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, DoorOpen, CalendarCheck, Calculator, ShieldCheck, Megaphone, TrendingUp, Users, FileText } from 'lucide-react';
+import { 
+  Megaphone, BookOpen, DoorOpen, CalendarCheck, Calculator, ShieldCheck, 
+  ArrowRight, Users, FileText, Activity, MoreHorizontal, ArrowUpRight
+} from 'lucide-react';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
 import api from '../../api/axios';
 import Avatar from '../../components/common/Avatar';
 
 const cards = [
-  { to: '/announcements',   icon: Megaphone,      label: 'Announcements',  lightGrad: 'from-indigo-500 to-indigo-700',     darkGrad: 'from-indigo-900/50 to-indigo-800/40',  roles: ['student','faculty','admin'], glow: 'rgba(99,102,241,0.35)' },
-  { to: '/notes',           icon: BookOpen,        label: 'Notes Sharing',  lightGrad: 'from-blue-500 to-blue-700',         darkGrad: 'from-blue-900/50 to-blue-800/40',      roles: ['student','faculty','admin'], glow: 'rgba(59,130,246,0.35)' },
-  { to: '/faculty-cabins',  icon: DoorOpen,        label: 'Faculty Cabins', lightGrad: 'from-emerald-500 to-emerald-700',   darkGrad: 'from-emerald-900/50 to-emerald-800/40',roles: ['student','faculty','admin'], glow: 'rgba(16,185,129,0.35)' },
-  { to: '/attendance',      icon: CalendarCheck,   label: 'Attendance',     lightGrad: 'from-violet-500 to-violet-700',     darkGrad: 'from-violet-900/50 to-violet-800/40',  roles: ['student','faculty'],         glow: 'rgba(139,92,246,0.35)' },
-  { to: '/cgpa-calculator', icon: Calculator,      label: 'CGPA Calculator',lightGrad: 'from-amber-500 to-orange-600',      darkGrad: 'from-amber-900/50 to-orange-900/40',   roles: ['student','faculty','admin'], glow: 'rgba(245,158,11,0.35)' },
-  { to: '/admin',           icon: ShieldCheck,     label: 'Admin Panel',    lightGrad: 'from-rose-500 to-rose-700',         darkGrad: 'from-rose-900/50 to-rose-800/40',      roles: ['admin'],                     glow: 'rgba(244,63,94,0.35)' },
+  { to: '/announcements',   icon: Megaphone,      label: 'Announcements',  desc: 'Latest updates and news from the campus administration.', roles: ['student','faculty','admin'] },
+  { to: '/notes',           icon: BookOpen,        label: 'Notes Sharing',  desc: 'Upload and browse study materials across all departments.', roles: ['student','faculty','admin'] },
+  { to: '/faculty-cabins',  icon: DoorOpen,        label: 'Faculty Cabins', desc: 'Locate faculty members and check their availability.', roles: ['student','faculty','admin'] },
+  { to: '/attendance',      icon: CalendarCheck,   label: 'Attendance',     desc: 'Anti-proxy QR attendance system for your classes.', roles: ['student','faculty'] },
+  { to: '/cgpa-calculator', icon: Calculator,      label: 'CGPA Calculator',desc: 'Instantly calculate your CGPA and plan your targets.', roles: ['student','faculty','admin'] },
+  { to: '/admin',           icon: ShieldCheck,     label: 'Admin Panel',    desc: 'System administration and user management.', roles: ['admin'] },
 ];
 
 export default function Dashboard() {
@@ -26,124 +29,119 @@ export default function Dashboard() {
 
   const visible = cards.filter(c => c.roles.includes(user?.role));
 
-  /* Greeting by time of day */
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const dateStr = new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
 
   return (
-    <div className="space-y-6">
-
-      {/* ── Welcome Banner ── */}
-      <div className={`mc-bounce-drop relative overflow-hidden rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 ${
-        dark
-          ? 'bg-gradient-to-r from-[#1a1208] via-[#1c1408] to-[#120e04] border border-[#c9a84c]/20'
-          : 'bg-gradient-to-r from-indigo-600 via-blue-600 to-violet-700'
-      }`}
-      style={{ boxShadow: dark ? '0 8px 32px rgba(0,0,0,0.60), 0 0 24px rgba(201,168,76,0.08)' : '0 8px 32px rgba(99,102,241,0.30)' }}
-      >
-        {/* Floating decorative orbs */}
-        <div className="mc-drift absolute top-3 right-10 w-3 h-3 rounded-full pointer-events-none" style={{ animationDuration: '8s', background: dark ? 'rgba(201,168,76,0.25)' : 'rgba(255,255,255,0.20)' }} />
-        <div className="mc-drift absolute bottom-4 right-24 w-2 h-2 rounded-full pointer-events-none" style={{ animationDuration: '11s', animationDelay: '2s', background: dark ? 'rgba(201,168,76,0.18)' : 'rgba(255,255,255,0.15)' }} />
-        <div className="mc-drift absolute top-5 left-1/2 w-1.5 h-1.5 rounded-full pointer-events-none" style={{ animationDuration: '9s', animationDelay: '1s', background: dark ? 'rgba(201,168,76,0.15)' : 'rgba(255,255,255,0.12)' }} />
-
-        <div className="mc-pulse-glow rounded-full shrink-0">
-          <Avatar name={user?.name} size={16} />
-        </div>
-
-        <div className="relative flex-1">
-          <p className={`text-sm font-medium mb-0.5 ${dark ? 'text-[#c9a84c]/60' : 'text-blue-200'}`}>
-            {greeting} 👋
-          </p>
-          <h2 className={`text-2xl font-bold ${dark ? 'text-[#c9a84c]' : 'text-white'}`}>
-            {user?.name?.split(' ')[0]}!
-          </h2>
-          <p className={`capitalize text-sm mt-0.5 ${dark ? 'text-[#c9a84c]/50' : 'text-blue-200'}`}>
-            {user?.role} · {user?.department}
+    <div className="pb-10 min-h-screen">
+      
+      {/* ── Header ── */}
+      <div className={`flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 ${dark ? 'text-white' : 'text-gray-900'}`}>
+        <div>
+          <div className={`flex items-center gap-2 text-xs font-bold mb-4 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+            <span>Home / Dashboard /</span> <span className={dark ? 'text-[#c9a84c]' : 'text-indigo-600'}>{dateStr} ▾</span>
+          </div>
+          <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 ${dark ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400' : ''}`}>
+            {greeting}, {user?.name?.split(' ')[0]}!
+          </h1>
+          <p className={`text-sm font-medium max-w-md leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+            Access all your campus tools and manage your academic life in one unified platform.
           </p>
         </div>
 
-        {/* Quick stat pills on banner */}
-        <div className="flex gap-3 flex-wrap">
-          {[
-            { label: 'Features',  val: '5+' },
-            { label: 'My Role',   val: user?.role?.slice(0,3)?.toUpperCase() },
-          ].map(({ label, val }) => (
-            <div key={label} className={`flex flex-col items-center px-4 py-2 rounded-xl border ${
-              dark
-                ? 'bg-[#c9a84c]/8 border-[#c9a84c]/20 text-[#c9a84c]'
-                : 'bg-white/12 border-white/20 text-white'
-            }`}>
-              <span className="text-lg font-bold leading-none">{val}</span>
-              <span className={`text-[10px] mt-0.5 ${dark ? 'text-[#c9a84c]/60' : 'text-blue-100'}`}>{label}</span>
-            </div>
-          ))}
+        <div className="flex items-center gap-4">
+          <Avatar name={user?.name} size={48} />
+          <div className="flex flex-col">
+            <span className="font-bold text-sm">{user?.name}</span>
+            <span className={`text-xs font-bold capitalize ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`}>{user?.role}</span>
+          </div>
         </div>
       </div>
 
-      {/* ── Stats Row ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { label: 'Notes Available',   value: stats.notes, icon: FileText,   lightColor: 'text-blue-600',   darkColor: 'text-[#c9a84c]',   lightBg: 'bg-blue-50',   darkBg: 'bg-[#c9a84c]/8' },
-          { label: 'Faculty Cabins',    value: stats.cabins, icon: DoorOpen,  lightColor: 'text-emerald-600',darkColor: 'text-emerald-400', lightBg: 'bg-emerald-50',darkBg: 'bg-emerald-500/8' },
-          { label: 'Registered Users',  value: stats.users, icon: Users,      lightColor: 'text-violet-600', darkColor: 'text-violet-400',  lightBg: 'bg-violet-50', darkBg: 'bg-violet-500/8' },
-        ].map((s, i) => {
-          const StatIcon = s.icon;
-          return (
-            <div
-              key={s.label}
-              className={`mc-flip-up mc-liquid-hover relative overflow-hidden rounded-2xl p-5 border transition-all duration-300 hover:-translate-y-1 ${
-                dark
-                  ? `dk-card`
-                  : `glass-card border-white/70 hover:border-indigo-200/80`
-              }`}
-              style={{ animationDelay: `${60 + i * 70}ms`, boxShadow: dark ? '0 4px 20px rgba(0,0,0,0.50)' : undefined }}
-            >
-              <div className={`inline-flex items-center justify-center w-10 h-10 rounded-xl mb-3 ${dark ? s.darkBg : s.lightBg}`}>
-                <StatIcon size={20} className={dark ? s.darkColor : s.lightColor} />
-              </div>
-              <p className={`text-3xl font-bold ${dark ? s.darkColor : s.lightColor}`}>{s.value}</p>
-              <p className={`text-sm mt-1 ${dark ? 'text-gray-500' : 'text-gray-400'}`}>{s.label}</p>
-              <TrendingUp size={14} className={`absolute bottom-4 right-4 ${dark ? 'text-[#c9a84c]/20' : 'text-indigo-200'}`} />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* ── Quick Access Grid ── */}
-      <div>
-        <h3 className={`mc-fade-right text-lg font-semibold mb-3 ${dark ? 'text-[#c9a84c]/80' : 'text-gray-700'}`}>
-          Quick Access
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {visible.map(({ to, icon: Icon, label, lightGrad, darkGrad, glow }, i) => (
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+        
+        {/* ── Main Quick Access Cards ── */}
+        <div className="xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
+          {visible.map((c, i) => (
             <Link
-              key={to}
-              to={to}
-              className={`mc-fade-up mc-liquid-hover group relative overflow-hidden rounded-3xl p-6 flex flex-col items-center gap-3 transition-all duration-300 hover:-translate-y-2 cursor-pointer ${
-                dark ? 'dk-card border border-[#c9a84c]/15 hover:border-[#c9a84c]/30 hover:shadow-[0_12px_40px_-8px_rgba(201,168,76,0.3)]' : 'glass-card border-[1.5px] border-indigo-200/60 hover:border-indigo-300 hover:shadow-[0_12px_40px_-8px_rgba(99,102,241,0.25)]'
+              key={c.to}
+              to={c.to}
+              className={`group relative overflow-hidden flex flex-col p-6 lg:p-8 transition-all duration-300 hover:-translate-y-1 ${
+                dark 
+                  ? 'bg-[#121220] rounded-[2rem] border border-[#232336] hover:border-[#c9a84c]/40' 
+                  : 'bg-white/80 backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] hover:shadow-[0_30px_80px_-15px_rgba(99,102,241,0.25)]'
               }`}
-              style={{ animationDelay: `${180 + i * 70}ms` }}
             >
-              {/* Icon orb */}
-              <div className={`w-12 h-12 p-3 rounded-2xl bg-gradient-to-br ${lightGrad} shadow-lg group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300`}
-                style={{ boxShadow: `0 8px 20px -6px ${glow}` }}>
-                <Icon size={24} className="text-white" />
+              {/* Glowing Aura Effect (Dark Theme) */}
+              {dark && (
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#c9a84c]/15 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+              )}
+              
+              {/* Top Row: Tag & More Icon */}
+              <div className="flex justify-between items-start mb-6 relative z-10">
+                <div className={`flex items-center gap-2 text-xs font-bold ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`}>
+                  <div className={`w-2 h-2 rounded-full border-2 ${dark ? 'border-[#c9a84c]' : 'border-indigo-600'}`} /> Portal Link
+                </div>
+                <div className={`p-2 rounded-full ${dark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-indigo-50 text-gray-400'}`}>
+                  <c.icon size={16}/>
+                </div>
               </div>
-
-              <span className={`text-sm font-semibold text-center transition-colors ${
-                dark
-                  ? 'text-gray-400 group-hover:text-[#c9a84c]'
-                  : 'text-gray-600 group-hover:text-indigo-600'
-              }`}>{label}</span>
-
-              {/* Corner arrow */}
-              <div className={`absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity ${dark ? 'text-[#c9a84c]/60' : 'text-indigo-400'}`}>
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                  <path d="M2 10L10 2M10 2H4M10 2V8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
+              
+              {/* Content */}
+              <div className="mb-8 relative z-10">
+                <h3 className={`text-xl lg:text-2xl font-bold mb-2 ${dark ? 'text-white' : 'text-gray-900'}`}>{c.label}</h3>
+                <p className={`text-xs leading-relaxed max-w-[90%] ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  {c.desc}
+                </p>
+              </div>
+              
+              {/* Bottom Action */}
+              <div className="mt-auto flex items-center justify-between relative z-10">
+                <div className="flex items-center gap-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${dark ? 'bg-[#c9a84c]/10 text-[#c9a84c]' : 'bg-indigo-50 text-indigo-600'}`}>
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  </div>
+                  <span className={`text-xs font-bold ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Open</span>
+                </div>
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* ── Right Sidebar: Stats & Widgets ── */}
+        <div className="xl:col-span-4 flex flex-col gap-6 lg:gap-8">
+          
+          {/* Stats Widget */}
+          <div className={`p-6 lg:p-8 flex flex-col items-center text-center ${
+            dark 
+              ? 'bg-[#121220] rounded-[2rem] border border-[#232336]'
+              : 'bg-white/80 backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)]'
+          }`}>
+            <div className="w-full flex justify-between items-center mb-8">
+              <h3 className={`font-bold ${dark ? 'text-white' : 'text-gray-900'}`}>Platform Usage</h3>
+              <button className={`p-2 rounded-full ${dark ? 'bg-white/5 text-gray-400' : 'bg-gray-100 text-gray-500'}`}><MoreHorizontal size={14}/></button>
+            </div>
+            
+            {/* Stats Chart Area */}
+            <div className="w-full grid grid-cols-2 gap-4 mb-6">
+               <div className={`flex flex-col items-center justify-center py-6 rounded-2xl ${dark ? 'bg-[#1c1c2e] border border-[#2a2a40]' : 'bg-indigo-50/50 border border-indigo-100'}`}>
+                 <FileText size={20} className={dark ? 'text-[#c9a84c] mb-2' : 'text-indigo-500 mb-2'} />
+                 <span className={`text-2xl font-black ${dark ? 'text-white' : 'text-gray-900'}`}>{stats.notes || 0}</span>
+                 <span className={`text-[10px] font-bold uppercase mt-1 ${dark ? 'text-gray-500' : 'text-gray-500'}`}>Notes</span>
+               </div>
+               <div className={`flex flex-col items-center justify-center py-6 rounded-2xl ${dark ? 'bg-[#1c1c2e] border border-[#2a2a40]' : 'bg-indigo-50/50 border border-indigo-100'}`}>
+                 <Users size={20} className={dark ? 'text-[#c9a84c] mb-2' : 'text-indigo-500 mb-2'} />
+                 <span className={`text-2xl font-black ${dark ? 'text-white' : 'text-gray-900'}`}>{stats.users || 0}</span>
+                 <span className={`text-[10px] font-bold uppercase mt-1 ${dark ? 'text-gray-500' : 'text-gray-500'}`}>Users</span>
+               </div>
+            </div>
+            
+            <div className="w-full flex justify-between items-center mt-auto pt-4 border-t border-dashed" style={{ borderColor: dark ? '#2a2a40' : '#e5e7eb' }}>
+              <span className={`text-[10px] font-bold ${dark ? 'text-gray-500' : 'text-gray-500'}`}>Latest metrics</span>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

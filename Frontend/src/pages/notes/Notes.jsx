@@ -62,19 +62,19 @@ export default function Notes() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search notes…"
-            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white"
+            className="w-full pl-9 pr-4 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm focus:outline-none focus:border-indigo-500 dark:border-[#c9a84c] dark:text-white"
           />
         </div>
         <select
           value={subject}
           onChange={e => setSubject(e.target.value)}
-          className="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm dark:text-white"
+          className="px-3 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm dark:text-white"
         >
           {SUBJECTS.map(s => <option key={s}>{s}</option>)}
         </select>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium"
         >
           <Plus size={16} /> Add Note
         </button>
@@ -84,7 +84,7 @@ export default function Notes() {
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="mc-skeleton rounded-xl h-44" style={{ animationDelay: `${i * 80}ms` }} />
+            <div key={i} className="mc-skeleton  h-44" style={{ animationDelay: `${i * 80}ms` }} />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -96,12 +96,12 @@ export default function Notes() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((note, i) => (
             <div key={note._id}
-              className="mc-flip-up mc-card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4 flex flex-col gap-2"
+              className="mc-flip-up mc-card-hover bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all p-4 flex flex-col gap-2"
               style={{ animationDelay: `${i * 55}ms` }}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <span className="text-xs font-semibold uppercase text-blue-500 tracking-wide">{note.subject}</span>
-                  <h3 className="font-semibold text-gray-800 dark:text-white text-sm mt-0.5">{note.title}</h3>
+                  <span className="text-xs font-semibold uppercase text-indigo-600 dark:text-[#c9a84c] tracking-wide">{note.subject}</span>
+                  <h3 className="font-semibold text-gray-900 dark:text-white text-sm mt-0.5">{note.title}</h3>
                 </div>
                 <div className="flex gap-1 shrink-0">
                   {canEdit(note) && (
@@ -127,7 +127,7 @@ export default function Notes() {
                 href={note.driveURL}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-600 font-medium mt-1"
+                className="flex items-center gap-1 text-xs text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:text-[#c9a84c] font-medium mt-1"
               >
                 <ExternalLink size={12} /> Open Drive Link
               </a>

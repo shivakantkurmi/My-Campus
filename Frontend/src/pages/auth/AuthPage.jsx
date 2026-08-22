@@ -104,10 +104,10 @@ export default function AuthPage({ initialView = 'login' }) {
   const bgImg = dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg';
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center overflow-hidden">
+    <div className="min-h-screen relative flex items-center justify-center overflow-hidden" style={{ background: dark ? '#07070f' : '#f8faff' }}>
       
       {/* ════════════════════════════════════════════
-          FULL-SCREEN BACKGROUND IMAGE
+          FULL-SCREEN BACKGROUND
       ════════════════════════════════════════════ */}
       <div className="absolute inset-0 z-0">
         <img 
@@ -119,7 +119,7 @@ export default function AuthPage({ initialView = 'login' }) {
         {/* Overlay gradient for contrast */}
         <div className="absolute inset-0" style={{
           background: dark 
-            ? 'linear-gradient(to right, rgba(7,7,15,0.92) 0%, rgba(7,7,15,0.7) 100%)' 
+            ? 'linear-gradient(to right, rgba(7,7,15,0.95) 0%, rgba(7,7,15,0.75) 100%)' 
             : 'linear-gradient(to right, rgba(255,255,255,0.65) 0%, rgba(238,242,255,0.4) 100%)',
           backdropFilter: 'blur(8px)'
         }} />
@@ -189,21 +189,24 @@ export default function AuthPage({ initialView = 'login' }) {
         ════════════════════════════════════════════ */}
         {/* We use scale to easily make the fixed 640px circle responsive on smaller screens without breaking layout */}
         <div className="relative w-[340px] h-[340px] sm:w-[480px] sm:h-[480px] lg:w-[640px] lg:h-[640px] flex items-center justify-center" style={{ perspective: '2000px' }}>
-          <div 
-            className="w-[640px] h-[640px] origin-center transition-transform duration-[1.4s] relative"
-            style={{ 
-              transformStyle: 'preserve-3d', 
-              transitionTimingFunction: 'cubic-bezier(0.68, -0.05, 0.27, 1.05)',
-              transform: `scale(var(--circle-scale)) ${isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)'}`,
-            }}
-          >
-            {/* Inject scale variable based on media queries using tailwind classes on a parent or inline style trick. 
-                Instead, we handle it via a style block for cleanliness */}
-            <style>{`
-              @media (max-width: 639px) { :root { --circle-scale: 0.53; } }
-              @media (min-width: 640px) and (max-width: 1023px) { :root { --circle-scale: 0.75; } }
-              @media (min-width: 1024px) { :root { --circle-scale: 1; } }
-            `}</style>
+          
+          {/* Outer scale wrapper to prevent transition bugs with CSS variables in transform */}
+          <div className="w-[640px] h-[640px] origin-center" style={{ transform: 'scale(var(--circle-scale))' }}>
+            
+            {/* Inner rotating wrapper */}
+            <div 
+              className="w-full h-full relative"
+              style={{ 
+                transformStyle: 'preserve-3d', 
+                transition: 'transform 1.4s cubic-bezier(0.68, -0.05, 0.27, 1.05)',
+                transform: isFlipped ? 'rotateY(-180deg)' : 'rotateY(0deg)',
+              }}
+            >
+              <style>{`
+                @media (max-width: 639px) { :root { --circle-scale: 0.53; } }
+                @media (min-width: 640px) and (max-width: 1023px) { :root { --circle-scale: 0.75; } }
+                @media (min-width: 1024px) { :root { --circle-scale: 1; } }
+              `}</style>
             
             {/* ================= FRONT: LOGIN CIRCLE ================= */}
             <div 
@@ -212,11 +215,10 @@ export default function AuthPage({ initialView = 'login' }) {
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
                 transform: 'rotateY(0deg)', // ensure proper stacking
-                zIndex: isFlipped ? 0 : 1, // Fix for safari/chrome backdrop-filter bug
               }}
             >
               {/* Glass background isolated from backface-visibility */}
-              <div className={`absolute inset-0 rounded-full overflow-hidden pointer-events-none ${dark ? 'dk-card border-2 border-[#c9a84c]/20 shadow-[0_30px_100px_rgba(0,0,0,0.8)]' : 'glass-card border-[2px] border-indigo-200/60 shadow-[0_30px_100px_rgba(99,102,241,0.25)]'}`} />
+              <div className={`absolute inset-0 rounded-full overflow-hidden pointer-events-none ${dark ? 'dk-card border-2 border-[#c9a84c]/20 shadow-[0_30px_100px_rgba(0,0,0,0.8)]' : 'bg-white/90 backdrop-blur-[40px] border-[2px] border-white/80 shadow-[0_30px_100px_rgba(255,255,255,0.7)]'}`} />
               {/* Outer decorative ring */}
               <div className="absolute inset-4 rounded-full border border-dashed pointer-events-none opacity-30" style={{ borderColor: dark ? '#c9a84c' : '#6366f1' }} />
               
@@ -282,12 +284,11 @@ export default function AuthPage({ initialView = 'login' }) {
               style={{
                 backfaceVisibility: 'hidden',
                 WebkitBackfaceVisibility: 'hidden',
-                transform: 'rotateY(180deg)',
-                zIndex: isFlipped ? 1 : 0, // Fix for safari/chrome backdrop-filter bug
+                transform: 'rotateY(180deg)'
               }}
             >
               {/* Glass background isolated from backface-visibility */}
-              <div className={`absolute inset-0 rounded-full overflow-hidden pointer-events-none ${dark ? 'dk-card border-2 border-[#c9a84c]/20 shadow-[0_30px_100px_rgba(0,0,0,0.8)]' : 'glass-card border-[2px] border-indigo-200/60 shadow-[0_30px_100px_rgba(99,102,241,0.25)]'}`} />
+              <div className={`absolute inset-0 rounded-full overflow-hidden pointer-events-none ${dark ? 'dk-card border-2 border-[#c9a84c]/20 shadow-[0_30px_100px_rgba(0,0,0,0.8)]' : 'bg-white/90 backdrop-blur-[40px] border-[2px] border-white/80 shadow-[0_30px_100px_rgba(255,255,255,0.7)]'}`} />
               {/* Outer decorative ring */}
               <div className="absolute inset-4 rounded-full border border-dashed pointer-events-none opacity-30" style={{ borderColor: dark ? '#c9a84c' : '#6366f1' }} />
 
@@ -372,6 +373,7 @@ export default function AuthPage({ initialView = 'login' }) {
                     {isRegSubmitting ? 'Creating...' : 'Create Account'}
                   </button>
                 </form>
+              </div>
               </div>
             </div>
           </div>

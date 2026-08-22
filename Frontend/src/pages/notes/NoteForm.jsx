@@ -35,13 +35,13 @@ export default function NoteForm({ editing, onClose, onSaved }) {
     onSaved();
   };
 
-  const inputCls = 'w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white';
+  const inputCls = 'w-full px-3 py-2 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm focus:outline-none focus:border-indigo-500 dark:border-[#c9a84c] dark:text-white';
 
   return (
     <Modal onClose={onClose}>
-      <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="font-semibold text-gray-800 dark:text-white">{editing ? 'Edit Note' : 'Add Note'}</h2>
+          <h2 className="font-semibold text-gray-900 dark:text-white">{editing ? 'Edit Note' : 'Add Note'}</h2>
           <button onClick={onClose}><X size={20} className="text-gray-500" /></button>
         </div>
 
@@ -80,10 +80,10 @@ export default function NoteForm({ editing, onClose, onSaved }) {
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className="flex-1 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+            <button type="button" onClick={onClose} className="flex-1 py-2 border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
               Cancel
             </button>
-            <button type="submit" disabled={isSubmitting} className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium disabled:opacity-50">
+            <button type="submit" disabled={isSubmitting} className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium disabled:opacity-50">
               {isSubmitting ? 'Saving…' : editing ? 'Update' : 'Add Note'}
             </button>
           </div>

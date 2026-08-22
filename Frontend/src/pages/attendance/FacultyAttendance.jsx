@@ -100,7 +100,7 @@ export default function FacultyAttendance() {
   const [countdown, setCountdown] = useState(10);
   const intervalRef = useRef(null);
   const countRef = useRef(null);
-  const inputCls = 'px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none dark:text-white';
+  const inputCls = 'px-3 py-2 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm focus:outline-none dark:text-white';
 
   // ── Excel upload ──────────────────────────────────────────────
   // Accepts any column order and any recognised header variation.
@@ -251,14 +251,14 @@ export default function FacultyAttendance() {
       `}</style>
 
       {/* ── Tab Bar ── */}
-      <div className="relative flex bg-gray-100 dark:bg-gray-800 rounded-2xl p-1">
+      <div className="relative flex bg-white/40 dark:bg-[#1a1a2e] backdrop-blur-md rounded-2xl p-1">
         {/* Sliding pill */}
-        <div className="tab-pill absolute top-1 bottom-1 rounded-xl bg-white dark:bg-gray-700 shadow-sm"
+        <div className="tab-pill absolute top-1 bottom-1  bg-white dark:bg-gray-700 shadow-sm"
           style={{ width: `${100 / 3}%`, transform: `translateX(${tabIdx * 100}%)` }} />
         {tabList.map(t => (
           <button key={t} onClick={() => setTab(t)}
-            className={`relative z-10 flex-1 py-2 text-sm font-medium rounded-xl transition-colors duration-200
-              ${tab === t ? 'text-gray-800 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>
+            className={`relative z-10 flex-1 py-2 text-sm font-medium  transition-colors duration-200
+              ${tab === t ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'}`}>
             {tabLabels[t]}
             {t === 'live' && session && (
               <span className="inline-block ml-1.5 w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -271,17 +271,17 @@ export default function FacultyAttendance() {
       {tab === 'setup' && (
         <div className="fadein space-y-4">
           {/* Upload card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 space-y-3 shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
-                <FileSpreadsheet size={18} className="text-blue-500"/>
+              <div className="p-2 bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/15 ">
+                <FileSpreadsheet size={18} className="text-indigo-600 dark:text-[#c9a84c]"/>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Upload Student List</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Upload Student List</h3>
                 <p className="text-xs text-gray-400">Excel / CSV — any column order</p>
               </div>
             </div>
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 dark:border-gray-600 rounded-xl py-6 px-4 cursor-pointer hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white/60 dark:border-[#2a2a40]  py-6 px-4 cursor-pointer hover:border-indigo-400 dark:border-[#c9a84c]/50 hover:bg-indigo-50 dark:bg-[#c9a84c]/10 dark:hover:bg-[#c9a84c]/5 transition-colors">
               <Upload size={22} className="text-gray-400"/>
               <span className="text-sm text-gray-500 dark:text-gray-400">Click to browse or drop file</span>
               <span className="text-xs text-gray-400">Supported headers: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">Reg No, Registration Number, Roll No</code></span>
@@ -290,12 +290,12 @@ export default function FacultyAttendance() {
           </div>
 
           {/* Manual entry card */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 space-y-3 shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-xl">
+              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 ">
                 <PlusCircle size={18} className="text-purple-500"/>
               </div>
-              <h3 className="font-semibold text-gray-800 dark:text-white text-sm">Manual Entry</h3>
+              <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Manual Entry</h3>
             </div>
             <div className="grid grid-cols-2 sm:flex gap-2">
               <input value={newReg} onChange={e => setNewReg(e.target.value)}
@@ -313,7 +313,7 @@ export default function FacultyAttendance() {
 
           {/* Student list */}
           {students.length > 0 && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-sm font-semibold text-gray-700 dark:text-white flex items-center gap-2">
                   <Users size={15} className="text-gray-400"/> {students.length} student{students.length !== 1 ? 's' : ''}
@@ -356,9 +356,9 @@ export default function FacultyAttendance() {
           <div className="grid md:grid-cols-2 gap-4">
 
             {/* ── QR Code with ring ── */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col items-center gap-3 shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col items-center gap-3 shadow-sm">
               <div className="flex items-center gap-2 self-start">
-                <QrCode size={16} className="text-blue-500"/>
+                <QrCode size={16} className="text-indigo-600 dark:text-[#c9a84c]"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live QR Code</h3>
                 <span className="ml-auto text-xs px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block"/>Active
@@ -382,17 +382,17 @@ export default function FacultyAttendance() {
                     </linearGradient>
                   </defs>
                 </svg>
-                {qrUrl && <img src={qrUrl} alt="QR" className="w-48 h-48 rounded-xl relative z-10"/>}
+                {qrUrl && <img src={qrUrl} alt="QR" className="w-48 h-48  relative z-10"/>}
               </div>
 
               <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <RefreshCw size={13} className="animate-spin"/>
-                Refreshes in <span className="font-bold text-blue-500 tabular-nums w-4 text-center">{countdown}</span>s
+                Refreshes in <span className="font-bold text-indigo-600 dark:text-[#c9a84c] tabular-nums w-4 text-center">{countdown}</span>s
               </div>
             </div>
 
             {/* ── Stats ── */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-100 dark:border-gray-700 flex flex-col gap-4 shadow-sm">
+            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col gap-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp size={16} className="text-green-500"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Stats</h3>
@@ -422,11 +422,11 @@ export default function FacultyAttendance() {
 
               <div className="flex gap-2 mt-auto">
                 <button onClick={downloadExcel}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-medium transition-all active:scale-95">
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f]  text-xs font-medium transition-all active:scale-95">
                   <Download size={13}/> Export
                 </button>
                 <button onClick={endSession}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-xs font-medium transition-all active:scale-95">
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white  text-xs font-medium transition-all active:scale-95">
                   <StopCircle size={13}/> End
                 </button>
               </div>
@@ -434,14 +434,14 @@ export default function FacultyAttendance() {
           </div>
 
           {/* ── Attendance list ── */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
             <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
               <Users size={15} className="text-gray-400"/>
               <span className="text-sm font-semibold text-gray-700 dark:text-white">Students</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 dark:bg-gray-700/50">
+                <thead className="bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md/50">
                   <tr>
                     {['Reg No', 'Name', 'Status', 'Override'].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{h}</th>
@@ -489,7 +489,7 @@ export default function FacultyAttendance() {
         <div className="fadein flex flex-col items-center gap-3 py-16 text-center">
           <QrCode size={40} className="text-gray-300"/>
           <p className="font-medium text-gray-400">No active session</p>
-          <p className="text-xs text-gray-400">Go to <button onClick={() => setTab('setup')} className="text-blue-500 underline">Setup</button> and start one.</p>
+          <p className="text-xs text-gray-400">Go to <button onClick={() => setTab('setup')} className="text-indigo-600 dark:text-[#c9a84c] underline">Setup</button> and start one.</p>
         </div>
       )}
 
@@ -506,11 +506,11 @@ export default function FacultyAttendance() {
               const pct = h.totalStudents ? Math.round(((h.presentCount ?? 0) / h.totalStudents) * 100) : 0;
               const color = pct >= 75 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
               return (
-                <div key={h._id} className="row-enter bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl px-5 py-4 shadow-sm"
+                <div key={h._id} className="row-enter bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  rounded-2xl px-5 py-4 shadow-sm"
                   style={{ animationDelay: `${i * 40}ms` }}>
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <p className="font-semibold text-gray-800 dark:text-white text-sm">
+                      <p className="font-semibold text-gray-900 dark:text-white text-sm">
                         {new Date(h.createdAt).toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5">

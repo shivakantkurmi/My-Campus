@@ -56,7 +56,7 @@ export default function FacultyCabins() {
     setFbSent(true); setFbMsg(''); setFeedback('');
   };
 
-  const inputCls = 'w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none dark:text-white';
+  const inputCls = 'w-full px-3 py-2 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm focus:outline-none dark:text-white';
 
   return (
     <div className="space-y-5">
@@ -64,10 +64,10 @@ export default function FacultyCabins() {
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search faculty or cabin number…"
-            className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:border-blue-500 dark:text-white" />
+            className="w-full pl-9 pr-4 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm focus:outline-none focus:border-indigo-500 dark:border-[#c9a84c] dark:text-white" />
         </div>
         {isAdmin && (
-          <button onClick={() => setForm({})} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700">
+          <button onClick={() => setForm({})} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white dark:bg-[#c9a84c] dark:text-[#07070f] rounded-lg text-sm font-medium hover:bg-indigo-700">
             <Plus size={16} /> Add Cabin
           </button>
         )}
@@ -83,12 +83,12 @@ export default function FacultyCabins() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {!loading && paginated.map((c, i) => (
           <div key={c._id}
-            className="mc-flip-up mc-card-hover bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-xl p-4"
+            className="mc-flip-up mc-card-hover bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all p-4"
             style={{ animationDelay: `${i * 55}ms` }}>
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-semibold text-gray-800 dark:text-white">{c.facultyName}</h3>
-                {c.department && <p className="text-xs text-blue-500 mt-0.5">{c.department}</p>}
+                <h3 className="font-semibold text-gray-900 dark:text-white">{c.facultyName}</h3>
+                {c.department && <p className="text-xs text-indigo-600 dark:text-[#c9a84c] mt-0.5">{c.department}</p>}
               </div>
               {isAdmin && (
                 <div className="flex gap-1">
@@ -138,7 +138,7 @@ export default function FacultyCabins() {
                   onClick={() => setPage(item)}
                   className={`min-w-[2rem] h-8 px-2 rounded-lg text-sm font-medium transition ${
                     safePage === item
-                      ? 'bg-blue-600 text-white'
+                      ? 'bg-indigo-600 text-white dark:bg-[#c9a84c] dark:text-[#07070f]'
                       : 'border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'
                   }`}>
                   {item}
@@ -162,9 +162,9 @@ export default function FacultyCabins() {
       {/* Add/Edit Modal – portaled to <body> to escape layout stacking context */}
       {form !== null && (
         <Modal onClose={() => setForm(null)}>
-          <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="font-semibold text-gray-800 dark:text-white">{form._id ? 'Edit Cabin' : 'Add Cabin'}</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">{form._id ? 'Edit Cabin' : 'Add Cabin'}</h2>
               <button onClick={() => setForm(null)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
                 <X size={18} className="text-gray-500" />
               </button>
@@ -181,8 +181,8 @@ export default function FacultyCabins() {
                 </div>
               ))}
               <div className="flex gap-3 pt-2">
-                <button onClick={() => setForm(null)} className="flex-1 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
-                <button onClick={handleSave} className="flex-1 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">Save</button>
+                <button onClick={() => setForm(null)} className="flex-1 py-2 border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
+                <button onClick={handleSave} className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium">Save</button>
               </div>
             </div>
           </div>
@@ -192,9 +192,9 @@ export default function FacultyCabins() {
       {/* Feedback Modal – portaled to <body> */}
       {feedback === 'open' && (
         <Modal onClose={() => setFeedback('')}>
-          <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#232336] shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-              <h2 className="font-semibold text-gray-800 dark:text-white">Report an Issue</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Report an Issue</h2>
               <button onClick={() => setFeedback('')} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
                 <X size={18} className="text-gray-500" />
               </button>
@@ -211,7 +211,7 @@ export default function FacultyCabins() {
                   </select>
                   <textarea value={fbMsg} onChange={e => setFbMsg(e.target.value)} rows={4} placeholder="Describe the issue…" className={`${inputCls} resize-none`} />
                   <div className="flex gap-3">
-                    <button onClick={() => setFeedback('')} className="flex-1 py-2 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
+                    <button onClick={() => setFeedback('')} className="flex-1 py-2 border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
                     <button onClick={sendFeedback} className="flex-1 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium">Submit</button>
                   </div>
                 </>

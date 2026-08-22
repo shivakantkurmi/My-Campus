@@ -60,7 +60,7 @@ export default function AnnouncementForm({ editing, onClose, onSaved }) {
 
   return (
     <Modal onClose={onClose}>
-      <div className="mc-scale-in bg-white dark:bg-gray-800 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+      <div className="mc-scale-in bg-white/70 dark:bg-[#121220] border border-white/80 dark:border-[#232336] rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] dark:shadow-none backdrop-blur-2xl transition-all rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="font-semibold text-gray-800 dark:text-white">{editing ? 'Edit Announcement' : 'Create Announcement'}</h2>
           <button onClick={onClose}><X size={20} className="text-gray-500" /></button>

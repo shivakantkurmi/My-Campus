@@ -41,7 +41,7 @@ export default function BlockedPage() {
             {err && <p className="text-red-400 text-sm mb-3">{err}</p>}
             <button
               onClick={handleAppeal}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] font-semibold rounded-lg transition"
             >
               Send Appeal
             </button>

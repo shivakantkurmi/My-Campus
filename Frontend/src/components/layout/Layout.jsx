@@ -23,21 +23,38 @@ export default function Layout() {
   const title = TITLES[pathname] ?? 'My-Campus';
 
   return (
-    <div className={`flex h-screen overflow-hidden ${
-      dark
-        ? 'bg-[#07070f]'
-        : 'bg-gradient-to-br from-[#eef2ff] via-[#f0f4ff] to-[#f5f3ff]'
+    <div className={`flex h-screen overflow-hidden relative ${
+      dark ? 'bg-[#050508]' : 'bg-[#e5e7f0]'
     }`}>
-      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      {/* ── Global Animated Backgrounds ── */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <img 
+          src={dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg'}
+          alt="Campus Background" 
+          className="w-full h-full object-cover opacity-90"
+        />
+        <div className="absolute inset-0" style={{
+          background: dark 
+            ? 'linear-gradient(to right, rgba(7,7,15,0.95) 0%, rgba(7,7,15,0.75) 100%)' 
+            : 'linear-gradient(to right, rgba(255,255,255,0.75) 0%, rgba(240,245,255,0.55) 100%)',
+          backdropFilter: 'blur(8px)'
+        }} />
+      </div>
 
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <Header onMenuClick={() => setSidebarOpen(true)} title={title} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {/* key={pathname} forces remount → triggers mc-page entrance on every navigation */}
-          <div key={pathname} className="mc-page">
-            <Outlet />
+      {/* ── Foreground Content ── */}
+      <div className="flex h-screen w-full relative z-10">
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+        <div className="flex flex-col flex-1 overflow-hidden relative">
+          <div className={pathname === '/dashboard' ? 'lg:hidden' : ''}>
+            <Header onMenuClick={() => setSidebarOpen(true)} title={title} />
           </div>
-        </main>
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+            <div key={pathname} className="mc-page">
+              <Outlet />
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );
