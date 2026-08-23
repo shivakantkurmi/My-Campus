@@ -37,12 +37,12 @@ export default function Dashboard() {
     <div className="pb-10 min-h-screen">
       
       {/* ── Header ── */}
-      <div className={`flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 ${dark ? 'text-white' : 'text-gray-900'}`}>
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-8 ${dark ? 'text-white' : 'text-gray-900'}`}>
         <div>
           <div className={`flex items-center gap-2 text-xs font-bold mb-4 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
             <span>Home / Dashboard /</span> <span className={dark ? 'text-[#c9a84c]' : 'text-indigo-600'}>{dateStr} ▾</span>
           </div>
-          <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 ${dark ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400' : ''}`}>
+          <h1 className={`text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold tracking-tight mb-2 ${dark ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400' : ''}`}>
             {greeting}, {user?.name?.split(' ')[0]}!
           </h1>
           <p className={`text-sm font-medium max-w-md leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -50,8 +50,8 @@ export default function Dashboard() {
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Avatar name={user?.name} size={48} />
+        <div className="flex items-center gap-3 shrink-0">
+          <Avatar name={user?.name} size={10} />
           <div className="flex flex-col">
             <span className="font-bold text-sm">{user?.name}</span>
             <span className={`text-xs font-bold capitalize ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`}>{user?.role}</span>
@@ -59,10 +59,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
         
         {/* ── Main Quick Access Cards ── */}
-        <div className="xl:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
+        <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-5 lg:gap-6">
           {visible.map((c, i) => (
             <Link
               key={c.to}
@@ -110,7 +110,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── Right Sidebar: Stats & Widgets ── */}
-        <div className="xl:col-span-4 flex flex-col gap-6 lg:gap-8">
+        <div className="lg:col-span-4 flex flex-col gap-6 lg:gap-8">
           
           {/* Stats Widget */}
           <div className={`p-6 lg:p-8 flex flex-col items-center text-center ${

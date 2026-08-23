@@ -139,7 +139,7 @@ export default function CGPACalculator() {
     <div className="max-w-2xl mx-auto space-y-5">
 
       {/* Tabs */}
-      <div className="flex gap-1 p-1 bg-white/40 dark:bg-[#1a1a2e] backdrop-blur-md  w-fit">
+      <div className="flex gap-1 p-1 bg-white/40 dark:bg-[#1a1a2e] backdrop-blur-md rounded-xl w-full sm:w-fit">
         {['gpa', 'cgpa'].map(t => (
           <button key={t} onClick={() => setTab(t)}
             className={`px-6 py-2 text-sm font-semibold rounded-lg transition ${

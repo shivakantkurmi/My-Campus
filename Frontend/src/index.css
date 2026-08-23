@@ -645,3 +645,36 @@ select option {
   animation: kenBurns 18s ease-in-out infinite;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE UTILITIES
+═══════════════════════════════════════════════════════════ */
+
+/* Safe viewport height (accounts for mobile browser chrome) */
+.min-h-screen-safe {
+  min-height: 100dvh;
+}
+
+/* ── xs breakpoint (< 480px) custom classes ── */
+@media (min-width: 480px) {
+  .xs\:flex-row { flex-direction: row; }
+  .xs\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .xs\:col-span-1 { grid-column: span 1 / span 1; }
+}
+
+/* Prevent horizontal scroll on all pages */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Ensure images don't overflow their containers */
+img {
+  max-width: 100%;
+}
+
+/* Touch-friendly tap targets */
+@media (max-width: 640px) {
+  button, a, [role="button"] {
+    min-height: 40px;
+  }
+}

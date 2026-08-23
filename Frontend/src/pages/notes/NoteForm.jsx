@@ -65,7 +65,7 @@ export default function NoteForm({ editing, onClose, onSaved }) {
             </div>
           ))}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Subject</label>
               <select {...register('subject')} className={inputCls}>

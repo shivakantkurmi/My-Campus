@@ -366,8 +366,8 @@ export default function FacultyAttendance() {
               </div>
 
               {/* QR with SVG countdown ring */}
-              <div className="relative flex items-center justify-center">
-                <svg width="220" height="220" className="absolute -rotate-90 pulse-qr">
+              <div className="relative flex items-center justify-center w-[200px] h-[200px] sm:w-[220px] sm:h-[220px] mx-auto">
+                <svg width="100%" height="100%" viewBox="0 0 220 220" className="absolute -rotate-90 pulse-qr">
                   <circle cx="110" cy="110" r="104" fill="none" strokeWidth="4"
                     className="text-gray-100 dark:text-gray-700" stroke="currentColor"/>
                   <circle cx="110" cy="110" r="104" fill="none" strokeWidth="4"

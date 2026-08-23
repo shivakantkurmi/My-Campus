@@ -92,12 +92,12 @@ export default function Announcements() {
     <div className="space-y-8 pb-10">
       
       {/* ── Header ── */}
-      <div className={`flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
+      <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 ${dark ? 'text-white' : 'text-gray-900'}`}>
         <div>
           <div className={`flex items-center gap-2 text-xs font-bold mb-4 ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`}>
             <Sparkles size={14} /> Campus Updates
           </div>
-          <h1 className={`text-4xl sm:text-5xl font-extrabold tracking-tight mb-2 ${dark ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400' : ''}`}>
+          <h1 className={`text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight mb-2 ${dark ? 'text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400' : ''}`}>
             Announcement Board
           </h1>
         </div>
@@ -115,7 +115,7 @@ export default function Announcements() {
       </div>
 
       {/* ── Filters ── */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
         <div className="sm:col-span-2 relative">
           <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
@@ -125,7 +125,7 @@ export default function Announcements() {
             className={`w-full rounded-[1.5rem] border px-10 py-3 text-sm outline-none transition-all ${glassInput}`}
           />
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
           <div className="relative flex-1">
             <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <select

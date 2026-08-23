@@ -60,7 +60,7 @@ export default function FacultyCabins() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
           <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search faculty or cabin number…"

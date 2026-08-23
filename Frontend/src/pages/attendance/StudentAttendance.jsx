@@ -241,8 +241,8 @@ export default function StudentAttendance() {
         {locked ? (
           <div className="flex flex-col items-center gap-4 py-4">
             {/* SVG countdown ring */}
-            <div className="relative flex items-center justify-center">
-              <svg width="120" height="120" className="-rotate-90">
+            <div className="relative flex items-center justify-center w-[120px] h-[120px] mx-auto">
+              <svg width="100%" height="100%" viewBox="0 0 120 120" className="-rotate-90">
                 {/* Track */}
                 <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor"
                   className="text-gray-100 dark:text-gray-700" strokeWidth="7"/>

@@ -10,11 +10,11 @@ import { useAuroraCanvas } from '../../components/common/AuroraCanvas';
 /* ── Mini typewriter hook ── */
 function useTypewriter(words, speed = 90, pause = 1600) {
   const [displayed, setDisplayed] = useState('');
-  const [wordIdx, setWordIdx]   = useState(0);
-  const [charIdx, setCharIdx]   = useState(0);
+  const [wordIdx, setWordIdx] = useState(0);
+  const [charIdx, setCharIdx] = useState(0);
   const [deleting, setDeleting] = useState(false);
   useEffect(() => {
-    const cur   = words[wordIdx];
+    const cur = words[wordIdx];
     const delay = deleting ? speed / 2 : speed;
     const timer = setTimeout(() => {
       if (!deleting && charIdx < cur.length) {
@@ -34,18 +34,18 @@ function useTypewriter(words, speed = 90, pause = 1600) {
 
 /* ── Campus image cards (like the circular cards in reference) ── */
 const CAMPUS_CARDS = [
-  { img: '/Images/VIT2.png',    label: 'VIT Bhopal',       sub: 'Main Campus — Night',    delay: '0s' },
-  { img: '/Images/VIT1.jpg',    label: 'Academic Block',   sub: 'VIT Bhopal Campus',      delay: '0.3s' },
-  { img: '/Images/images.jpg',  label: 'VIT Gate',         sub: 'VIT Bhopal University',  delay: '0.6s' },
+  { img: '/Images/VIT2.png', label: 'VIT Bhopal', sub: 'Main Campus — Night', delay: '0s' },
+  { img: '/Images/VIT1.jpg', label: 'Academic Block', sub: 'VIT Bhopal Campus', delay: '0.3s' },
+  { img: '/Images/images.jpg', label: 'VIT Gate', sub: 'VIT Bhopal University', delay: '0.6s' },
 ];
 
 const features = [
-  { icon: BookOpen,      title: 'Notes Sharing',       desc: 'Upload and browse notes from peers across departments.',          color: 'from-indigo-500 to-indigo-600' },
-  { icon: QrCode,        title: 'QR Attendance',        desc: 'Anti-proxy QR scan with time limit — no more proxy attendance.', color: 'from-violet-500 to-purple-600' },
-  { icon: DoorOpen,      title: 'Faculty Cabin Finder', desc: 'Check which professors are in their cabin right now.',           color: 'from-sky-400 to-cyan-600' },
-  { icon: Calculator,    title: 'CGPA Calculator',      desc: 'Enter semester grades and get GPA/CGPA instantly.',              color: 'from-emerald-500 to-teal-600' },
-  { icon: ShieldCheck,   title: 'Admin Dashboard',      desc: 'Full platform moderation — users, notes, complaints.',          color: 'from-rose-500 to-red-600' },
-  { icon: GraduationCap, title: 'Built for VIT',        desc: 'Designed specifically for VIT Bhopal students and faculty.',    color: 'from-amber-500 to-orange-600' },
+  { icon: BookOpen, title: 'Notes Sharing', desc: 'Upload and browse notes from peers across departments.', color: 'from-indigo-500 to-indigo-600' },
+  { icon: QrCode, title: 'QR Attendance', desc: 'Anti-proxy QR scan with time limit — no more proxy attendance.', color: 'from-violet-500 to-purple-600' },
+  { icon: DoorOpen, title: 'Faculty Cabin Finder', desc: 'Check which professors are in their cabin right now.', color: 'from-sky-400 to-cyan-600' },
+  { icon: Calculator, title: 'CGPA Calculator', desc: 'Enter semester grades and get GPA/CGPA instantly.', color: 'from-emerald-500 to-teal-600' },
+  { icon: ShieldCheck, title: 'Admin Dashboard', desc: 'Full platform moderation — users, notes, complaints.', color: 'from-rose-500 to-red-600' },
+  { icon: GraduationCap, title: 'Built for VIT', desc: 'Designed specifically for VIT Bhopal students and faculty.', color: 'from-amber-500 to-orange-600' },
 ];
 
 const typeWords = ['campus life.', 'your grades.', 'your attendance.', 'your notes.'];
@@ -64,7 +64,7 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
     let particles = [];
     const mouse = { x: null, y: null };
     const PARTICLE_GAP = 3;
-    const EASE         = 0.055;
+    const EASE = 0.055;
     const MOUSE_RADIUS = 5000;
     const clr = isDark ? { r: 201, g: 168, b: 76 } : { r: 99, g: 102, b: 241 };
 
@@ -117,8 +117,8 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
       animId = requestAnimationFrame(animate);
     };
 
-    const onMove  = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; };
-    const onLeave = ()  => { mouse.x = null; mouse.y = null; };
+    const onMove = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; };
+    const onLeave = () => { mouse.x = null; mouse.y = null; };
     canvas.addEventListener('mousemove', onMove);
     canvas.addEventListener('mouseleave', onLeave);
 
@@ -139,7 +139,7 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvasRef, isDark, linesKey]);
 }
 
@@ -150,8 +150,8 @@ export default function Landing() {
   const { dark, toggleTheme, initTheme } = useThemeStore();
   const [scrolled, setScrolled] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
-  const typed      = useTypewriter(typeWords);
-  const canvasRef  = useRef(null);
+  const typed = useTypewriter(typeWords);
+  const canvasRef = useRef(null);
   const bgCanvasRef = useRef(null);
 
   useParticleCanvas(canvasRef, dark, HERO_LINES);
@@ -168,14 +168,14 @@ export default function Landing() {
   /* ── Hero background image state ── */
   const defaultBg = dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg';
   const [heroBg, setHeroBg] = useState(defaultBg);
-  
+
   // Reset when theme changes if they haven't explicitly picked one, or just keep it simple
   useEffect(() => {
     setHeroBg(dark ? '/Images/VIT2.png' : '/Images/VIT1.jpg');
   }, [dark]);
 
   return (
-    <div className={`min-h-screen text-gray-900 dark:text-white overflow-hidden`}
+    <div className={`min-h-screen text-gray-900 dark:text-white overflow-x-hidden`}
       style={{ background: dark ? '#07070f' : '#eef2ff' }}>
 
       {/* Aurora canvas — fixed bg layer */}
@@ -188,7 +188,7 @@ export default function Landing() {
       {/* ════════════════════════════════════════════
           HERO — Full-bleed image background
       ════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex flex-col overflow-hidden">
+      <section className="relative h-screen flex flex-col overflow-hidden">
 
         {/* Full-bleed background image */}
         <div className="absolute inset-0 z-0">
@@ -207,50 +207,44 @@ export default function Landing() {
         </div>
 
         {/* ── Sticky Navbar ── */}
-        <nav className={`sticky top-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? dark
-              ? 'bg-[#07070f]/80 backdrop-blur-xl border-b border-[#c9a84c]/12 shadow-xl shadow-black/40'
-              : 'bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-lg shadow-indigo-500/10'
-            : 'bg-transparent'
-        }`}>
+        <nav className={`sticky top-0 z-50 transition-all duration-500 ${scrolled
+          ? dark
+            ? 'bg-[#07070f]/80 backdrop-blur-xl border-b border-[#c9a84c]/12 shadow-xl shadow-black/40'
+            : 'bg-white/70 backdrop-blur-xl border-b border-white/50 shadow-lg shadow-indigo-500/10'
+          : 'bg-transparent'
+          }`}>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
 
             {/* Logo */}
             <div className="flex items-center gap-2.5">
-              <div className={`mc-glass-float w-9 h-9 rounded-xl flex items-center justify-center shadow-lg ${
-                dark
-                  ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] shadow-[#c9a84c]/40'
-                  : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-500/40'
-              }`}>
+              <div className={`mc-glass-float w-9 h-9 rounded-xl flex items-center justify-center shadow-lg ${dark
+                ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] shadow-[#c9a84c]/40'
+                : 'bg-gradient-to-br from-indigo-500 to-violet-600 shadow-indigo-500/40'
+                }`}>
                 <GraduationCap size={18} className="text-white" />
               </div>
-              <span className={`text-xl font-bold tracking-tight drop-shadow-md transition-colors ${
-                dark ? 'text-[#c9a84c]' : 'text-gray-900'
-              }`}>My-Campus</span>
+              <span className={`text-xl font-bold tracking-tight drop-shadow-md transition-colors ${dark ? 'text-[#c9a84c]' : 'text-gray-900'
+                }`}>My-Campus</span>
             </div>
 
             {/* Nav right */}
             <div className="flex items-center gap-2 sm:gap-3">
               <button onClick={toggleTheme}
-                  className={`px-5 py-2 rounded-full font-medium text-sm transition-all ${
-                    dark
-                    ? 'text-gray-300 hover:text-white hover:bg-[#c9a84c]/10'
-                    : 'text-gray-800 hover:bg-white/40 border border-indigo-200/50'
+                className={`px-5 py-2 rounded-full font-medium text-sm transition-all ${dark
+                  ? 'text-gray-300 hover:text-white hover:bg-[#c9a84c]/10'
+                  : 'text-gray-800 hover:bg-white/40 border border-indigo-200/50'
                   }`}>
                 {dark ? <Sun size={18} className="mc-heartbeat" /> : <Moon size={18} />}
               </button>
 
-              <Link to="/login" className={`p-2 rounded-full border transition-all ${
-                  dark 
-                  ? 'text-gray-400 border-gray-700 hover:text-white hover:border-[#c9a84c]' 
-                  : 'text-gray-700 border-indigo-200 hover:bg-white/40'
+              <Link to="/login" className={`p-2 rounded-full border transition-all ${dark
+                ? 'text-gray-400 border-gray-700 hover:text-white hover:border-[#c9a84c]'
+                : 'text-gray-700 border-indigo-200 hover:bg-white/40'
                 }`}>Sign In</Link>
 
-              <Link to="/register" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${
-                  dark 
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
-                  : 'bg-white/60 border border-indigo-200 text-indigo-700 hover:bg-white shadow-[0_4px_16px_rgba(99,102,241,0.2)]'
+              <Link to="/register" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${dark
+                ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
+                : 'bg-white/60 border border-indigo-200 text-indigo-700 hover:bg-white shadow-[0_4px_16px_rgba(99,102,241,0.2)]'
                 }`}>
                 Get Started <ArrowRight size={14} className="mc-nudge" />
               </Link>
@@ -265,23 +259,22 @@ export default function Landing() {
           <div className="flex-1 flex flex-col justify-center max-w-xl">
 
             {/* Badge */}
-            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border ${
-                dark 
-                ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]' 
-                : 'bg-indigo-50/80 border-indigo-200 text-indigo-700'
+            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border ${dark
+              ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]'
+              : 'bg-indigo-50/80 border-indigo-200 text-indigo-700'
               }`}>
               <Sparkles size={10} className="mc-heartbeat" />
               VIT Bhopal University · Campus Platform
             </div>
 
             {/* Particle canvas — "MY CAMPUS" text */}
-            <div className="relative w-full mb-4" style={{ height: '220px' }}>
+            <div className="relative w-full mb-4" style={{ height: 'clamp(140px, 28vw, 220px)' }}>
               <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" style={{ cursor: 'none' }} />
             </div>
 
             {/* Typewriter subtitle */}
-            <h1 className={`text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-gray-900'}`}>
-              One Portal for Everything<br/> for your{' '}
+            <h1 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-gray-900'}`}>
+              One Portal for Everything<br /> for {' '}
               <span className={dark ? 'mc-gold-shimmer' : ''} style={!dark ? {
                 background: 'linear-gradient(90deg,#ffffff,#c7d2fe,#a5b4fc,#ffffff)',
                 backgroundSize: '200% auto',
@@ -292,27 +285,24 @@ export default function Landing() {
               } : {}}>{typed}<span className="mc-caret" /></span>
             </h1>
 
-            <p className={`text-sm sm:text-base leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 drop-shadow-md ${
-              dark ? 'text-gray-300' : 'text-gray-700 font-medium'
-            }`}>
+            <p className={`text-sm sm:text-base leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 drop-shadow-md ${dark ? 'text-gray-300' : 'text-gray-700 font-medium'
+              }`}>
               Notes sharing, anti-proxy QR attendance, faculty cabin finder,
               CGPA calculator — all in one place, built for VITians.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${
-                dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
-                  : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
-              }`}>
+              <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
+                ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
+                : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
+                }`}>
                 Join My-Campus <ArrowRight size={18} className="mc-nudge" />
               </Link>
 
-              <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${
-                  dark 
-                  ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400' 
-                  : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
+              <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${dark
+                ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400'
+                : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
                 }`}>
                 Sign In
               </Link>
@@ -321,7 +311,7 @@ export default function Landing() {
             {/* Stats row */}
             <div className="mt-10 flex gap-6 sm:gap-10">
               {[{ val: '5+', label: 'Features' }, { val: '3', label: 'User Roles' }, { val: '1', label: 'Campus Admin' }].map(({ val, label }) => (
-                <div className="text-center">
+                <div key={label} className="text-center">
                   <div className={`text-2xl font-bold drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>{val}</div>
                   <div className={`text-xs mt-0.5 ${dark ? 'text-gray-400' : 'text-gray-600 font-medium'}`}>{label}</div>
                 </div>
@@ -387,20 +377,19 @@ export default function Landing() {
         }} />
       </section>
 
-      {/* ── Footer ── */}
-      <footer className={`absolute bottom-0 w-full z-10 border-t py-6 px-6 backdrop-blur-md ${dark ? 'border-[#c9a84c]/20 bg-[#07070f]/80' : 'border-indigo-200/40 bg-white/60'}`}>
+      {/* ── Footer — appears only on scroll ── */}
+      <footer className={`relative z-10 border-t py-6 px-6 backdrop-blur-md ${dark ? 'border-[#c9a84c]/20 bg-[#07070f]/90' : 'border-indigo-200/40 bg-white/70'}`}>
         <div className={`max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
           <div className="flex items-center gap-2">
-            <div className={`w-6 h-6 rounded-md flex items-center justify-center ${
-              dark ? 'bg-gradient-to-br from-[#c9a84c] to-[#a87c30]' : 'bg-indigo-600'
-            }`}>
+            <div className={`w-6 h-6 rounded-md flex items-center justify-center ${dark ? 'bg-gradient-to-br from-[#c9a84c] to-[#a87c30]' : 'bg-indigo-600'
+              }`}>
               <GraduationCap size={12} className="text-white" />
             </div>
             <span className={`font-semibold ${dark ? 'text-[#c9a84c]' : 'text-gray-800'}`}>My-Campus</span>
           </div>
           <p>© Shivakant Kurmi 2026 · VIT Bhopal</p>
           <div className="flex gap-4">
-            <Link to="/login"    className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
+            <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
             <Link to="/register" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Register</Link>
           </div>
         </div>

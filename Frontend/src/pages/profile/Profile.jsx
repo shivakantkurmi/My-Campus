@@ -70,7 +70,7 @@ export default function Profile() {
   const labelCls = `block text-xs font-bold mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-600'}`;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6 items-start pb-10">
+    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] gap-5 lg:gap-6 items-start pb-10">
 
       {/* ═══════════════════════════════════════
           LEFT — Identity card
@@ -176,7 +176,7 @@ export default function Profile() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
           {/* ── Personal Info ── */}
-          <div className={`mc-fade-up p-6 md:p-8 ${glassCard}`}>
+          <div className={`mc-fade-up p-5 md:p-6 lg:p-8 ${glassCard}`}>
             <div className="flex items-center gap-3 mb-5">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                 dark ? 'bg-[#c9a84c]/12' : 'bg-indigo-100'
@@ -233,7 +233,7 @@ export default function Profile() {
           </div>
 
           {/* ── Change Password ── */}
-          <div className={`mc-fade-up mc-stagger-2 p-6 md:p-8 ${glassCard}`}>
+          <div className={`mc-fade-up mc-stagger-2 p-5 md:p-6 lg:p-8 ${glassCard}`}>
             <div className="flex items-center gap-3 mb-5">
               <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                 dark ? 'bg-violet-500/12' : 'bg-violet-100'
