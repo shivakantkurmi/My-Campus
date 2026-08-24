@@ -221,7 +221,7 @@ export default function CGPACalculator() {
           </div>
 
           <button onClick={() => setGpaRows(prev => [...prev, emptyCourse()])}
-            className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition">
+            className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition">
             <Plus size={15} /> Add Course
           </button>
         </div>
@@ -241,7 +241,7 @@ export default function CGPACalculator() {
                     onChange={e => setSemesters(prev => prev.map(s => s.id === sem.id ? { ...s, label: e.target.value } : s))}
                     className="font-semibold text-gray-700 dark:text-white bg-transparent text-sm border-b border-transparent hover:border-gray-300 focus:outline-none focus:border-indigo-400 w-32"
                   />
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-[#c9a84c]/20 text-indigo-600 dark:text-[#c9a84c]">
                     GPA {computeGpa(sem.courses)}
                   </span>
                 </div>
@@ -271,7 +271,7 @@ export default function CGPACalculator() {
               </div>
 
               <button onClick={() => addSemCourse(sem.id)}
-                className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition">
+                className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition">
                 <Plus size={14} /> Add Course
               </button>
             </div>
@@ -279,7 +279,7 @@ export default function CGPACalculator() {
 
           <button
             onClick={() => setSemesters(prev => [...prev, { id: Date.now(), label: `Semester ${prev.length + 1}`, courses: [emptyCourse()] }])}
-            className="w-full py-3 border-2 border-dashed border-gray-200 dark:border-gray-700  text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:border-indigo-600 dark:hover:text-indigo-400 transition text-sm font-medium"
+            className="w-full py-3 border-2 border-dashed border-gray-200 dark:border-[#2a2a40] text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:border-[#c9a84c] dark:hover:text-[#c9a84c] rounded-[2.5rem] transition text-sm font-medium"
           >
             + Add Semester
           </button>

@@ -222,7 +222,7 @@ export default function StudentAttendance() {
 
         {/* Info panel */}
         {showInfo && (
-          <div className="pop-in bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/10 border border-indigo-200 dark:border-[#c9a84c]/30 dark:border-indigo-700 dark:border-[#8a6020]  p-3 text-xs text-indigo-800 dark:text-[#a87c30] dark:text-indigo-400 dark:text-[#e8c76b] space-y-1">
+          <div className="pop-in bg-indigo-50 dark:bg-[#c9a84c]/10 border border-indigo-200 dark:border-[#c9a84c]/30 p-3 text-xs text-indigo-800 dark:text-[#c9a84c] space-y-1 rounded-xl">
             <p className="font-semibold flex items-center gap-1"><ShieldCheck size={13}/> How the device lock works</p>
             <p>
               When your attendance is confirmed by the server, a timestamp is saved in this browser
@@ -313,11 +313,10 @@ export default function StudentAttendance() {
               )}
             </div>
 
-            {/* Submitting overlay */}
             {submitting && (
-              <div className="pop-in flex items-center justify-center gap-3 py-4 bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/10  border border-indigo-200 dark:border-[#c9a84c]/30 dark:border-indigo-700 dark:border-[#8a6020]">
+              <div className="pop-in flex items-center justify-center gap-3 py-4 bg-indigo-50 dark:bg-[#c9a84c]/10 border border-indigo-200 dark:border-[#c9a84c]/30 rounded-xl">
                 <Loader2 size={20} className="animate-spin text-indigo-600 dark:text-[#c9a84c]"/>
-                <span className="text-sm font-medium text-indigo-700 dark:text-[#c9a84c] dark:text-indigo-500 dark:text-[#e8c76b]">Verifying with server…</span>
+                <span className="text-sm font-medium text-indigo-700 dark:text-[#c9a84c]">Verifying with server…</span>
               </div>
             )}
 
@@ -361,7 +360,7 @@ export default function StudentAttendance() {
 
       {/* ── Anti-Proxy Rules ── */}
       {!locked && (
-        <div className="bg-yellow-50 dark:bg-yellow-900/20  p-4 border border-yellow-200 dark:border-yellow-700 text-xs text-yellow-700 dark:text-yellow-300 space-y-1">
+        <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 border border-yellow-200 dark:border-yellow-700/50 text-xs text-yellow-700 dark:text-yellow-400 space-y-1 rounded-xl">
           <p className="font-semibold">Anti-Proxy Rules:</p>
           <p>• QR refreshes every 10 seconds — sharing is futile.</p>
           <p>• Each device is server-locked for 20 minutes after one successful mark.</p>

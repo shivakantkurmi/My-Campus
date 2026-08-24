@@ -127,7 +127,7 @@ export default function Notes() {
                 href={note.driveURL}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 text-xs text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:text-[#c9a84c] font-medium mt-1"
+                className="flex items-center gap-1 text-xs text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] font-medium mt-1"
               >
                 <ExternalLink size={12} /> Open Drive Link
               </a>
