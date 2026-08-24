@@ -169,6 +169,7 @@ export default function AuthPage({ initialView = 'login' }) {
   const [isFlipped, setIsFlipped] = useState(initialView === 'register');
   const [showPass, setShowPass]     = useState(false);
   const [showRegPass, setShowRegPass] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
 
   const [loginErr, setLoginErr] = useState('');
   const {
@@ -187,6 +188,11 @@ export default function AuthPage({ initialView = 'login' }) {
 
   useEffect(() => { initTheme(); }, []);
   useEffect(() => { setIsFlipped(location.pathname === '/register'); }, [location.pathname]);
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleView = (view) => navigate(view === 'login' ? '/login' : '/register');
 
@@ -287,7 +293,8 @@ export default function AuthPage({ initialView = 'login' }) {
       {/* ══════════════════════════════════════════════════════
           MOBILE / TABLET  (< lg)  — Flat card layout
       ══════════════════════════════════════════════════════ */}
-      <div className="lg:hidden relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-16">
+      {!isDesktop && (
+      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-16">
 
         {/* Logo */}
         <div className="flex items-center gap-3 mb-6">
@@ -354,11 +361,13 @@ export default function AuthPage({ initialView = 'login' }) {
           </div>
         </div>
       </div>
+      )}
 
       {/* ══════════════════════════════════════════════════════
           DESKTOP  (lg+)  — Original 3D circle layout
       ══════════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex relative z-10 w-full max-w-[1200px] flex-row items-center justify-center gap-12 p-12">
+      {isDesktop && (
+      <div className="relative z-10 w-full max-w-[1200px] flex flex-row items-center justify-center gap-12 p-12">
 
         {/* Left info panel */}
         <div className={`flex flex-col w-[380px] h-[600px] rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl ${dark ? 'dk-card border border-[#c9a84c]/20' : 'glass-card border-[1.5px] border-indigo-200/60'}`}>
@@ -457,6 +466,7 @@ export default function AuthPage({ initialView = 'login' }) {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
