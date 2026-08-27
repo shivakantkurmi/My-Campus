@@ -5,6 +5,7 @@ import {
   ShieldCheck, Moon, Sun, ArrowRight, GraduationCap, Sparkles, MapPin,
 } from 'lucide-react';
 import useThemeStore from '../../store/themeStore';
+import useAuthStore from '../../store/authStore';
 import { useAuroraCanvas } from '../../components/common/AuroraCanvas';
 
 /* ── Mini typewriter hook ── */
@@ -148,6 +149,7 @@ export function useParticleCanvas(canvasRef, isDark, lines) {
 ───────────────────────────────────────────────── */
 export default function Landing() {
   const { dark, toggleTheme, initTheme } = useThemeStore();
+  const { user } = useAuthStore();
   const [scrolled, setScrolled] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const typed = useTypewriter(typeWords);
@@ -237,17 +239,28 @@ export default function Landing() {
                 {dark ? <Sun size={18} className="mc-heartbeat" /> : <Moon size={18} />}
               </button>
 
-              <Link to="/login" className={`p-2 rounded-full border transition-all ${dark
-                ? 'text-gray-400 border-gray-700 hover:text-white hover:border-[#c9a84c]'
-                : 'text-gray-700 border-indigo-200 hover:bg-white/40'
-                }`}>Sign In</Link>
+              {user ? (
+                <Link to="/dashboard" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${dark
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-[0_4px_16px_rgba(99,102,241,0.3)]'
+                  }`}>
+                  Dashboard <ArrowRight size={14} className="mc-nudge" />
+                </Link>
+              ) : (
+                <>
+                  <Link to="/login" className={`p-2 rounded-full border transition-all ${dark
+                    ? 'text-gray-400 border-gray-700 hover:text-white hover:border-[#c9a84c]'
+                    : 'text-gray-700 border-indigo-200 hover:bg-white/40'
+                    }`}>Sign In</Link>
 
-              <Link to="/register" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${dark
-                ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
-                : 'bg-white/60 border border-indigo-200 text-indigo-700 hover:bg-white shadow-[0_4px_16px_rgba(99,102,241,0.2)]'
-                }`}>
-                Get Started <ArrowRight size={14} className="mc-nudge" />
-              </Link>
+                  <Link to="/register" className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg ${dark
+                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
+                    : 'bg-white/60 border border-indigo-200 text-indigo-700 hover:bg-white shadow-[0_4px_16px_rgba(99,102,241,0.2)]'
+                    }`}>
+                    Get Started <ArrowRight size={14} className="mc-nudge" />
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </nav>
@@ -293,19 +306,30 @@ export default function Landing() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
-                ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
-                : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
-                }`}>
-                Join My-Campus <ArrowRight size={18} className="mc-nudge" />
-              </Link>
+              {user ? (
+                <Link to="/dashboard" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-8 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
+                  : 'bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700'
+                  }`}>
+                  Go to Dashboard <ArrowRight size={18} className="mc-nudge" />
+                </Link>
+              ) : (
+                <>
+                  <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
+                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
+                    : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
+                    }`}>
+                    Join My-Campus <ArrowRight size={18} className="mc-nudge" />
+                  </Link>
 
-              <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${dark
-                ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400'
-                : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
-                }`}>
-                Sign In
-              </Link>
+                  <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${dark
+                    ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400'
+                    : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
+                    }`}>
+                    Sign In
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Stats row */}
@@ -396,8 +420,16 @@ export default function Landing() {
             >
               Cookie Settings
             </button>
-            <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
-            <Link to="/register" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Register</Link>
+            {user ? (
+              <Link to="/dashboard" className={`hover:underline font-semibold ${dark ? 'hover:text-[#c9a84c] text-[#c9a84c]' : 'hover:text-indigo-600 text-indigo-600'}`}>
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
+                <Link to="/register" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Register</Link>
+              </>
+            )}
           </div>
         </div>
       </footer>

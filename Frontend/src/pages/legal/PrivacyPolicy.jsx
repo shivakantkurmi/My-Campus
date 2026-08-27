@@ -6,10 +6,12 @@ import {
   ExternalLink, Mail, Eye, KeyRound, Clock, Settings, Search, ChevronRight, GraduationCap
 } from 'lucide-react';
 import useThemeStore from '../../store/themeStore';
+import useAuthStore from '../../store/authStore';
 import { useAuroraCanvas } from '../../components/common/AuroraCanvas';
 
 export default function PrivacyPolicy() {
   const { dark, toggleTheme } = useThemeStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const bgCanvasRef = useRef(null);
   const [activeSection, setActiveSection] = useState('overview');
@@ -254,14 +256,14 @@ export default function PrivacyPolicy() {
               <div className="text-xs text-indigo-500 dark:text-[#c9a84c] font-mono mt-1">support@mycampus.edu</div>
             </div>
             <Link
-              to="/login"
+              to={user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/login'}
               className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow ${
                 dark
                   ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
                   : 'bg-indigo-600 text-white'
               }`}
             >
-              Contact Admin Portal
+              {user ? (user.role === 'admin' ? 'Open Admin Panel' : 'My Dashboard') : 'Sign In Portal'}
             </Link>
           </div>
         </div>
@@ -340,16 +342,29 @@ export default function PrivacyPolicy() {
               <span className="hidden sm:inline">{dark ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
 
-            <Link
-              to="/login"
-              className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow ${
-                dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
-                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
-              }`}
-            >
-              Sign In
-            </Link>
+            {user ? (
+              <Link
+                to="/dashboard"
+                className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow ${
+                  dark
+                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow ${
+                  dark
+                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>
@@ -547,12 +562,18 @@ export default function PrivacyPolicy() {
             <Link to="/" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>
               Home
             </Link>
-            <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>
-              Sign In
-            </Link>
+            {user ? (
+              <Link to="/dashboard" className={`hover:underline font-semibold ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`}>
+                Dashboard
+              </Link>
+            ) : (
+              <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>
+                Sign In
+              </Link>
+            )}
             <button
               onClick={triggerCookieSettings}
-              className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}
+              className={`hover:underline cursor-pointer ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}
             >
               Cookie Settings
             </button>

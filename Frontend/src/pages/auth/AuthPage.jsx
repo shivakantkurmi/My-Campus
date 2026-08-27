@@ -188,12 +188,18 @@ function RegisterFormFields({ onSubmit, register, errors, isSubmitting, showPass
 export default function AuthPage({ initialView = 'login' }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setAuth } = useAuthStore();
+  const { user, setAuth } = useAuthStore();
   const { dark, initTheme, toggleTheme } = useThemeStore();
   const [isFlipped, setIsFlipped] = useState(initialView === 'register');
   const [showPass, setShowPass]     = useState(false);
   const [showRegPass, setShowRegPass] = useState(false);
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, navigate]);
 
   const [loginErr, setLoginErr] = useState('');
   const {
