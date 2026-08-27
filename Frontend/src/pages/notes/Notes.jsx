@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
 import NoteForm from './NoteForm';
-import { Search, Plus, ExternalLink, Pencil, Trash2, BookOpen } from 'lucide-react';
+import { Search, Plus, ExternalLink, Pencil, Trash2, BookOpen, Loader2 } from 'lucide-react';
 
 const SUBJECTS = ['All', 'CN', 'OOPS', 'Operating Systems', 'CPP', 'DBMS', 'Maths', 'Physics', 'Other'];
 
@@ -15,6 +15,7 @@ export default function Notes() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchNotes = async () => {
     try {
@@ -45,8 +46,13 @@ export default function Notes() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this note?')) return;
-    await api.delete(`/notes/${id}`);
-    fetchNotes();
+    try {
+      setDeletingId(id);
+      await api.delete(`/notes/${id}`);
+      await fetchNotes();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const canEdit = (note) => note.uploadedBy?._id === user?._id;
@@ -110,8 +116,17 @@ export default function Notes() {
                     </button>
                   )}
                   {canDelete(note) && (
-                    <button onClick={() => handleDelete(note._id)} className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
-                      <Trash2 size={14} className="text-red-400" />
+                    <button
+                      onClick={() => handleDelete(note._id)}
+                      disabled={deletingId === note._id}
+                      className="p-1.5 hover:bg-red-50 dark:hover:bg-red-900/20 rounded disabled:opacity-50"
+                      title="Delete note"
+                    >
+                      {deletingId === note._id ? (
+                        <Loader2 size={14} className="animate-spin text-red-500" />
+                      ) : (
+                        <Trash2 size={14} className="text-red-400" />
+                      )}
                     </button>
                   )}
                 </div>

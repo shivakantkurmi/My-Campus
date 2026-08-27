@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
 import useCabinsStore from '../../store/cabinsStore';
-import { Search, Plus, Pencil, Trash2, DoorOpen, MessageSquarePlus, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, DoorOpen, MessageSquarePlus, X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import Modal from '../../components/common/Modal';
 
 const PAGE_SIZE = 30;
@@ -13,10 +13,13 @@ export default function FacultyCabins() {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [form, setForm] = useState(null); // null | {} | cabin-obj
+  const [isSaving, setIsSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [fbType, setFbType] = useState('missing_faculty');
   const [fbMsg, setFbMsg] = useState('');
   const [fbSent, setFbSent] = useState(false);
+  const [isSendingFb, setIsSendingFb] = useState(false);
   const isAdmin = user?.role === 'admin';
 
   // Load once; subsequent visits reuse cache
@@ -38,22 +41,37 @@ export default function FacultyCabins() {
 
   const handleSave = async () => {
     if (!form.facultyName || !form.cabinNumber) return;
-    if (form._id) await api.put(`/cabins/${form._id}`, form);
-    else await api.post('/cabins', form);
-    setForm(null);
-    refresh(); // invalidate cache and re-fetch
+    try {
+      setIsSaving(true);
+      if (form._id) await api.put(`/cabins/${form._id}`, form);
+      else await api.post('/cabins', form);
+      setForm(null);
+      refresh(); // invalidate cache and re-fetch
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this cabin?')) return;
-    await api.delete(`/cabins/${id}`);
-    refresh(); // invalidate cache and re-fetch
+    try {
+      setDeletingId(id);
+      await api.delete(`/cabins/${id}`);
+      refresh(); // invalidate cache and re-fetch
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const sendFeedback = async () => {
     if (!fbMsg.trim()) return;
-    await api.post('/feedback', { type: fbType, message: fbMsg });
-    setFbSent(true); setFbMsg(''); setFeedback('');
+    try {
+      setIsSendingFb(true);
+      await api.post('/feedback', { type: fbType, message: fbMsg });
+      setFbSent(true); setFbMsg(''); setFeedback('');
+    } finally {
+      setIsSendingFb(false);
+    }
   };
 
   const inputCls = 'w-full px-3 py-2 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm focus:outline-none dark:text-white';
@@ -95,8 +113,17 @@ export default function FacultyCabins() {
                   <button onClick={() => setForm(c)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
                     <Pencil size={14} className="text-gray-500" />
                   </button>
-                  <button onClick={() => handleDelete(c._id)} className="p-1.5 hover:bg-red-50 rounded">
-                    <Trash2 size={14} className="text-red-400" />
+                  <button
+                    onClick={() => handleDelete(c._id)}
+                    disabled={deletingId === c._id}
+                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded disabled:opacity-50"
+                    title="Delete cabin"
+                  >
+                    {deletingId === c._id ? (
+                      <Loader2 size={14} className="animate-spin text-red-500" />
+                    ) : (
+                      <Trash2 size={14} className="text-red-400" />
+                    )}
                   </button>
                 </div>
               )}
@@ -182,7 +209,20 @@ export default function FacultyCabins() {
               ))}
               <div className="flex gap-3 pt-2">
                 <button onClick={() => setForm(null)} className="flex-1 py-2 border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
-                <button onClick={handleSave} className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium">Save</button>
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium disabled:opacity-60 flex items-center justify-center gap-2"
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Saving…</span>
+                    </>
+                  ) : (
+                    'Save'
+                  )}
+                </button>
               </div>
             </div>
           </div>
@@ -212,7 +252,20 @@ export default function FacultyCabins() {
                   <textarea value={fbMsg} onChange={e => setFbMsg(e.target.value)} rows={4} placeholder="Describe the issue…" className={`${inputCls} resize-none`} />
                   <div className="flex gap-3">
                     <button onClick={() => setFeedback('')} className="flex-1 py-2 border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm text-gray-600 dark:text-gray-300">Cancel</button>
-                    <button onClick={sendFeedback} className="flex-1 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium">Submit</button>
+                    <button
+                      onClick={sendFeedback}
+                      disabled={isSendingFb}
+                      className="flex-1 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg text-sm font-medium disabled:opacity-60 flex items-center justify-center gap-2"
+                    >
+                      {isSendingFb ? (
+                        <>
+                          <Loader2 size={15} className="animate-spin" />
+                          <span>Submitting…</span>
+                        </>
+                      ) : (
+                        'Submit'
+                      )}
+                    </button>
                   </div>
                 </>
               )}

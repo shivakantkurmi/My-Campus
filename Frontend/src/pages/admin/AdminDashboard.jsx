@@ -6,6 +6,7 @@ import useThemeStore from '../../store/themeStore';
 import {
   Search, UserX, UserCheck, Trash2, MessageSquare,
   FileText, Users, GraduationCap, BookOpen, ShieldCheck,
+  Loader2, Sparkles, X, CheckCircle2
 } from 'lucide-react';
 
 const ROLE_FILTERS = ['all', 'student', 'faculty'];
@@ -14,6 +15,10 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState('users');
   const [userSearch, setUserSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [blockingId, setBlockingId] = useState(null);
+  const [deletingNoteId, setDeletingNoteId] = useState(null);
+  const [resolvingId, setResolvingId] = useState(null);
+  const [actionNotice, setActionNotice] = useState('');
   const { dark } = useThemeStore();
 
   const { users, notes, complaints, stats, loading, fetchAll, refresh } = useAdminStore();
@@ -21,22 +26,45 @@ export default function AdminDashboard() {
 
   const toggleBlock = async (id, blocked) => {
     try {
+      setBlockingId(id);
       await api.patch(`/admin/users/${id}/block`, { isBlocked: !blocked });
       await refresh();
+      setActionNotice(`User ${!blocked ? 'blocked' : 'unblocked'} successfully`);
+      setTimeout(() => setActionNotice(''), 3500);
     } catch (err) {
       alert(err.response?.data?.message || 'Action failed');
+    } finally {
+      setBlockingId(null);
     }
   };
 
   const deleteNote = async (id) => {
     if (!window.confirm('Delete this note permanently?')) return;
-    await api.delete(`/notes/${id}`);
-    await refresh();
+    try {
+      setDeletingNoteId(id);
+      await api.delete(`/notes/${id}`);
+      await refresh();
+      setActionNotice('Note deleted permanently');
+      setTimeout(() => setActionNotice(''), 3500);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete note');
+    } finally {
+      setDeletingNoteId(null);
+    }
   };
 
   const resolveComplaint = async (id) => {
-    await api.patch(`/admin/complaints/${id}/resolve`);
-    await refresh();
+    try {
+      setResolvingId(id);
+      await api.patch(`/admin/complaints/${id}/resolve`);
+      await refresh();
+      setActionNotice('Complaint marked as resolved');
+      setTimeout(() => setActionNotice(''), 3500);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to resolve complaint');
+    } finally {
+      setResolvingId(null);
+    }
   };
 
   const filteredUsers = users.filter(u => {
@@ -131,6 +159,21 @@ export default function AdminDashboard() {
           }`} />
         </div>
       )}
+      
+      {/* Action Notification Banner */}
+      {actionNotice && (
+        <div className={`p-3.5 rounded-2xl text-xs font-semibold flex items-center justify-between shadow-lg animate-in fade-in slide-in-from-top-2 border ${
+          dark ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300' : 'bg-emerald-50 border-emerald-200 text-emerald-800'
+        }`}>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-emerald-500 shrink-0" />
+            <span>{actionNotice}</span>
+          </div>
+          <button onClick={() => setActionNotice('')} className="p-1 opacity-60 hover:opacity-100 transition-opacity">
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* ── Users Tab ── */}
       {tab === 'users' && !loading && (
@@ -151,17 +194,17 @@ export default function AdminDashboard() {
                 <button
                   key={r}
                   onClick={() => setRoleFilter(r)}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
+                  className={`px-3 py-1.5 rounded-xl text-xs font-medium capitalize transition-all ${
                     roleFilter === r
                       ? dark
-                        ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-sm'
-                        : 'bg-indigo-600 text-white shadow-sm'
+                        ? 'bg-[#c9a84c] text-[#07070f] font-semibold'
+                        : 'bg-indigo-600 text-white font-semibold'
                       : dark
-                        ? 'bg-[#1a1a2e]/60 border border-[#c9a84c]/15 text-gray-400 hover:border-[#c9a84c]/30'
-                        : 'bg-white/80 border border-indigo-100 text-gray-600 hover:border-indigo-300 backdrop-blur-sm'
+                        ? 'bg-white/5 text-gray-400 hover:text-white'
+                        : 'bg-white/60 text-gray-600 hover:text-gray-900 border border-gray-200'
                   }`}
                 >
-                  {r === 'all' ? `All (${users.filter(u => u.role !== 'admin').length})` : `${r === 'student' ? '🎓' : '👨‍🏫'} ${r}`}
+                  {r}
                 </button>
               ))}
             </div>
@@ -174,29 +217,27 @@ export default function AdminDashboard() {
           </p>
 
           {/* Table */}
-          <div className={`rounded-2xl border overflow-x-auto ${
-            dark ? 'bg-[#0f0f1e]/80 border-[#c9a84c]/10 backdrop-blur-xl' : 'glass-card border-white/70'
-          }`}>
-            <table className="w-full text-sm min-w-[640px]">
+          <div className={`overflow-x-auto rounded-2xl border ${dark ? 'dk-card' : 'glass-card border-white/70'}`}>
+            <table className="w-full text-left text-sm">
               <thead>
-                <tr className={dark ? 'border-b border-[#c9a84c]/10' : 'border-b border-gray-100'}>
-                  {['User', 'Role', 'Department', 'Status', 'Action'].map(h => (
-                    <th key={h} className={`text-left px-4 py-3 text-xs font-semibold uppercase tracking-wide ${
-                      dark ? 'text-[#c9a84c]/50' : 'text-gray-400'
-                    }`}>{h}</th>
-                  ))}
+                <tr className={`border-b text-xs ${dark ? 'border-[#c9a84c]/10 text-gray-500' : 'border-gray-100 text-gray-400'}`}>
+                  <th className="px-4 py-3 font-medium">User</th>
+                  <th className="px-4 py-3 font-medium">Role</th>
+                  <th className="px-4 py-3 font-medium">Department</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Action</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${dark ? 'divide-[#c9a84c]/8' : 'divide-gray-100'}`}>
+              <tbody className={`divide-y ${dark ? 'divide-[#c9a84c]/6' : 'divide-gray-50'}`}>
                 {filteredUsers.length === 0 && (
                   <tr>
-                    <td colSpan={5} className={`text-center py-10 text-sm ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
+                    <td colSpan={5} className={`text-center py-10 text-xs ${dark ? 'text-gray-600' : 'text-gray-400'}`}>
                       No users found.
                     </td>
                   </tr>
                 )}
                 {filteredUsers.map(u => (
-                  <tr key={u._id} className={`transition-colors ${dark ? 'hover:bg-[#c9a84c]/4' : 'hover:bg-indigo-50/50'}`}>
+                  <tr key={u._id} className={`transition-colors ${dark ? 'hover:bg-white/[0.02]' : 'hover:bg-indigo-50/30'}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <Avatar name={u.name} size={8} />
@@ -222,20 +263,40 @@ export default function AdminDashboard() {
                           ? dark ? 'bg-red-500/15 text-red-400' : 'bg-red-50 text-red-600'
                           : dark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-700'
                       }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${u.isBlocked ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full ${u.isBlocked ? 'bg-red-500 animate-pulse' : 'bg-emerald-500'}`} />
                         {u.isBlocked ? 'Blocked' : 'Active'}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleBlock(u._id, u.isBlocked)}
-                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
-                          u.isBlocked
-                            ? dark ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
-                            : dark ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25' : 'bg-red-50 text-red-500 hover:bg-red-100'
+                        disabled={blockingId === u._id}
+                        className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all shadow-sm active:scale-95 disabled:opacity-75 disabled:cursor-wait ${
+                          blockingId === u._id
+                            ? dark
+                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse'
+                              : 'bg-amber-100 text-amber-800 border border-amber-300 animate-pulse'
+                            : u.isBlocked
+                            ? dark ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 border border-emerald-500/20' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100 border border-emerald-200'
+                            : dark ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/20' : 'bg-red-50 text-red-500 hover:bg-red-100 border border-red-200'
                         }`}
                       >
-                        {u.isBlocked ? <><UserCheck size={13} /> Unblock</> : <><UserX size={13} /> Block</>}
+                        {blockingId === u._id ? (
+                          <>
+                            <Loader2 size={13} className="animate-spin text-amber-500" />
+                            <span>{u.isBlocked ? 'Unblocking…' : 'Blocking…'}</span>
+                          </>
+                        ) : u.isBlocked ? (
+                          <>
+                            <UserCheck size={13} />
+                            <span>Unblock</span>
+                          </>
+                        ) : (
+                          <>
+                            <UserX size={13} />
+                            <span>Block</span>
+                          </>
+                        )}
                       </button>
                     </td>
                   </tr>
@@ -268,11 +329,16 @@ export default function AdminDashboard() {
               </div>
               <button
                 onClick={() => deleteNote(note._id)}
+                disabled={deletingNoteId === note._id}
                 className={`p-2 rounded-lg transition shrink-0 ${
                   dark ? 'text-gray-600 hover:bg-red-500/15 hover:text-red-400' : 'text-gray-400 hover:bg-red-50 hover:text-red-500'
                 }`}
               >
-                <Trash2 size={15} />
+                {deletingNoteId === note._id ? (
+                  <Loader2 size={15} className="animate-spin text-red-500" />
+                ) : (
+                  <Trash2 size={15} />
+                )}
               </button>
             </div>
           ))}
@@ -315,9 +381,17 @@ export default function AdminDashboard() {
                 {c.status !== 'resolved' && (
                   <button
                     onClick={() => resolveComplaint(c._id)}
-                    className={`text-xs font-semibold hover:underline ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}
+                    disabled={resolvingId === c._id}
+                    className={`inline-flex items-center gap-1 text-xs font-semibold hover:underline ${dark ? 'text-emerald-400' : 'text-emerald-600'}`}
                   >
-                    Mark Resolved
+                    {resolvingId === c._id ? (
+                      <>
+                        <Loader2 size={12} className="animate-spin" />
+                        <span>Resolving…</span>
+                      </>
+                    ) : (
+                      'Mark Resolved'
+                    )}
                   </button>
                 )}
               </div>

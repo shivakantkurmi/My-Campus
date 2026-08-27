@@ -3,7 +3,7 @@ import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
 import useThemeStore from '../../store/themeStore';
 import AnnouncementForm from './AnnouncementForm';
-import { ArrowDownAZ, CalendarClock, Filter, Plus, Search, ShieldCheck, Sparkles, Trash2, Pencil } from 'lucide-react';
+import { ArrowDownAZ, CalendarClock, Filter, Plus, Search, ShieldCheck, Sparkles, Trash2, Pencil, Loader2 } from 'lucide-react';
 
 const PRIORITY_ORDER = { high: 0, medium: 1, low: 2 };
 const sortOptions = [
@@ -37,6 +37,7 @@ export default function Announcements() {
   const [sortBy, setSortBy] = useState('created-desc');
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   const fetchAnnouncements = async () => {
     try {
@@ -121,52 +122,97 @@ export default function Announcements() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search announcement name or description…"
-            className={`w-full rounded-[1.5rem] border px-10 py-3 text-sm outline-none transition-all ${glassInput}`}
+            placeholder="Search campus notices..."
+            className={`w-full pl-12 pr-4 py-3 rounded-2xl text-sm transition-all outline-none border ${glassInput}`}
           />
         </div>
-        <div className="flex flex-col xs:flex-row gap-3 sm:gap-4">
-          <div className="relative flex-1">
-            <Filter size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className={`w-full appearance-none rounded-[1.5rem] border px-10 py-3 text-sm outline-none transition-all ${glassInput}`}
-            >
-              {priorityOptions.map((option) => <option key={option} value={option}>{option === 'all' ? 'All priorities' : option}</option>)}
-            </select>
+
+        {/* Filters and CTA */}
+        <div className="flex flex-wrap gap-2.5 items-center">
+          
+          {/* Priority Pill Filters */}
+          <div className={`flex p-1 rounded-2xl border ${dark ? 'bg-[#121220] border-[#232336]' : 'bg-white/60 border-white/80 backdrop-blur-md'}`}>
+            {priorityOptions.map((p) => (
+              <button
+                key={p}
+                onClick={() => setPriority(p)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+                  priority === p
+                    ? dark
+                      ? 'bg-[#c9a84c] text-[#07070f] shadow-sm'
+                      : 'bg-indigo-600 text-white shadow-sm'
+                    : dark
+                      ? 'text-gray-400 hover:text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
           </div>
-          <div className="relative flex-1">
-            <ArrowDownAZ size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+
+          {/* Sort Menu */}
+          <div className="relative">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`w-full appearance-none rounded-[1.5rem] border px-10 py-3 text-sm outline-none transition-all ${glassInput}`}
+              className={`pl-3 pr-8 py-2.5 rounded-2xl text-xs font-semibold appearance-none outline-none border transition-all cursor-pointer ${glassInput}`}
             >
-              {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+              {sortOptions.map((o) => (
+                <option key={o.value} value={o.value} className={dark ? 'bg-[#121220] text-white' : 'bg-white text-gray-900'}>
+                  {o.label}
+                </option>
+              ))}
             </select>
+            <ArrowDownAZ size={14} className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${dark ? 'text-gray-400' : 'text-gray-500'}`} />
           </div>
+
+          {/* Admin Create Button */}
+          {canManage && (
+            <button
+              onClick={() => { setEditing(null); setShowForm(true); }}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 ${
+                dark
+                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
+              }`}
+            >
+              <Plus size={16} /> New Notice
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ── List ── */}
-      {loading ? (
-        <div className="py-20 text-center text-gray-400 animate-pulse font-bold">Loading updates...</div>
-      ) : visibleAnnouncements.length === 0 ? (
-        <div className={`py-16 text-center ${glassCard}`}>
-          <ShieldCheck size={48} className={`mx-auto mb-4 ${dark ? 'text-[#c9a84c]' : 'text-indigo-300'}`} />
-          <h3 className={`text-xl font-bold mb-2 ${dark ? 'text-white' : 'text-gray-900'}`}>All Caught Up</h3>
-          <p className={dark ? 'text-gray-400' : 'text-gray-500'}>There are no matching announcements at this time.</p>
+      {/* Loading Skeleton */}
+      {loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className={`h-48 rounded-[2rem] animate-pulse ${dark ? 'bg-white/5' : 'bg-gray-100'}`} />
+          ))}
         </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+      )}
+
+      {/* Empty State */}
+      {!loading && visibleAnnouncements.length === 0 && (
+        <div className={`p-12 text-center rounded-[2.5rem] border ${glassCard}`}>
+          <Sparkles size={40} className={`mx-auto mb-3 opacity-40 ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`} />
+          <h3 className="text-base font-bold mb-1">No Announcements Found</h3>
+          <p className="text-xs text-gray-500">There are currently no announcements matching your filters.</p>
+        </div>
+      )}
+
+      {/* Announcements List */}
+      {!loading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {visibleAnnouncements.map((item) => (
-            <div key={item._id} className={`p-6 lg:p-8 flex flex-col relative group transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${glassCard}`}>
-              
-              {/* Top Row: Tag & Actions */}
-              <div className="flex items-start justify-between mb-6">
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  item.priority === 'high' 
+            <div
+              key={item._id}
+              className={`p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 ${glassCard}`}
+            >
+              {/* Header Badges */}
+              <div className="flex items-center justify-between gap-2 mb-4">
+                <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${
+                  item.priority === 'high'
                     ? dark ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-red-50 text-red-600 border border-red-100'
                     : item.priority === 'medium'
                       ? dark ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' : 'bg-orange-50 text-orange-600 border border-orange-100'
@@ -180,8 +226,17 @@ export default function Announcements() {
                     <button onClick={() => { setEditing(item); setShowForm(true); }} className={`p-2 rounded-xl transition-colors ${dark ? 'hover:bg-white/5 text-gray-400' : 'hover:bg-gray-100 text-gray-400'}`}>
                       <Pencil size={14} />
                     </button>
-                    <button onClick={() => handleDelete(item._id)} className={`p-2 rounded-xl transition-colors ${dark ? 'hover:bg-red-500/10 text-red-400' : 'hover:bg-red-50 text-red-500'}`}>
-                      <Trash2 size={14} />
+                    <button
+                      onClick={() => handleDelete(item._id)}
+                      disabled={deletingId === item._id}
+                      className={`p-2 rounded-xl transition-colors disabled:opacity-50 ${dark ? 'hover:bg-red-500/10 text-red-400' : 'hover:bg-red-50 text-red-500'}`}
+                      title="Delete announcement"
+                    >
+                      {deletingId === item._id ? (
+                        <Loader2 size={14} className="animate-spin text-red-500" />
+                      ) : (
+                        <Trash2 size={14} />
+                      )}
                     </button>
                   </div>
                 )}

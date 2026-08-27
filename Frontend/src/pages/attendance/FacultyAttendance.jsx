@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../../api/axios';
 import * as XLSX from 'xlsx';
-import { Upload, Users, QrCode, Download, RefreshCw, Check, X, Play, StopCircle, Clock, TrendingUp, FileSpreadsheet, PlusCircle, Trash2 } from 'lucide-react';
+import { Upload, Users, QrCode, Download, RefreshCw, Check, X, Play, StopCircle, Clock, TrendingUp, FileSpreadsheet, PlusCircle, Trash2, Loader2 } from 'lucide-react';
 
 // ── Flexible Excel column resolution ────────────────────────────────────────
 // slug() lowercases + strips ALL spaces/punctuation/special chars first, so
@@ -98,6 +98,8 @@ export default function FacultyAttendance() {
   const [history, setHistory] = useState([]);
   const [tab, setTab] = useState('setup'); // setup | live | history
   const [countdown, setCountdown] = useState(10);
+  const [isStartingSession, setIsStartingSession] = useState(false);
+  const [isEndingSession, setIsEndingSession] = useState(false);
   const intervalRef = useRef(null);
   const countRef = useRef(null);
   const inputCls = 'px-3 py-2 bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md border border-white/60 dark:border-[#2a2a40] rounded-lg text-sm focus:outline-none dark:text-white';
@@ -144,12 +146,19 @@ export default function FacultyAttendance() {
   // ── Start session ─────────────────────────────────────────────
   const startSession = async () => {
     if (!students.length) return alert('Add at least one student first.');
-    const res = await api.post('/attendance/session', { students });
-    setSession(res.data.session);
-    setAttendance(students.map(s => ({ ...s, present: false })));
-    generateQR(res.data.session.qrToken);
-    setTab('live');
-    startQrRefresh(res.data.session._id);
+    try {
+      setIsStartingSession(true);
+      const res = await api.post('/attendance/session', { students });
+      setSession(res.data.session);
+      setAttendance(students.map(s => ({ ...s, present: false })));
+      generateQR(res.data.session.qrToken);
+      setTab('live');
+      startQrRefresh(res.data.session._id);
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to start session');
+    } finally {
+      setIsStartingSession(false);
+    }
   };
 
   // ── QR helpers ────────────────────────────────────────────────
@@ -188,11 +197,18 @@ export default function FacultyAttendance() {
   // ── End session ───────────────────────────────────────────────
   const endSession = async () => {
     if (!session) return;
-    clearInterval(intervalRef.current);
-    clearInterval(countRef.current);
-    await api.post(`/attendance/session/${session._id}/end`);
-    setSession(null); setTab('history');
-    fetchHistory();
+    try {
+      setIsEndingSession(true);
+      clearInterval(intervalRef.current);
+      clearInterval(countRef.current);
+      await api.post(`/attendance/session/${session._id}/end`);
+      setSession(null); setTab('history');
+      fetchHistory();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to end session');
+    } finally {
+      setIsEndingSession(false);
+    }
   };
 
   // ── History ───────────────────────────────────────────────────
@@ -341,11 +357,23 @@ export default function FacultyAttendance() {
             </div>
           )}
 
-          <button onClick={startSession} disabled={!students.length}
-            className="w-full py-3.5 bg-linear-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-sm shadow-green-500/30 transition-all active:scale-[.98]">
-            <Play size={17}/>
-            Start Attendance Session
-            {students.length > 0 && <span className="bg-white/20 text-xs px-2 py-0.5 rounded-full">{students.length}</span>}
+          <button
+            onClick={startSession}
+            disabled={!students.length || isStartingSession}
+            className="w-full py-3.5 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-700 hover:to-emerald-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold rounded-2xl flex items-center justify-center gap-2 shadow-sm shadow-green-500/30 transition-all active:scale-[.98]"
+          >
+            {isStartingSession ? (
+              <>
+                <Loader2 size={17} className="animate-spin" />
+                <span>Starting Session…</span>
+              </>
+            ) : (
+              <>
+                <Play size={17}/>
+                <span>Start Attendance Session</span>
+                {students.length > 0 && <span className="bg-white/20 text-xs px-2 py-0.5 rounded-full">{students.length}</span>}
+              </>
+            )}
           </button>
         </div>
       )}
@@ -378,41 +406,47 @@ export default function FacultyAttendance() {
                   <defs>
                     <linearGradient id="qrGrad" x1="0" y1="0" x2="1" y2="1">
                       <stop offset="0%"   stopColor="#3b82f6"/>
-                      <stop offset="100%" stopColor="#8b5cf6"/>
+                      <stop offset="100%" stopColor="#10b981"/>
                     </linearGradient>
                   </defs>
                 </svg>
-                {qrUrl && <img src={qrUrl} alt="QR" className="w-48 h-48  relative z-10"/>}
+                {qrUrl ? (
+                  <img src={qrUrl} alt="Attendance QR" className="w-[170px] h-[170px] sm:w-[190px] sm:h-[190px] rounded-xl shadow-inner"/>
+                ) : (
+                  <div className="w-[170px] h-[170px] flex items-center justify-center text-gray-400 text-xs">Generating QR…</div>
+                )}
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                <RefreshCw size={13} className="animate-spin"/>
-                Refreshes in <span className="font-bold text-indigo-600 dark:text-[#c9a84c] tabular-nums w-4 text-center">{countdown}</span>s
+              {/* Countdown badge */}
+              <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <Clock size={13} className="text-indigo-600 dark:text-[#c9a84c]"/>
+                Refreshes in <span className="font-mono font-bold text-gray-800 dark:text-white">{countdown}s</span>
               </div>
             </div>
 
-            {/* ── Stats ── */}
+            {/* ── Live stats card ── */}
             <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col gap-4 shadow-sm">
               <div className="flex items-center gap-2">
-                <TrendingUp size={16} className="text-green-500"/>
-                <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Stats</h3>
+                <TrendingUp size={16} className="text-indigo-600 dark:text-[#c9a84c]"/>
+                <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Attendance</h3>
               </div>
 
-              {/* Big number */}
-              <div className="text-center py-2">
-                <p className="text-5xl font-black text-green-500 tabular-nums">{presentCount}</p>
-                <p className="text-sm text-gray-400 mt-1">of <span className="font-medium text-gray-600 dark:text-gray-300">{totalCount}</span> students present</p>
+              {/* Big stat counter */}
+              <div className="flex items-end gap-2 my-auto">
+                <span className="text-5xl font-black text-gray-900 dark:text-white tracking-tight">{presentCount}</span>
+                <span className="text-xl text-gray-400 mb-1">/ {totalCount}</span>
+                <span className="ml-auto text-sm font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2.5 py-1 rounded-full">
+                  {progressPct}%
+                </span>
               </div>
 
               {/* Progress bar */}
               <div className="space-y-1">
-                <div className="flex justify-between text-xs text-gray-400">
-                  <span>Attendance</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">{progressPct}%</span>
-                </div>
                 <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
-                  <div className="h-2.5 rounded-full bg-linear-to-r from-green-500 to-emerald-400 transition-all duration-700"
-                    style={{ width: `${progressPct}%` }}/>
+                  <div
+                    className="h-2.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-400 transition-all duration-700"
+                    style={{ width: `${progressPct}%` }}
+                  />
                 </div>
                 <div className="flex justify-between text-xs text-gray-400 pt-0.5">
                   <span className="text-green-600 dark:text-green-400">{presentCount} present</span>
@@ -421,13 +455,28 @@ export default function FacultyAttendance() {
               </div>
 
               <div className="flex gap-2 mt-auto">
-                <button onClick={downloadExcel}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f]  text-xs font-medium transition-all active:scale-95">
+                <button
+                  onClick={downloadExcel}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] text-xs font-medium transition-all active:scale-95 rounded-xl shadow-sm"
+                >
                   <Download size={13}/> Export
                 </button>
-                <button onClick={endSession}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white  text-xs font-medium transition-all active:scale-95">
-                  <StopCircle size={13}/> End
+                <button
+                  onClick={endSession}
+                  disabled={isEndingSession}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition-all active:scale-95 disabled:opacity-60 rounded-xl shadow-sm"
+                >
+                  {isEndingSession ? (
+                    <>
+                      <Loader2 size={13} className="animate-spin" />
+                      <span>Ending…</span>
+                    </>
+                  ) : (
+                    <>
+                      <StopCircle size={13}/>
+                      <span>End</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

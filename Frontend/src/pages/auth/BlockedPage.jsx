@@ -1,20 +1,26 @@
 import { useState } from 'react';
 import api from '../../api/axios';
 import useAuthStore from '../../store/authStore';
+import { Loader2 } from 'lucide-react';
 
 export default function BlockedPage() {
   const { user } = useAuthStore();
   const [msg, setMsg] = useState('');
   const [sent, setSent] = useState(false);
   const [err, setErr] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAppeal = async () => {
     if (!msg.trim()) return setErr('Please write your appeal message.');
     try {
+      setIsSubmitting(true);
+      setErr('');
       await api.post('/feedback', { type: 'unblock_appeal', message: msg });
       setSent(true);
     } catch {
       setErr('Failed to send appeal. Try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -41,9 +47,17 @@ export default function BlockedPage() {
             {err && <p className="text-red-400 text-sm mb-3">{err}</p>}
             <button
               onClick={handleAppeal}
-              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] font-semibold rounded-lg transition"
+              disabled={isSubmitting}
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] font-semibold rounded-lg transition disabled:opacity-60 flex items-center justify-center gap-2"
             >
-              Send Appeal
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  <span>Submitting Appeal…</span>
+                </>
+              ) : (
+                'Send Appeal'
+              )}
             </button>
           </>
         )}
