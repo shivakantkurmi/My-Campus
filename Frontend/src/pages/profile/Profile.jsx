@@ -39,6 +39,16 @@ export default function Profile() {
   const onSubmit = async (data) => {
     try {
       setErr(''); setSuccess('');
+      if (data.newPassword) {
+        if (data.newPassword.length < 4 || data.newPassword.length > 16) {
+          setErr('New password must be between 4 and 16 characters');
+          return;
+        }
+        if (!data.currentPassword) {
+          setErr('Current password is required to change password');
+          return;
+        }
+      }
       const res = await api.put('/auth/profile', data);
       updateUser(res.data.user);
       setSuccess('Profile updated successfully!');
@@ -251,14 +261,14 @@ export default function Profile() {
                 <label className={labelCls}>Current Password</label>
                 <div className="relative">
                   <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                  <input {...register('currentPassword')} type="password" placeholder="Current password" className={inputCls} />
+                  <input {...register('currentPassword')} type="password" maxLength={16} placeholder="Current password" className={inputCls} />
                 </div>
               </div>
               <div>
                 <label className={labelCls}>New Password</label>
                 <div className="relative">
                   <Lock size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                  <input {...register('newPassword')} type="password" placeholder="Min 6 characters" className={inputCls} />
+                  <input {...register('newPassword')} type="password" minLength={4} maxLength={16} placeholder="Password (4-16 chars)" className={inputCls} />
                 </div>
               </div>
             </div>

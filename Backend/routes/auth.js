@@ -18,6 +18,12 @@ router.post('/register', authLimiter, async (req, res) => {
     if (!name || !email || !password || !role || !department)
       return res.status(400).json({ message: 'All fields are required' });
 
+    if (email.length > 100)
+      return res.status(400).json({ message: 'Email must not exceed 100 characters' });
+
+    if (password.length < 4 || password.length > 16)
+      return res.status(400).json({ message: 'Password must be between 4 and 16 characters' });
+
     if (role === 'admin')
       return res.status(403).json({ message: 'Admin registration is not allowed' });
 
@@ -37,6 +43,12 @@ router.post('/login', authLimiter, async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password)
       return res.status(400).json({ message: 'Email and password required' });
+
+    if (email.length > 100)
+      return res.status(400).json({ message: 'Email must not exceed 100 characters' });
+
+    if (password.length < 4 || password.length > 16)
+      return res.status(400).json({ message: 'Password must be between 4 and 16 characters' });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ message: 'Invalid credentials' });
@@ -65,6 +77,9 @@ router.put('/profile', protect, async (req, res) => {
 
     // Password change (optional)
     if (newPassword) {
+      if (newPassword.length < 4 || newPassword.length > 16)
+        return res.status(400).json({ message: 'New password must be between 4 and 16 characters' });
+
       if (!currentPassword)
         return res.status(400).json({ message: 'Current password required to set a new one' });
       const valid = await user.comparePassword(currentPassword);

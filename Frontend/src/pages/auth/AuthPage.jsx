@@ -10,14 +10,14 @@ import useAdminStore from '../../store/adminStore';
 import useThemeStore from '../../store/themeStore';
 
 const loginSchema = yup.object({
-  email:    yup.string().email('Invalid email').required('Email required'),
-  password: yup.string().min(6, 'Min 6 chars').required('Password required'),
+  email:    yup.string().email('Invalid email').max(100, 'Max 100 characters').required('Email required'),
+  password: yup.string().min(4, 'Min 4 characters').max(16, 'Max 16 characters').required('Password required'),
 });
 
 const registerSchema = yup.object({
-  name:       yup.string().min(2, 'Min 2 chars').required('Name required'),
-  email:      yup.string().email('Invalid email').required('Email required'),
-  password:   yup.string().min(6, 'Min 6 chars').required('Password required'),
+  name:       yup.string().min(2, 'Min 2 chars').max(60, 'Max 60 chars').required('Name required'),
+  email:      yup.string().email('Invalid email').max(100, 'Max 100 characters').required('Email required'),
+  password:   yup.string().min(4, 'Min 4 characters').max(16, 'Max 16 characters').required('Password required'),
   role:       yup.string().oneOf(['student', 'faculty']).required('Role required'),
   department: yup.string().required('Department required'),
 });
@@ -48,6 +48,7 @@ function LoginFormFields({ onSubmit, register, errors, isSubmitting, showPass, s
           <input
             {...register('email')}
             type="email"
+            maxLength={100}
             autoComplete="email"
             placeholder="you@vitbhopal.ac.in"
             className={`${inputBase} pl-12`}
@@ -62,8 +63,10 @@ function LoginFormFields({ onSubmit, register, errors, isSubmitting, showPass, s
           <input
             {...register('password')}
             type={showPass ? 'text' : 'password'}
+            minLength={4}
+            maxLength={16}
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder="Password (4-16 chars)"
             className={`${inputBase} pl-12 pr-12`}
             style={lightInputStyle}
           />
@@ -83,51 +86,62 @@ function LoginFormFields({ onSubmit, register, errors, isSubmitting, showPass, s
 function RegisterFormFields({ onSubmit, register, errors, isSubmitting, showPass, setShowPass, inputBase, lightInputStyle, dark, btnStyle }) {
   return (
     <form onSubmit={onSubmit} className="space-y-3 text-left">
-      <div className="flex gap-3">
-        <div className="relative flex-1 min-w-0">
-          <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-          <input
-            {...register('name')}
-            type="text"
-            autoComplete="name"
-            placeholder="Full name"
-            className={`${inputBase} pl-10 py-3`}
-            style={lightInputStyle}
-          />
+      <div>
+        <div className="flex gap-3">
+          <div className="relative flex-1 min-w-0">
+            <User size={15} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              {...register('name')}
+              type="text"
+              maxLength={60}
+              autoComplete="name"
+              placeholder="Full name"
+              className={`${inputBase} pl-10 py-3`}
+              style={lightInputStyle}
+            />
+          </div>
+          <div className="flex bg-[#07070f]/20 rounded-full p-1 shrink-0" style={lightInputStyle}>
+            {['student', 'faculty'].map((r) => (
+              <label key={r} className="relative cursor-pointer">
+                <input {...register('role')} type="radio" value={r} className="sr-only peer" />
+                <div className={`px-3 py-2 rounded-full text-xs font-semibold capitalize transition-all ${
+                  dark ? 'text-gray-500 peer-checked:bg-[#c9a84c]/20 peer-checked:text-[#c9a84c]'
+                       : 'text-gray-500 peer-checked:bg-indigo-100 peer-checked:text-indigo-700'
+                }`}>{r}</div>
+              </label>
+            ))}
+          </div>
         </div>
-        <div className="flex bg-[#07070f]/20 rounded-full p-1 shrink-0" style={lightInputStyle}>
-          {['student', 'faculty'].map((r) => (
-            <label key={r} className="relative cursor-pointer">
-              <input {...register('role')} type="radio" value={r} className="sr-only peer" />
-              <div className={`px-3 py-2 rounded-full text-xs font-semibold capitalize transition-all ${
-                dark ? 'text-gray-500 peer-checked:bg-[#c9a84c]/20 peer-checked:text-[#c9a84c]'
-                     : 'text-gray-500 peer-checked:bg-indigo-100 peer-checked:text-indigo-700'
-              }`}>{r}</div>
-            </label>
-          ))}
-        </div>
+        {errors.name && <p className="mt-1 pl-4 text-[11px] text-red-500 font-medium">{errors.name.message}</p>}
+        {errors.role && <p className="mt-1 pl-4 text-[11px] text-red-500 font-medium">{errors.role.message}</p>}
       </div>
+
       <div>
         <div className="relative">
           <Mail size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           <input
             {...register('email')}
             type="email"
+            maxLength={100}
             autoComplete="email"
             placeholder="you@vitbhopal.ac.in"
             className={`${inputBase} pl-12 py-3`}
             style={lightInputStyle}
           />
         </div>
+        {errors.email && <p className="mt-1 pl-4 text-[11px] text-red-500 font-medium">{errors.email.message}</p>}
       </div>
+
       <div>
         <div className="relative">
           <Lock size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           <input
             {...register('password')}
             type={showPass ? 'text' : 'password'}
+            minLength={4}
+            maxLength={16}
             autoComplete="new-password"
-            placeholder="Password (min 6 chars)"
+            placeholder="Password (4-16 chars)"
             className={`${inputBase} pl-12 py-3 pr-12`}
             style={lightInputStyle}
           />
@@ -135,7 +149,9 @@ function RegisterFormFields({ onSubmit, register, errors, isSubmitting, showPass
             {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
           </button>
         </div>
+        {errors.password && <p className="mt-1 pl-4 text-[11px] text-red-500 font-medium">{errors.password.message}</p>}
       </div>
+
       <div>
         <div className="relative">
           <Building2 size={15} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -150,7 +166,9 @@ function RegisterFormFields({ onSubmit, register, errors, isSubmitting, showPass
           </select>
           <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-xs">▼</div>
         </div>
+        {errors.department && <p className="mt-1 pl-4 text-[11px] text-red-500 font-medium">{errors.department.message}</p>}
       </div>
+
       <button type="submit" disabled={isSubmitting} className="mc-btn w-full py-3.5 rounded-full text-base font-bold disabled:opacity-60 mt-2 shadow-xl" style={btnStyle}>
         {isSubmitting ? 'Creating...' : 'Create Account'}
       </button>
