@@ -8,6 +8,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import Landing from './pages/landing/Landing';
 import AuthPage from './pages/auth/AuthPage';
 import BlockedPage from './pages/auth/BlockedPage';
+import PrivacyPolicy from './pages/legal/PrivacyPolicy';
 import Dashboard from './pages/dashboard/Dashboard';
 import Notes from './pages/notes/Notes';
 import Announcements from './pages/announcements/Announcements';
@@ -16,6 +17,7 @@ import Attendance from './pages/attendance/Attendance';
 import CGPACalculator from './pages/cgpa/CGPACalculator';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import Profile from './pages/profile/Profile';
+import CookieConsent from './components/common/CookieConsent';
 
 export default function App() {
   const { initTheme } = useThemeStore();
@@ -23,9 +25,17 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      {/* Global Theme-Consistent Cookie & Privacy Consent */}
+      <CookieConsent />
+
       <Routes>
         {/* Public */}
         <Route path="/" element={<Landing />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<PrivacyPolicy />} />
+        <Route path="/cookie-policy" element={<PrivacyPolicy />} />
+
         {/* Auth routes wrapped to prevent unmounting during 3D flip */}
         <Route element={<AuthPage />}>
           <Route path="/login" element={<div />} />

@@ -154,6 +154,12 @@ function RegisterFormFields({ onSubmit, register, errors, isSubmitting, showPass
       <button type="submit" disabled={isSubmitting} className="mc-btn w-full py-3.5 rounded-full text-base font-bold disabled:opacity-60 mt-2 shadow-xl" style={btnStyle}>
         {isSubmitting ? 'Creating...' : 'Create Account'}
       </button>
+      <p className={`text-[11px] text-center pt-1 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
+        By registering, you agree to our{' '}
+        <Link to="/privacy-policy" className={`underline font-semibold ${dark ? 'text-[#c9a84c] hover:text-[#e8c76b]' : 'text-indigo-600 hover:text-indigo-800'}`}>
+          Privacy Policy
+        </Link>
+      </p>
     </form>
   );
 }

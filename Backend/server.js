@@ -35,6 +35,10 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploaded profile photos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// ── Rate Limiting ─────────────────────────────────────────────
+const { globalLimiter } = require('./middleware/rateLimiter');
+app.use('/api', globalLimiter);
+
 // ── API Routes ────────────────────────────────────────────────
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/notes', require('./routes/notes'));

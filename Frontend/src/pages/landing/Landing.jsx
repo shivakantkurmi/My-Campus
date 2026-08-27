@@ -388,7 +388,14 @@ export default function Landing() {
             <span className={`font-semibold ${dark ? 'text-[#c9a84c]' : 'text-gray-800'}`}>My-Campus</span>
           </div>
           <p>© Shivakant Kurmi 2026 · VIT Bhopal</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
+            <Link to="/privacy-policy" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Privacy Policy</Link>
+            <button 
+              onClick={() => window.dispatchEvent(new CustomEvent('mc_open_cookie_preferences'))}
+              className={`hover:underline cursor-pointer ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}
+            >
+              Cookie Settings
+            </button>
             <Link to="/login" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Sign In</Link>
             <Link to="/register" className={`hover:underline ${dark ? 'hover:text-[#c9a84c]' : 'hover:text-indigo-600'}`}>Register</Link>
           </div>

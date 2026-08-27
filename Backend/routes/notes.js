@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Note = require('../models/Note');
 const { protect } = require('../middleware/auth');
+const { uploadLimiter } = require('../middleware/rateLimiter');
 
 // ── GET /api/notes ────────────────────────────────────────────
 router.get('/', protect, async (req, res) => {
@@ -16,7 +17,7 @@ router.get('/', protect, async (req, res) => {
 });
 
 // ── POST /api/notes ───────────────────────────────────────────
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, uploadLimiter, async (req, res) => {
   try {
     const { title, driveURL, subject, courseCode, faculty, slot, module, description } = req.body;
     if (!title || !driveURL || !subject)
