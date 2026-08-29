@@ -287,9 +287,9 @@ export default function FacultyAttendance() {
       {tab === 'setup' && (
         <div className="fadein space-y-4">
           {/* Upload card */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
+          <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] p-5 space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-indigo-50 dark:bg-[#c9a84c]/10 dark:bg-[#c9a84c]/15 ">
+              <div className="p-2 bg-indigo-50 dark:bg-[#c9a84c]/10 rounded-lg">
                 <FileSpreadsheet size={18} className="text-indigo-600 dark:text-[#c9a84c]"/>
               </div>
               <div>
@@ -297,7 +297,7 @@ export default function FacultyAttendance() {
                 <p className="text-xs text-gray-400">Excel / CSV — any column order</p>
               </div>
             </div>
-            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-white/60 dark:border-[#2a2a40]  py-6 px-4 cursor-pointer hover:border-indigo-400 dark:border-[#c9a84c]/50 hover:bg-indigo-50 dark:bg-[#c9a84c]/10 dark:hover:bg-[#c9a84c]/5 transition-colors">
+            <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 dark:border-[#2a2a40] rounded-lg py-6 px-4 cursor-pointer hover:border-indigo-400 dark:hover:border-[#c9a84c]/50 hover:bg-slate-50 dark:hover:bg-[#c9a84c]/5 transition-colors">
               <Upload size={22} className="text-gray-400"/>
               <span className="text-sm text-gray-500 dark:text-gray-400">Click to browse or drop file</span>
               <span className="text-xs text-gray-400">Supported headers: <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">Reg No, Registration Number, Roll No</code></span>
@@ -306,9 +306,9 @@ export default function FacultyAttendance() {
           </div>
 
           {/* Manual entry card */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  space-y-3 shadow-sm">
+          <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] p-5 space-y-3 shadow-sm">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 ">
+              <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
                 <PlusCircle size={18} className="text-purple-500"/>
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-white text-sm">Manual Entry</h3>
@@ -329,7 +329,7 @@ export default function FacultyAttendance() {
 
           {/* Student list */}
           {students.length > 0 && (
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
+            <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] overflow-hidden shadow-sm">
               <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-700">
                 <span className="text-sm font-semibold text-gray-700 dark:text-white flex items-center gap-2">
                   <Users size={15} className="text-gray-400"/> {students.length} student{students.length !== 1 ? 's' : ''}
@@ -384,7 +384,7 @@ export default function FacultyAttendance() {
           <div className="grid md:grid-cols-2 gap-4">
 
             {/* ── QR Code with ring ── */}
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col items-center gap-3 shadow-sm">
+            <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] p-5 flex flex-col items-center gap-3 shadow-sm">
               <div className="flex items-center gap-2 self-start">
                 <QrCode size={16} className="text-indigo-600 dark:text-[#c9a84c]"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live QR Code</h3>
@@ -425,7 +425,7 @@ export default function FacultyAttendance() {
             </div>
 
             {/* ── Live stats card ── */}
-            <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl p-5  flex flex-col gap-4 shadow-sm">
+            <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] p-5 flex flex-col gap-4 shadow-sm">
               <div className="flex items-center gap-2">
                 <TrendingUp size={16} className="text-indigo-600 dark:text-[#c9a84c]"/>
                 <h3 className="font-semibold text-gray-700 dark:text-white text-sm">Live Attendance</h3>
@@ -457,14 +457,14 @@ export default function FacultyAttendance() {
               <div className="flex gap-2 mt-auto">
                 <button
                   onClick={downloadExcel}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] text-xs font-medium transition-all active:scale-95 rounded-xl shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] text-xs font-medium transition-all active:scale-95 rounded-lg shadow-sm"
                 >
                   <Download size={13}/> Export
                 </button>
                 <button
                   onClick={endSession}
                   disabled={isEndingSession}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition-all active:scale-95 disabled:opacity-60 rounded-xl shadow-sm"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium transition-all active:scale-95 disabled:opacity-60 rounded-lg shadow-sm"
                 >
                   {isEndingSession ? (
                     <>
@@ -483,14 +483,14 @@ export default function FacultyAttendance() {
           </div>
 
           {/* ── Attendance list ── */}
-          <div className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] overflow-hidden shadow-sm">
             <div className="px-5 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-2">
               <Users size={15} className="text-gray-400"/>
               <span className="text-sm font-semibold text-gray-700 dark:text-white">Students</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md/50">
+                <thead className="bg-slate-50 dark:bg-[#1c1c2e]">
                   <tr>
                     {['Reg No', 'Name', 'Status', 'Override'].map(h => (
                       <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">{h}</th>
@@ -500,18 +500,17 @@ export default function FacultyAttendance() {
                 <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                   {attendance.map((s, i) => (
                     <tr key={s.regNo}
-                      className={`transition-colors duration-500 ${s.present ? 'bg-green-50/60 dark:bg-green-900/10' : ''}`}
-                      style={{ animationDelay: `${i * 20}ms` }}>
+                      className={`transition-colors duration-200 ${s.present ? 'bg-green-50/60 dark:bg-green-900/10' : ''}`}>
                       <td className="px-4 py-2.5">
                         <span className="font-mono text-xs font-medium text-gray-700 dark:text-gray-300">{s.regNo}</span>
                       </td>
                       <td className="px-4 py-2.5 text-gray-700 dark:text-gray-300">{s.name}</td>
                       <td className="px-4 py-2.5">
-                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all duration-300
+                        <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all duration-200
                           ${s.present
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400'
                             : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${s.present ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}/>
+                          <span className={`w-1.5 h-1.5 rounded-full ${s.present ? 'bg-green-500' : 'bg-gray-400'}`}/>
                           {s.present ? 'Present' : 'Absent'}
                         </span>
                       </td>
@@ -551,12 +550,11 @@ export default function FacultyAttendance() {
               <p className="font-medium text-gray-400">No session history yet.</p>
             </div>
           ) : (
-            history.map((h, i) => {
+            history.map((h) => {
               const pct = h.totalStudents ? Math.round(((h.presentCount ?? 0) / h.totalStudents) * 100) : 0;
               const color = pct >= 75 ? 'bg-green-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
               return (
-                <div key={h._id} className="row-enter bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  rounded-2xl px-5 py-4 shadow-sm"
-                  style={{ animationDelay: `${i * 40}ms` }}>
+                <div key={h._id} className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] px-5 py-4 shadow-sm transition-all">
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white text-sm">

@@ -63,24 +63,24 @@ export default function Notes() {
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Search notes…"
-            className="w-full pl-9 pr-4 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm focus:outline-none focus:border-indigo-500 dark:border-[#c9a84c] dark:text-white"
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-[#c9a84c] text-gray-900 dark:text-white shadow-sm transition-colors"
           />
         </div>
         <select
           value={subject}
           onChange={e => setSubject(e.target.value)}
-          className="px-3 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm dark:text-white"
+          className="px-3.5 py-2.5 bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] text-sm focus:outline-none dark:text-white shadow-sm cursor-pointer"
         >
           {SUBJECTS.map(s => <option key={s}>{s}</option>)}
         </select>
         <button
           onClick={() => { setEditing(null); setShowForm(true); }}
-          className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-[#c9a84c] dark:hover:bg-[#a87c30] dark:text-[#07070f] rounded-lg text-sm font-semibold shadow-sm transition-colors"
         >
           <Plus size={16} /> Add Note
         </button>
@@ -90,20 +90,19 @@ export default function Notes() {
       {loading ? (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="mc-skeleton  h-44" style={{ animationDelay: `${i * 80}ms` }} />
+            <div key={i} className="h-36 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 animate-pulse p-4 space-y-2.5" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="mc-fade-up text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-gray-400">
           <BookOpen size={40} className="mx-auto mb-3 opacity-40" />
           <p>No notes found.</p>
         </div>
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((note, i) => (
+          {filtered.map((note) => (
             <div key={note._id}
-              className="mc-flip-up mc-card-hover bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all p-4 flex flex-col gap-2"
-              style={{ animationDelay: `${i * 55}ms` }}>
+              className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#232336] p-4 flex flex-col gap-2 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-200 dark:hover:border-[#c9a84c]/30">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span className="text-xs font-semibold uppercase text-indigo-600 dark:text-[#c9a84c] tracking-wide">{note.subject}</span>
@@ -111,7 +110,7 @@ export default function Notes() {
                 </div>
                 <div className="flex gap-1 shrink-0">
                   {canEdit(note) && (
-                    <button onClick={() => { setEditing(note); setShowForm(true); }} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                    <button onClick={() => { setEditing(note); setShowForm(true); }} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                       <Pencil size={14} className="text-gray-500" />
                     </button>
                   )}

@@ -80,43 +80,52 @@ export default function FacultyCabins() {
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
         <div className="relative flex-1">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input value={search} onChange={e => handleSearch(e.target.value)} placeholder="Search faculty or cabin number…"
-            className="w-full pl-9 pr-4 py-2 bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all text-sm focus:outline-none focus:border-indigo-500 dark:border-[#c9a84c] dark:text-white" />
+            className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] text-sm focus:outline-none focus:border-indigo-500 dark:focus:border-[#c9a84c] text-gray-900 dark:text-white shadow-sm transition-colors" />
         </div>
         {isAdmin && (
-          <button onClick={() => setForm({})} className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white dark:bg-[#c9a84c] dark:text-[#07070f] rounded-lg text-sm font-medium hover:bg-indigo-700">
+          <button onClick={() => setForm({})} className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 text-white dark:bg-[#c9a84c] dark:text-[#07070f] rounded-lg text-sm font-medium hover:bg-indigo-700 dark:hover:bg-[#a87c30] transition-colors shadow-sm">
             <Plus size={16} /> Add Cabin
           </button>
         )}
-        <button onClick={() => setFeedback('open')} className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg text-sm font-medium hover:bg-yellow-600">
+        <button onClick={() => setFeedback('open')} className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 text-white rounded-lg text-sm font-medium hover:bg-amber-600 transition-colors shadow-sm">
           <MessageSquarePlus size={16} /> Report Issue
         </button>
       </div>
 
-      {/* Cabin cards */}
+      {/* Skeleton Loading State */}
       {loading && (
-        <p className="text-center text-sm text-gray-400 py-6">Loading cabins…</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="h-28 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-800 animate-pulse p-4 space-y-3">
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3" />
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2 pt-2" />
+            </div>
+          ))}
+        </div>
       )}
+
+      {/* Cabin cards */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {!loading && paginated.map((c, i) => (
+        {!loading && paginated.map((c) => (
           <div key={c._id}
-            className="mc-flip-up mc-card-hover bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all p-4"
-            style={{ animationDelay: `${i * 55}ms` }}>
+            className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#232336] p-4 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:border-indigo-200 dark:hover:border-[#c9a84c]/30 shadow-sm">
             <div className="flex justify-between items-start">
               <div>
                 <h3 className="font-semibold text-gray-900 dark:text-white">{c.facultyName}</h3>
-                {c.department && <p className="text-xs text-indigo-600 dark:text-[#c9a84c] mt-0.5">{c.department}</p>}
+                {c.department && <p className="text-xs text-indigo-600 dark:text-[#c9a84c] mt-0.5 font-medium">{c.department}</p>}
               </div>
               {isAdmin && (
                 <div className="flex gap-1">
-                  <button onClick={() => setForm(c)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">
+                  <button onClick={() => setForm(c)} className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
                     <Pencil size={14} className="text-gray-500" />
                   </button>
                   <button
                     onClick={() => handleDelete(c._id)}
                     disabled={deletingId === c._id}
-                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded disabled:opacity-50"
+                    className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg disabled:opacity-50 transition-colors"
                     title="Delete cabin"
                   >
                     {deletingId === c._id ? (
@@ -130,7 +139,7 @@ export default function FacultyCabins() {
             </div>
             <div className="mt-3 space-y-1 text-sm">
               <p className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                <DoorOpen size={14} /> Cabin: <span className="font-medium">{c.cabinNumber}</span>
+                <DoorOpen size={14} className="text-slate-400" /> Cabin: <span className="font-semibold text-slate-800 dark:text-slate-100">{c.cabinNumber}</span>
               </p>
               {c.contact && <p className="text-gray-500 dark:text-gray-400 text-xs">📞 {c.contact}</p>}
             </div>
@@ -189,7 +198,7 @@ export default function FacultyCabins() {
       {/* Add/Edit Modal – portaled to <body> to escape layout stacking context */}
       {form !== null && (
         <Modal onClose={() => setForm(null)}>
-          <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-[#121220] rounded-2xl border border-slate-200 dark:border-[#2a2a40] shadow-xl w-full max-w-md overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="font-semibold text-gray-900 dark:text-white">{form._id ? 'Edit Cabin' : 'Add Cabin'}</h2>
               <button onClick={() => setForm(null)} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
@@ -232,7 +241,7 @@ export default function FacultyCabins() {
       {/* Feedback Modal – portaled to <body> */}
       {feedback === 'open' && (
         <Modal onClose={() => setFeedback('')}>
-          <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="bg-white dark:bg-[#121220] rounded-2xl border border-slate-200 dark:border-[#2a2a40] shadow-xl w-full max-w-md overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="font-semibold text-gray-900 dark:text-white">Report an Issue</h2>
               <button onClick={() => setFeedback('')} className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">

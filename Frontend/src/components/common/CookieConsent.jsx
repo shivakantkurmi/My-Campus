@@ -79,28 +79,28 @@ export default function CookieConsent() {
   if (!visible) return null;
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 md:left-auto md:right-8 md:max-w-xl z-50 animate-in fade-in slide-in-from-bottom-6 duration-500">
+    <div className="fixed bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 md:left-auto md:right-8 md:max-w-xl z-50 animate-in fade-in slide-in-from-bottom-6 duration-300">
       <div
-        className={`rounded-3xl p-5 sm:p-6 shadow-2xl backdrop-blur-2xl transition-all duration-300 border ${
+        className={`rounded-2xl p-5 sm:p-6 shadow-xl backdrop-blur-xl transition-all duration-200 border ${
           dark
-            ? 'bg-[#0e0e1a]/95 border-[#c9a84c]/25 shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(201,168,76,0.15)] text-gray-200'
-            : 'bg-white/90 border-indigo-100 shadow-[0_20px_50px_rgba(99,102,241,0.2)] text-gray-800'
+            ? 'bg-[#0e0e1a]/95 border-[#2a2a40] text-slate-200'
+            : 'bg-white/95 border-slate-200 shadow-xl text-slate-800'
         }`}
       >
         {/* Header bar */}
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-center gap-3">
             <div
-              className={`w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md ${
+              className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${
                 dark
-                  ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] text-[#07070f] shadow-[#c9a84c]/20'
-                  : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-indigo-500/30'
+                  ? 'bg-[#c9a84c] text-[#07070f]'
+                  : 'bg-indigo-600 text-white'
               }`}
             >
-              <Cookie size={20} />
+              <Cookie size={18} />
             </div>
             <div>
-              <h3 className={`text-base font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+              <h3 className={`text-base font-bold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>
                 Cookie &amp; Privacy Preferences
               </h3>
               <span className={`text-[11px] font-medium ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -110,7 +110,7 @@ export default function CookieConsent() {
           </div>
           <button
             onClick={() => setVisible(false)}
-            className={`p-1.5 rounded-full transition-colors ${
+            className={`p-1.5 rounded-lg transition-colors ${
               dark ? 'text-gray-400 hover:text-white hover:bg-white/10' : 'text-gray-500 hover:text-gray-800 hover:bg-gray-100'
             }`}
             title="Close banner"
@@ -136,8 +136,8 @@ export default function CookieConsent() {
         {/* Detailed Preferences Accordion */}
         {showPreferences && (
           <div
-            className={`mb-4 p-4 rounded-2xl space-y-3 text-xs border ${
-              dark ? 'bg-black/40 border-[#c9a84c]/15' : 'bg-indigo-50/60 border-indigo-100'
+            className={`mb-4 p-4 rounded-xl space-y-3 text-xs border ${
+              dark ? 'bg-black/40 border-[#2a2a40]' : 'bg-slate-50 border-slate-200'
             }`}
           >
             {/* Essential */}
@@ -152,7 +152,7 @@ export default function CookieConsent() {
                 </p>
               </div>
               <span
-                className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex-shrink-0 ${
+                className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider flex-shrink-0 ${
                   dark ? 'bg-[#c9a84c]/20 text-[#c9a84c]' : 'bg-indigo-100 text-indigo-700'
                 }`}
               >
@@ -160,7 +160,7 @@ export default function CookieConsent() {
               </span>
             </div>
 
-            <div className={`border-t ${dark ? 'border-white/10' : 'border-indigo-200/50'}`} />
+            <div className={`border-t ${dark ? 'border-white/10' : 'border-slate-200'}`} />
 
             {/* Functional */}
             <div className="flex items-center justify-between gap-2">
@@ -187,7 +187,7 @@ export default function CookieConsent() {
               </label>
             </div>
 
-            <div className={`border-t ${dark ? 'border-white/10' : 'border-indigo-200/50'}`} />
+            <div className={`border-t ${dark ? 'border-white/10' : 'border-slate-200'}`} />
 
             {/* Analytics */}
             <div className="flex items-center justify-between gap-2">
@@ -222,10 +222,10 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={handleAcceptAll}
-                className={`flex-1 sm:flex-none px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 ${
                   dark
-                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
+                    ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20'
                 }`}
               >
                 <Check size={14} /> Accept All
@@ -233,10 +233,10 @@ export default function CookieConsent() {
 
               <button
                 onClick={handleDeclineOptional}
-                className={`flex-1 sm:flex-none px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold border transition-all active:scale-95 ${
+                className={`flex-1 sm:flex-none px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium border transition-all active:scale-95 ${
                   dark
-                    ? 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 bg-white/5'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white/60'
+                    ? 'border-slate-700 text-slate-300 hover:text-white hover:bg-white/5'
+                    : 'border-slate-200 text-slate-700 hover:bg-slate-100 bg-white'
                 }`}
               >
                 Essential Only
@@ -244,7 +244,7 @@ export default function CookieConsent() {
 
               <button
                 onClick={() => setShowPreferences(true)}
-                className={`px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-colors inline-flex items-center gap-1.5 ${
+                className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors inline-flex items-center gap-1.5 ${
                   dark
                     ? 'text-[#c9a84c] hover:bg-[#c9a84c]/10'
                     : 'text-indigo-600 hover:bg-indigo-50'
@@ -257,10 +257,10 @@ export default function CookieConsent() {
             <>
               <button
                 onClick={handleSaveCustom}
-                className={`flex-1 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 ${
+                className={`flex-1 px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 ${
                   dark
-                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
-                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
+                    ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20'
                 }`}
               >
                 Save Preferences
@@ -268,10 +268,10 @@ export default function CookieConsent() {
 
               <button
                 onClick={() => setShowPreferences(false)}
-                className={`px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold border transition-all active:scale-95 ${
+                className={`px-3.5 py-2 rounded-lg text-xs sm:text-sm font-medium border transition-all active:scale-95 ${
                   dark
-                    ? 'border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 bg-white/5'
-                    : 'border-gray-300 text-gray-700 hover:bg-gray-100 bg-white/60'
+                    ? 'border-slate-700 text-slate-300 hover:text-white hover:bg-white/5'
+                    : 'border-slate-200 text-slate-700 hover:bg-slate-100 bg-white'
                 }`}
               >
                 Back

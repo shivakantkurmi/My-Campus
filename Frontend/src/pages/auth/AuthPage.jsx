@@ -339,17 +339,17 @@ export default function AuthPage({ initialView = 'login' }) {
         </div>
 
         {/* Card */}
-        <div className={`w-full max-w-sm mx-auto rounded-[2rem] shadow-2xl overflow-hidden ${
+        <div className={`w-full max-w-sm mx-auto rounded-2xl shadow-xl overflow-hidden ${
           dark
             ? 'bg-[#0d0d1e]/95 border border-[#c9a84c]/15 backdrop-blur-xl'
-            : 'bg-white/92 border border-white/80 backdrop-blur-[40px] shadow-[0_20px_80px_rgba(99,102,241,0.15)]'
+            : 'bg-white border border-slate-200 shadow-[0_20px_80px_rgba(99,102,241,0.15)]'
         }`}>
 
           {/* Tab bar */}
-          <div className={`flex p-1.5 m-4 rounded-2xl ${dark ? 'bg-white/5' : 'bg-indigo-50/80'}`}>
+          <div className={`flex p-1.5 m-4 rounded-xl ${dark ? 'bg-white/5' : 'bg-indigo-50/80'}`}>
             {[['login', 'Sign In'], ['register', 'Register']].map(([view, label]) => (
               <button key={view} type="button" onClick={() => toggleView(view)}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                className={`flex-1 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   (view === 'login' && !isFlipped) || (view === 'register' && isFlipped)
                     ? dark ? 'bg-[#c9a84c]/20 text-[#c9a84c] shadow-sm' : 'bg-white text-indigo-700 shadow-md'
                     : dark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'
@@ -367,7 +367,7 @@ export default function AuthPage({ initialView = 'login' }) {
               <h1 className={`text-2xl font-black mb-1 ${dark ? 'text-white' : 'text-gray-900'}`}>Welcome back</h1>
               <p className={`text-sm mb-5 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Sign in to your campus account</p>
               {loginErr && (
-                <div className={`mb-4 p-3 rounded-2xl text-sm border font-medium ${dark ? 'bg-red-900/30 border-red-800/50 text-red-400' : 'bg-red-50 border-red-200 text-red-700'}`}>
+                <div className={`mb-4 p-3 rounded-xl text-sm border font-medium ${dark ? 'bg-red-900/30 border-red-800/50 text-red-400' : 'bg-red-50 border-red-200 text-red-700'}`}>
                   {loginErr}
                 </div>
               )}
@@ -383,8 +383,8 @@ export default function AuthPage({ initialView = 'login' }) {
             <div className={isFlipped ? 'block' : 'hidden'}>
               <h1 className={`text-2xl font-black mb-1 ${dark ? 'text-white' : 'text-gray-900'}`}>Create account</h1>
               <p className={`text-sm mb-4 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>Join the VIT Bhopal campus platform</p>
-              {regSuccess && <div className="mb-3 p-3 rounded-2xl text-sm border font-medium bg-emerald-500/20 border-emerald-500/40 text-emerald-500">Account created! Redirecting…</div>}
-              {regErr && <div className="mb-3 p-3 rounded-2xl text-sm border font-medium bg-red-500/20 border-red-500/40 text-red-500">{regErr}</div>}
+              {regSuccess && <div className="mb-3 p-3 rounded-xl text-sm border font-medium bg-emerald-500/20 border-emerald-500/40 text-emerald-500">Account created! Redirecting…</div>}
+              {regErr && <div className="mb-3 p-3 rounded-xl text-sm border font-medium bg-red-500/20 border-red-500/40 text-red-500">{regErr}</div>}
               <RegisterFormFields {...registerProps} />
             </div>
 
@@ -400,9 +400,9 @@ export default function AuthPage({ initialView = 'login' }) {
       <div className="relative z-10 w-full max-w-[1200px] flex flex-row items-center justify-center gap-12 p-12">
 
         {/* Left info panel */}
-        <div className={`flex flex-col w-[380px] h-[600px] rounded-[2.5rem] p-10 relative overflow-hidden shadow-2xl ${dark ? 'dk-card border border-[#c9a84c]/20' : 'glass-card border-[1.5px] border-indigo-200/60'}`}>
+        <div className={`flex flex-col w-[380px] h-[600px] rounded-2xl p-10 relative overflow-hidden shadow-2xl ${dark ? 'dk-card border border-[#c9a84c]/20' : 'glass-card border-[1.5px] border-indigo-200/60'}`}>
           <div className="flex items-center gap-3 mb-10">
-            <div className={`mc-glass-float w-12 h-12 rounded-[1.25rem] flex items-center justify-center shadow-xl ${
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-xl ${
               dark ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020]' : 'bg-gradient-to-br from-indigo-500 to-violet-600'
             }`} style={{ boxShadow: dark ? '0 8px 30px rgba(201,168,76,0.3)' : '0 8px 30px rgba(99,102,241,0.4)' }}>
               <GraduationCap size={24} className="text-white" />

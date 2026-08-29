@@ -154,7 +154,7 @@ export default function CGPACalculator() {
       </div>
 
       {/* Result card */}
-      <div className="mc-scale-in bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5">
+      <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] shadow-sm p-5 transition-all">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -176,12 +176,12 @@ export default function CGPACalculator() {
           {/* Grade reference */}
           <div className="flex flex-wrap gap-1.5">
             {Object.entries(GRADE_MAP).map(([g, p]) => (
-              <span key={g} className={`text-xs px-2 py-0.5 rounded-full border ${
+              <span key={g} className={`text-xs px-2 py-0.5 rounded-md border ${
                 p === null
-                  ? 'bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md text-gray-400 dark:text-gray-500 border-white/60 dark:border-[#2a2a40]'
+                  ? 'bg-slate-50 dark:bg-[#1c1c2e] text-gray-400 dark:text-gray-500 border-slate-200 dark:border-[#2a2a40]'
                   : p === 0
                   ? 'bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 border-red-100 dark:border-red-800'
-                  : 'bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md text-gray-500 dark:text-gray-400 border-white/60 dark:border-[#2a2a40]'
+                  : 'bg-slate-50 dark:bg-[#1c1c2e] text-gray-600 dark:text-gray-300 border-slate-200 dark:border-[#2a2a40]'
               }`}>
                 {g}={p ?? 'skip'}
               </span>
@@ -192,7 +192,7 @@ export default function CGPACalculator() {
 
       {/* GPA tab */}
       {tab === 'gpa' && (
-        <div className="mc-fade-up bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3">
+        <div className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] shadow-sm p-5 space-y-3">
           <div className="flex items-center justify-between mb-1">
             <h3 className="font-semibold text-gray-700 dark:text-white flex items-center gap-2">
               <Calculator size={15} className="text-indigo-500" />
@@ -203,12 +203,10 @@ export default function CGPACalculator() {
 
           <div className="space-y-3">
             {gpaRows.map((r, i) => (
-              <div key={r.id}
-                className="mc-fade-up p-3  bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md/50"
-                style={{ animationDelay: `${i * 50}ms` }}>
+              <div key={r.id} className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#1c1c2e] border border-slate-200/60 dark:border-[#2a2a40]">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                  <span className="text-xs text-gray-400">Course {i + 1}</span>
+                  <span className="text-xs text-gray-400 font-medium">Course {i + 1}</span>
                 </div>
                 <CourseRow
                   course={r}
@@ -221,7 +219,7 @@ export default function CGPACalculator() {
           </div>
 
           <button onClick={() => setGpaRows(prev => [...prev, emptyCourse()])}
-            className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition">
+            className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition pt-2">
             <Plus size={15} /> Add Course
           </button>
         </div>
@@ -229,11 +227,9 @@ export default function CGPACalculator() {
 
       {/* CGPA tab */}
       {tab === 'cgpa' && (
-        <div className="mc-fade-up space-y-4">
-          {semesters.map((sem, si) => (
-            <div key={sem.id}
-              className="bg-white/80 dark:bg-[#121220] backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 dark:border-[#c9a84c]/20 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)] dark:shadow-none transition-all  p-5 space-y-3"
-              style={{ animationDelay: `${si * 60}ms` }}>
+        <div className="space-y-4">
+          {semesters.map((sem) => (
+            <div key={sem.id} className="bg-white dark:bg-[#121220] rounded-xl border border-slate-200 dark:border-[#2a2a40] shadow-sm p-5 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <input
@@ -241,13 +237,13 @@ export default function CGPACalculator() {
                     onChange={e => setSemesters(prev => prev.map(s => s.id === sem.id ? { ...s, label: e.target.value } : s))}
                     className="font-semibold text-gray-700 dark:text-white bg-transparent text-sm border-b border-transparent hover:border-gray-300 focus:outline-none focus:border-indigo-400 w-32"
                   />
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-[#c9a84c]/20 text-indigo-600 dark:text-[#c9a84c]">
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-[#c9a84c]/20 text-indigo-600 dark:text-[#c9a84c]">
                     GPA {computeGpa(sem.courses)}
                   </span>
                 </div>
                 {semesters.length > 1 && (
                   <button onClick={() => setSemesters(prev => prev.filter(s => s.id !== sem.id))}
-                    className="text-xs text-red-400 hover:text-red-600 font-medium">
+                    className="text-xs text-red-500 hover:text-red-700 font-medium">
                     Remove
                   </button>
                 )}
@@ -255,10 +251,10 @@ export default function CGPACalculator() {
 
               <div className="space-y-3">
                 {sem.courses.map((c, i) => (
-                  <div key={c.id} className="p-3  bg-white/40 dark:bg-[#1c1c2e] backdrop-blur-md/50">
+                  <div key={c.id} className="p-3.5 rounded-lg bg-slate-50 dark:bg-[#1c1c2e] border border-slate-200/60 dark:border-[#2a2a40]">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{i + 1}</span>
-                      <span className="text-xs text-gray-400">Course {i + 1}</span>
+                      <span className="text-xs text-gray-400 font-medium">Course {i + 1}</span>
                     </div>
                     <CourseRow
                       course={c}
@@ -271,7 +267,7 @@ export default function CGPACalculator() {
               </div>
 
               <button onClick={() => addSemCourse(sem.id)}
-                className="flex items-center gap-2 text-sm font-medium text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition">
+                className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-[#c9a84c] hover:text-indigo-700 dark:hover:text-[#a87c30] transition pt-2">
                 <Plus size={14} /> Add Course
               </button>
             </div>
@@ -279,7 +275,7 @@ export default function CGPACalculator() {
 
           <button
             onClick={() => setSemesters(prev => [...prev, { id: Date.now(), label: `Semester ${prev.length + 1}`, courses: [emptyCourse()] }])}
-            className="w-full py-3 border-2 border-dashed border-gray-200 dark:border-[#2a2a40] text-gray-400 hover:border-indigo-400 hover:text-indigo-500 dark:hover:border-[#c9a84c] dark:hover:text-[#c9a84c] rounded-[2.5rem] transition text-sm font-medium"
+            className="w-full py-3 border-2 border-dashed border-slate-300 dark:border-[#2a2a40] text-slate-500 hover:border-indigo-400 hover:text-indigo-600 dark:hover:border-[#c9a84c] dark:hover:text-[#c9a84c] rounded-xl transition text-sm font-medium"
           >
             + Add Semester
           </button>

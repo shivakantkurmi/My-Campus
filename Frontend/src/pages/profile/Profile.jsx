@@ -62,22 +62,22 @@ export default function Profile() {
   const RoleIcon = roleMeta.icon;
   const roleColorCls = dark ? roleMeta.darkColor : roleMeta.lightColor;
 
-  /* ── Liquid Glass / Dark Premium Theme Classes ── */
+  /* ── Standardized Card & Input Theme Classes ── */
   const glassCard = dark 
-    ? 'bg-[#121220] rounded-[2.5rem] border border-[#232336]' 
-    : 'bg-white/80 backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)]';
+    ? 'bg-[#121220] rounded-xl border border-[#232336]' 
+    : 'bg-white rounded-xl border border-slate-200 shadow-sm';
   
   const glassInput = dark
     ? 'bg-[#1c1c2e] border-[#2a2a40] text-white placeholder-gray-500 focus:border-[#c9a84c]'
-    : 'bg-white/50 border-white/60 text-gray-900 placeholder-gray-400 focus:border-indigo-400 backdrop-blur-md shadow-sm';
+    : 'bg-white border-slate-200 text-gray-900 placeholder-gray-400 focus:border-indigo-500 shadow-sm';
 
-  const inputCls = `w-full pl-10 pr-4 py-3 rounded-[1.5rem] text-sm outline-none transition-all border ${glassInput}`;
+  const inputCls = `w-full pl-10 pr-4 py-2.5 rounded-lg text-sm outline-none transition-colors border ${glassInput}`;
 
-  const readonlyCls = `w-full pl-10 pr-4 py-3 rounded-[1.5rem] text-sm cursor-not-allowed ${
-    dark ? 'bg-[#12121e]/60 border border-[#2a2a40] text-gray-600' : 'bg-gray-50 border border-gray-200 text-gray-400'
+  const readonlyCls = `w-full pl-10 pr-4 py-2.5 rounded-lg text-sm cursor-not-allowed ${
+    dark ? 'bg-[#12121e]/60 border border-[#2a2a40] text-gray-600' : 'bg-slate-50 border border-slate-200 text-gray-400'
   }`;
 
-  const labelCls = `block text-xs font-bold mb-1.5 ${dark ? 'text-gray-400' : 'text-gray-600'}`;
+  const labelCls = `block text-xs font-semibold mb-1.5 ${dark ? 'text-gray-400' : 'text-slate-600'}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[320px_1fr] gap-5 lg:gap-6 items-start pb-10">

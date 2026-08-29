@@ -1,23 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ShieldCheck, Lock, Cookie, UserCheck, QrCode, FileText,
   Server, ArrowLeft, Sun, Moon, Sparkles, CheckCircle2,
-  ExternalLink, Mail, Eye, KeyRound, Clock, Settings, Search, ChevronRight, GraduationCap
+  Mail, Eye, KeyRound, Clock, Settings, Search, ChevronRight, GraduationCap
 } from 'lucide-react';
 import useThemeStore from '../../store/themeStore';
 import useAuthStore from '../../store/authStore';
-import { useAuroraCanvas } from '../../components/common/AuroraCanvas';
 
 export default function PrivacyPolicy() {
   const { dark, toggleTheme } = useThemeStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
-  const bgCanvasRef = useRef(null);
   const [activeSection, setActiveSection] = useState('overview');
   const [searchQuery, setSearchQuery] = useState('');
-
-  useAuroraCanvas(bgCanvasRef, dark, { density: 12000, maxAlpha: dark ? 0.35 : 0.2 });
 
   const triggerCookieSettings = () => {
     window.dispatchEvent(new CustomEvent('mc_open_cookie_preferences'));
@@ -36,7 +32,7 @@ export default function PrivacyPolicy() {
           <p>
             This Privacy Policy explains transparently how we collect, process, safeguard, and retain your personal and academic information when you use our web portal, notes sharing hub, anti-proxy QR attendance system, faculty cabin status tracker, and CGPA calculator.
           </p>
-          <div className={`p-4 rounded-2xl border ${dark ? 'bg-[#c9a84c]/10 border-[#c9a84c]/20 text-gray-200' : 'bg-indigo-50/70 border-indigo-200 text-indigo-900'}`}>
+          <div className={`p-4 rounded-xl border ${dark ? 'bg-[#c9a84c]/10 border-[#c9a84c]/20 text-gray-200' : 'bg-indigo-50/70 border-indigo-200 text-indigo-900'}`}>
             <div className="flex items-center gap-2 font-bold mb-1">
               <Sparkles size={16} className={dark ? 'text-[#c9a84c]' : 'text-indigo-600'} />
               <span>Core Privacy Commitment</span>
@@ -57,7 +53,7 @@ export default function PrivacyPolicy() {
           <p>To provide a personalized and secure experience, we collect the following categories of information:</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
               <div className="flex items-center gap-2 font-bold text-sm mb-2 text-indigo-400 dark:text-[#c9a84c]">
                 <KeyRound size={16} /> Account Information
               </div>
@@ -69,7 +65,7 @@ export default function PrivacyPolicy() {
               </ul>
             </div>
 
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
               <div className="flex items-center gap-2 font-bold text-sm mb-2 text-indigo-400 dark:text-[#c9a84c]">
                 <FileText size={16} /> Academic &amp; Study Notes
               </div>
@@ -81,7 +77,7 @@ export default function PrivacyPolicy() {
               </ul>
             </div>
 
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
               <div className="flex items-center gap-2 font-bold text-sm mb-2 text-indigo-400 dark:text-[#c9a84c]">
                 <QrCode size={16} /> Attendance &amp; Device Tokens
               </div>
@@ -93,7 +89,7 @@ export default function PrivacyPolicy() {
               </ul>
             </div>
 
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/30 border-white/10' : 'bg-white/70 border-indigo-100'}`}>
               <div className="flex items-center gap-2 font-bold text-sm mb-2 text-indigo-400 dark:text-[#c9a84c]">
                 <Clock size={16} /> Faculty Cabin &amp; Broadcasts
               </div>
@@ -202,7 +198,7 @@ export default function PrivacyPolicy() {
             We implement industry-standard safeguards to protect student and faculty records against unauthorized access, modification, or DDoS attacks:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-indigo-100'}`}>
               <h4 className="font-bold mb-1 flex items-center gap-2 text-indigo-400 dark:text-[#c9a84c]">
                 <Server size={16} /> API Rate Limiting
               </h4>
@@ -210,7 +206,7 @@ export default function PrivacyPolicy() {
                 Express rate limiters restrict requests across authentication endpoints, defending against credential stuffing, automated bots, and brute force login attempts.
               </p>
             </div>
-            <div className={`p-4 rounded-2xl border ${dark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-indigo-100'}`}>
+            <div className={`p-4 rounded-xl border ${dark ? 'bg-black/20 border-white/10' : 'bg-white/60 border-indigo-100'}`}>
               <h4 className="font-bold mb-1 flex items-center gap-2 text-indigo-400 dark:text-[#c9a84c]">
                 <Lock size={16} /> Strong Cryptography
               </h4>
@@ -247,7 +243,7 @@ export default function PrivacyPolicy() {
           <p className="text-xs sm:text-sm">
             For privacy inquiries, security reports, or technical support regarding your My-Campus account, please contact our administrative team:
           </p>
-          <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+          <div className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
             dark ? 'bg-[#0f0f1c] border-[#c9a84c]/20' : 'bg-white/80 border-indigo-100'
           }`}>
             <div>
@@ -257,10 +253,10 @@ export default function PrivacyPolicy() {
             </div>
             <Link
               to={user ? (user.role === 'admin' ? '/admin' : '/dashboard') : '/login'}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow ${
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all shadow ${
                 dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
-                  : 'bg-indigo-600 text-white'
+                  ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
               }`}
             >
               {user ? (user.role === 'admin' ? 'Open Admin Panel' : 'My Dashboard') : 'Sign In Portal'}
@@ -281,32 +277,28 @@ export default function PrivacyPolicy() {
 
   return (
     <div
-      className={`min-h-screen text-gray-900 dark:text-white transition-colors duration-300 relative selection:bg-[#c9a84c]/30`}
-      style={{ background: dark ? '#07070f' : '#eef2ff' }}
+      className={`min-h-screen text-slate-900 dark:text-slate-100 transition-colors duration-300 relative selection:bg-indigo-500/20 ${
+        dark
+          ? 'bg-gradient-to-b from-[#0B0F19] via-[#0F172A] to-[#0B0F19]'
+          : 'bg-gradient-to-b from-slate-50 via-indigo-50/25 to-slate-100'
+      }`}
     >
-      {/* Dynamic Aurora Canvas */}
-      <canvas
-        ref={bgCanvasRef}
-        className="fixed inset-0 w-full h-full pointer-events-none z-0"
-        style={{ opacity: dark ? 0.85 : 0.45 }}
-      />
-
       {/* ── Top Navigation Bar ── */}
       <header
-        className={`sticky top-0 z-40 backdrop-blur-xl border-b transition-all duration-300 ${
+        className={`sticky top-0 z-40 backdrop-blur-md border-b transition-all duration-150 ${
           dark
-            ? 'bg-[#07070f]/80 border-[#c9a84c]/15 shadow-xl shadow-black/40'
-            : 'bg-white/80 border-indigo-100 shadow-lg shadow-indigo-500/5'
+            ? 'bg-[#0B0F19]/90 border-slate-800 shadow-sm'
+            : 'bg-white/85 border-slate-200/80 shadow-sm'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate(-1)}
-              className={`p-2 rounded-full border transition-all ${
+              className={`p-2 rounded-lg border transition-colors ${
                 dark
-                  ? 'border-gray-700 text-gray-300 hover:text-white hover:border-[#c9a84c]'
-                  : 'border-indigo-200 text-gray-700 hover:bg-white/60'
+                  ? 'border-slate-700 text-slate-300 hover:text-white hover:bg-white/5'
+                  : 'border-slate-200 text-slate-700 hover:bg-slate-100'
               }`}
               title="Go Back"
             >
@@ -314,15 +306,15 @@ export default function PrivacyPolicy() {
             </button>
             <Link to="/" className="flex items-center gap-2.5">
               <div
-                className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-md ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center shadow-sm ${
                   dark
-                    ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] text-[#07070f]'
-                    : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white'
+                    ? 'bg-[#c9a84c] text-[#07070f]'
+                    : 'bg-indigo-600 text-white'
                 }`}
               >
                 <GraduationCap size={18} />
               </div>
-              <span className={`text-lg font-bold tracking-tight ${dark ? 'text-[#c9a84c]' : 'text-gray-900'}`}>
+              <span className={`text-lg font-bold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>
                 My-Campus
               </span>
             </Link>
@@ -331,23 +323,23 @@ export default function PrivacyPolicy() {
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={toggleTheme}
-              className={`p-2 sm:px-4 sm:py-2 rounded-full font-medium text-xs sm:text-sm transition-all flex items-center gap-1.5 border ${
+              className={`p-2 sm:px-3.5 sm:py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors flex items-center gap-1.5 border ${
                 dark
-                  ? 'text-gray-300 hover:text-white hover:bg-[#c9a84c]/10 border-gray-700'
-                  : 'text-gray-800 hover:bg-white/60 border-indigo-200/60'
+                  ? 'text-slate-300 hover:text-white hover:bg-white/5 border-slate-700'
+                  : 'text-slate-700 hover:bg-slate-100 border-slate-200'
               }`}
               title="Toggle Theme"
             >
-              {dark ? <Sun size={16} className="text-[#c9a84c]" /> : <Moon size={16} className="text-indigo-600" />}
+              {dark ? <Sun size={15} className="text-[#c9a84c]" /> : <Moon size={15} className="text-indigo-600" />}
               <span className="hidden sm:inline">{dark ? 'Light Mode' : 'Dark Mode'}</span>
             </button>
 
             {user ? (
               <Link
                 to="/dashboard"
-                className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow ${
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-sm ${
                   dark
-                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
+                    ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
                     : 'bg-indigo-600 text-white hover:bg-indigo-700'
                 }`}
               >
@@ -356,9 +348,9 @@ export default function PrivacyPolicy() {
             ) : (
               <Link
                 to="/login"
-                className={`px-5 py-2 rounded-full text-xs sm:text-sm font-bold transition-all shadow ${
+                className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors shadow-sm ${
                   dark
-                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
+                    ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
                     : 'bg-indigo-600 text-white hover:bg-indigo-700'
                 }`}
               >
@@ -411,26 +403,26 @@ export default function PrivacyPolicy() {
           <div className="lg:col-span-4 sticky top-24 space-y-4">
             {/* Search Input */}
             <div className="relative">
-              <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 placeholder="Search privacy topics..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className={`w-full pl-11 pr-4 py-3 rounded-2xl text-xs sm:text-sm backdrop-blur-md border transition-all focus:outline-none ${
+                className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm border transition-colors focus:outline-none ${
                   dark
-                    ? 'bg-[#121222]/80 border-[#c9a84c]/20 text-white placeholder-gray-500 focus:border-[#c9a84c]'
-                    : 'bg-white/80 border-indigo-100 text-gray-800 placeholder-gray-400 focus:border-indigo-500'
+                    ? 'bg-[#121222] border-[#2a2a40] text-white placeholder-gray-500 focus:border-[#c9a84c]'
+                    : 'bg-white border-slate-200 text-slate-800 placeholder-gray-400 focus:border-indigo-500 shadow-sm'
                 }`}
               />
             </div>
 
             {/* Quick Navigation Card */}
             <div
-              className={`p-4 rounded-3xl backdrop-blur-xl border ${
+              className={`p-4 rounded-xl border ${
                 dark
-                  ? 'bg-[#10101c]/80 border-[#c9a84c]/15 shadow-[0_10px_30px_rgba(0,0,0,0.5)]'
-                  : 'bg-white/80 border-indigo-100 shadow-lg shadow-indigo-500/5'
+                  ? 'bg-[#10101c] border-[#2a2a40] shadow-sm'
+                  : 'bg-white border-slate-200 shadow-sm'
               }`}
             >
               <h3 className={`text-xs font-bold uppercase tracking-wider mb-3 px-2 ${dark ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -442,7 +434,7 @@ export default function PrivacyPolicy() {
                     key={id}
                     href={`#${id}`}
                     onClick={() => setActiveSection(id)}
-                    className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                    className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all ${
                       activeSection === id
                         ? dark
                           ? 'bg-[#c9a84c]/20 text-[#c9a84c] shadow-sm'
@@ -462,8 +454,8 @@ export default function PrivacyPolicy() {
               </nav>
 
               {/* Cookie Action Box */}
-              <div className={`mt-5 p-3.5 rounded-2xl border text-center ${
-                dark ? 'bg-black/30 border-[#c9a84c]/15' : 'bg-indigo-50/50 border-indigo-100'
+              <div className={`mt-4 p-3.5 rounded-xl border text-center ${
+                dark ? 'bg-black/30 border-[#2a2a40]' : 'bg-slate-50 border-slate-200'
               }`}>
                 <div className="flex items-center justify-center gap-1.5 font-bold text-xs mb-1">
                   <Cookie size={14} className={dark ? 'text-[#c9a84c]' : 'text-indigo-600'} />
@@ -474,10 +466,10 @@ export default function PrivacyPolicy() {
                 </p>
                 <button
                   onClick={triggerCookieSettings}
-                  className={`w-full py-2 rounded-xl text-xs font-bold transition-all shadow active:scale-95 ${
+                  className={`w-full py-2 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95 ${
                     dark
-                      ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f]'
-                      : 'bg-indigo-600 text-white'
+                      ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                   }`}
                 >
                   Manage Preferences
@@ -487,33 +479,33 @@ export default function PrivacyPolicy() {
           </div>
 
           {/* Right Column: Policy Content Cards */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-8 space-y-5">
             {filteredSections.map(({ id, title, icon: Icon, content }) => (
               <section
                 key={id}
                 id={id}
-                className={`p-6 sm:p-8 rounded-3xl backdrop-blur-xl border transition-all duration-300 scroll-mt-24 ${
+                className={`p-6 sm:p-7 rounded-xl border transition-all duration-150 scroll-mt-24 ${
                   dark
-                    ? 'bg-[#10101f]/85 border-[#c9a84c]/15 shadow-[0_15px_40px_rgba(0,0,0,0.6)] hover:border-[#c9a84c]/30'
-                    : 'bg-white/85 border-indigo-100 shadow-xl shadow-indigo-500/5 hover:border-indigo-200'
+                    ? 'bg-[#10101f] border-[#2a2a40] shadow-sm hover:border-[#c9a84c]/30'
+                    : 'bg-white border-slate-200 shadow-sm hover:border-indigo-200'
                 }`}
               >
-                <div className="flex items-center gap-3.5 mb-4 pb-3 border-b border-gray-200/50 dark:border-white/10">
+                <div className="flex items-center gap-3.5 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
                   <div
-                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-md flex-shrink-0 ${
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center shadow-sm flex-shrink-0 ${
                       dark
-                        ? 'bg-gradient-to-br from-[#c9a84c] to-[#8a6020] text-[#07070f]'
-                        : 'bg-gradient-to-br from-indigo-500 to-violet-600 text-white'
+                        ? 'bg-[#c9a84c] text-[#07070f]'
+                        : 'bg-indigo-600 text-white'
                     }`}
                   >
-                    <Icon size={20} />
+                    <Icon size={18} />
                   </div>
-                  <h2 className={`text-lg sm:text-xl font-bold tracking-tight ${dark ? 'text-white' : 'text-gray-900'}`}>
+                  <h2 className={`text-base sm:text-lg font-bold tracking-tight ${dark ? 'text-white' : 'text-slate-900'}`}>
                     {title}
                   </h2>
                 </div>
 
-                <div className={`text-sm leading-relaxed ${dark ? 'text-gray-300' : 'text-gray-700'}`}>
+                <div className={`text-sm leading-relaxed ${dark ? 'text-gray-300' : 'text-slate-600'}`}>
                   {content}
                 </div>
               </section>
@@ -521,8 +513,8 @@ export default function PrivacyPolicy() {
 
             {filteredSections.length === 0 && (
               <div
-                className={`p-12 text-center rounded-3xl border ${
-                  dark ? 'bg-[#10101f]/60 border-gray-800 text-gray-400' : 'bg-white/60 border-indigo-100 text-gray-600'
+                className={`p-10 text-center rounded-xl border ${
+                  dark ? 'bg-[#10101f]/60 border-gray-800 text-gray-400' : 'bg-white border-slate-200 text-gray-600'
                 }`}
               >
                 <Search size={32} className="mx-auto mb-3 opacity-40" />

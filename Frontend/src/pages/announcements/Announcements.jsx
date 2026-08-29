@@ -80,14 +80,14 @@ export default function Announcements() {
 
   const canManage = user?.role === 'admin';
 
-  /* ── Liquid Glass / Dark Premium Theme Classes ── */
+  /* ── Standardized Card & Input Theme Classes ── */
   const glassCard = dark 
-    ? 'bg-[#121220] rounded-[2rem] border border-[#232336]' 
-    : 'bg-white/80 backdrop-blur-[40px] rounded-[2.5rem] border-[2px] border-white/90 shadow-[0_30px_80px_-15px_rgba(255,255,255,0.6)]';
+    ? 'bg-[#121220] rounded-xl border border-[#232336]' 
+    : 'bg-white rounded-xl border border-slate-200 shadow-sm';
   
   const glassInput = dark
     ? 'bg-[#1c1c2e] border-[#2a2a40] text-white placeholder-gray-500 focus:border-[#c9a84c]'
-    : 'bg-white/60 border-white/80 text-gray-900 placeholder-gray-400 focus:border-indigo-400 backdrop-blur-md shadow-sm';
+    : 'bg-white border-slate-200 text-gray-900 placeholder-gray-400 focus:border-indigo-500 shadow-sm';
 
   return (
     <div className="space-y-8 pb-10">
@@ -106,11 +106,11 @@ export default function Announcements() {
         {canManage && (
           <button
             onClick={() => { setEditing(null); setShowForm(true); }}
-            className={`px-6 py-3 rounded-2xl text-sm font-bold shadow-lg transition-transform hover:-translate-y-1 ${
-              dark ? 'bg-gradient-to-r from-[#c9a84c] to-[#8a6020] text-[#07070f] shadow-[#c9a84c]/20' : 'bg-gray-900 text-white'
+            className={`px-5 py-2.5 rounded-lg text-sm font-semibold shadow-sm transition-all duration-150 hover:-translate-y-0.5 ${
+              dark ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]' : 'bg-indigo-600 hover:bg-indigo-700 text-white'
             }`}
           >
-            <Plus size={16} className="inline mr-2" /> New Announcement
+            <Plus size={16} className="inline mr-1.5" /> New Announcement
           </button>
         )}
       </div>
@@ -118,12 +118,12 @@ export default function Announcements() {
       {/* ── Filters ── */}
       <div className="grid gap-3 sm:gap-4 sm:grid-cols-3">
         <div className="sm:col-span-2 relative">
-          <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search campus notices..."
-            className={`w-full pl-12 pr-4 py-3 rounded-2xl text-sm transition-all outline-none border ${glassInput}`}
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm transition-colors outline-none border ${glassInput}`}
           />
         </div>
 
@@ -131,12 +131,12 @@ export default function Announcements() {
         <div className="flex flex-wrap gap-2.5 items-center">
           
           {/* Priority Pill Filters */}
-          <div className={`flex p-1 rounded-2xl border ${dark ? 'bg-[#121220] border-[#232336]' : 'bg-white/60 border-white/80 backdrop-blur-md'}`}>
+          <div className={`flex p-1 rounded-lg border ${dark ? 'bg-[#121220] border-[#232336]' : 'bg-slate-100 border-slate-200'}`}>
             {priorityOptions.map((p) => (
               <button
                 key={p}
                 onClick={() => setPriority(p)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+                className={`px-3 py-1 rounded-md text-xs font-semibold capitalize transition-all ${
                   priority === p
                     ? dark
                       ? 'bg-[#c9a84c] text-[#07070f] shadow-sm'
@@ -156,7 +156,7 @@ export default function Announcements() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className={`pl-3 pr-8 py-2.5 rounded-2xl text-xs font-semibold appearance-none outline-none border transition-all cursor-pointer ${glassInput}`}
+              className={`pl-3 pr-8 py-2 rounded-lg text-xs font-semibold appearance-none outline-none border transition-all cursor-pointer ${glassInput}`}
             >
               {sortOptions.map((o) => (
                 <option key={o.value} value={o.value} className={dark ? 'bg-[#121220] text-white' : 'bg-white text-gray-900'}>
@@ -171,13 +171,13 @@ export default function Announcements() {
           {canManage && (
             <button
               onClick={() => { setEditing(null); setShowForm(true); }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-md active:scale-95 ${
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold transition-all shadow-sm ${
                 dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] hover:shadow-[0_0_20px_rgba(201,168,76,0.4)]'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/30'
+                  ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                  : 'bg-indigo-600 hover:bg-indigo-700 text-white'
               }`}
             >
-              <Plus size={16} /> New Notice
+              <Plus size={15} /> New Notice
             </button>
           )}
         </div>
@@ -187,15 +187,15 @@ export default function Announcements() {
       {loading && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className={`h-48 rounded-[2rem] animate-pulse ${dark ? 'bg-white/5' : 'bg-gray-100'}`} />
+            <div key={i} className={`h-40 rounded-xl animate-pulse ${dark ? 'bg-white/5 border border-white/5' : 'bg-slate-100 border border-slate-200'}`} />
           ))}
         </div>
       )}
 
       {/* Empty State */}
       {!loading && visibleAnnouncements.length === 0 && (
-        <div className={`p-12 text-center rounded-[2.5rem] border ${glassCard}`}>
-          <Sparkles size={40} className={`mx-auto mb-3 opacity-40 ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`} />
+        <div className={`p-10 text-center rounded-xl border ${glassCard}`}>
+          <Sparkles size={36} className={`mx-auto mb-3 opacity-40 ${dark ? 'text-[#c9a84c]' : 'text-indigo-600'}`} />
           <h3 className="text-base font-bold mb-1">No Announcements Found</h3>
           <p className="text-xs text-gray-500">There are currently no announcements matching your filters.</p>
         </div>
@@ -203,11 +203,11 @@ export default function Announcements() {
 
       {/* Announcements List */}
       {!loading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {visibleAnnouncements.map((item) => (
             <div
               key={item._id}
-              className={`p-6 flex flex-col transition-all duration-300 hover:-translate-y-1 ${glassCard}`}
+              className={`p-5 flex flex-col transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md ${glassCard}`}
             >
               {/* Header Badges */}
               <div className="flex items-center justify-between gap-2 mb-4">

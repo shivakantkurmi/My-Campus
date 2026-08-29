@@ -272,59 +272,52 @@ export default function Landing() {
           <div className="flex-1 flex flex-col justify-center max-w-xl">
 
             {/* Badge */}
-            <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-6 border ${dark
+            <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold tracking-wide mb-6 border ${dark
               ? 'bg-[#c9a84c]/10 border-[#c9a84c]/30 text-[#c9a84c]'
-              : 'bg-indigo-50/80 border-indigo-200 text-indigo-700'
+              : 'bg-indigo-50 border-indigo-200 text-indigo-700'
               }`}>
-              <Sparkles size={10} className="mc-heartbeat" />
+              <Sparkles size={13} />
               VIT Bhopal University · Campus Platform
             </div>
 
             {/* Particle canvas — "MY CAMPUS" text */}
-            <div className="relative w-full mb-4" style={{ height: 'clamp(140px, 28vw, 220px)' }}>
+            <div className="relative w-full mb-4" style={{ height: 'clamp(140px, 28vw, 200px)' }}>
               <canvas ref={canvasRef} className="absolute inset-0 w-full h-full block" style={{ cursor: 'none' }} />
             </div>
 
-            {/* Typewriter subtitle */}
+            {/* High-Conviction Headline (Issue 6) */}
             <h1 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight mb-4 drop-shadow-lg ${dark ? 'text-white' : 'text-gray-900'}`}>
-              One Portal for Everything<br /> for {' '}
-              <span className={dark ? 'mc-gold-shimmer' : ''} style={!dark ? {
-                background: 'linear-gradient(90deg,#ffffff,#c7d2fe,#a5b4fc,#ffffff)',
-                backgroundSize: '200% auto',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                animation: 'gradientShift 3s linear infinite',
-              } : {}}>{typed}<span className="mc-caret" /></span>
+              The Campus Operating System <br />
+              <span className={dark ? 'text-[#c9a84c]' : 'text-indigo-600'}>for VIT Bhopal.</span>
             </h1>
 
+            {/* Clear, Specific Subhead (Issue 6) */}
             <p className={`text-sm sm:text-base leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0 drop-shadow-md ${dark ? 'text-gray-300' : 'text-gray-700 font-medium'
               }`}>
-              Notes sharing, anti-proxy QR attendance, faculty cabin finder,
-              CGPA calculator — all in one place, built for VITians.
+              Streamline your academic day with anti-proxy QR attendance, real-time cabin tracking for 371+ faculty members, instant VIT GPA calculation, and peer study notes.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
               {user ? (
-                <Link to="/dashboard" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-8 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
-                  ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
-                  : 'bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700'
+                <Link to="/dashboard" className={`inline-flex items-center justify-center gap-2 px-7 py-3 text-sm font-semibold rounded-lg shadow-md transition-all duration-150 hover:-translate-y-0.5 ${dark
+                  ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                  : 'bg-indigo-600 text-white hover:bg-indigo-700'
                   }`}>
-                  Go to Dashboard <ArrowRight size={18} className="mc-nudge" />
+                  Go to Dashboard <ArrowRight size={16} />
                 </Link>
               ) : (
                 <>
-                  <Link to="/register" className={`mc-btn mc-liquid-hover inline-flex items-center justify-center gap-2 px-7 py-3.5 text-base font-bold rounded-2xl shadow-2xl transition-all hover:-translate-y-1 ${dark
-                    ? 'bg-gradient-to-r from-[#c9a84c] to-[#a87c30] text-[#07070f] shadow-[#c9a84c]/35 mc-glow-gold'
-                    : 'bg-white text-indigo-700 shadow-white/30 hover:shadow-white/50'
+                  <Link to="/register" className={`inline-flex items-center justify-center gap-2 px-7 py-3 text-sm font-semibold rounded-lg shadow-md transition-all duration-150 hover:-translate-y-0.5 ${dark
+                    ? 'bg-[#c9a84c] text-[#07070f] hover:bg-[#a87c30]'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
                     }`}>
-                    Join My-Campus <ArrowRight size={18} className="mc-nudge" />
+                    Get Started with VIT Mail <ArrowRight size={16} />
                   </Link>
 
-                  <Link to="/login" className={`px-8 py-3.5 rounded-full font-bold transition-all border ${dark
-                    ? 'border-gray-600 text-gray-300 hover:text-white hover:border-gray-400'
-                    : 'border-indigo-300 text-indigo-700 hover:bg-white/40 hover:border-indigo-400'
+                  <Link to="/login" className={`inline-flex items-center justify-center px-7 py-3 rounded-lg text-sm font-semibold transition-all duration-150 border ${dark
+                    ? 'border-gray-700 text-gray-200 hover:bg-white/5 hover:border-gray-500'
+                    : 'border-slate-300 text-slate-800 hover:bg-white/70 hover:border-slate-400'
                     }`}>
                     Sign In
                   </Link>
@@ -332,64 +325,53 @@ export default function Landing() {
               )}
             </div>
 
-            {/* Stats row */}
-            <div className="mt-10 flex gap-6 sm:gap-10">
-              {[{ val: '5+', label: 'Features' }, { val: '3', label: 'User Roles' }, { val: '1', label: 'Campus Admin' }].map(({ val, label }) => (
-                <div key={label} className="text-center">
-                  <div className={`text-2xl font-bold drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>{val}</div>
-                  <div className={`text-xs mt-0.5 ${dark ? 'text-gray-400' : 'text-gray-600 font-medium'}`}>{label}</div>
-                </div>
-              ))}
+            {/* Operational Metrics Bar (Issue 6) */}
+            <div className="mt-10 grid grid-cols-3 gap-4 pt-6 border-t border-slate-200/50 dark:border-white/10 max-w-lg">
+              <div>
+                <div className={`text-xl sm:text-2xl font-black drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>371+</div>
+                <div className={`text-xs mt-0.5 font-medium ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Faculty Cabins</div>
+              </div>
+              <div>
+                <div className={`text-xl sm:text-2xl font-black drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>10s</div>
+                <div className={`text-xs mt-0.5 font-medium ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Anti-Proxy Token</div>
+              </div>
+              <div>
+                <div className={`text-xl sm:text-2xl font-black drop-shadow ${dark ? 'text-[#c9a84c]' : 'text-indigo-700'}`}>100%</div>
+                <div className={`text-xs mt-0.5 font-medium ${dark ? 'text-gray-400' : 'text-gray-600'}`}>Native VIT Grade Scale</div>
+              </div>
             </div>
           </div>
 
-          {/* RIGHT — Floating campus image cards (like reference circular cards) */}
+          {/* RIGHT — Campus image cards */}
           <div className="lg:w-[380px] xl:w-[420px] flex-shrink-0 relative hidden lg:flex flex-col gap-4 items-end pr-4">
-            {CAMPUS_CARDS.map(({ img, label, sub, delay }, i) => (
+            {CAMPUS_CARDS.map(({ img, label, sub }, i) => (
               <div
                 key={label}
                 onClick={() => setHeroBg(img)}
-                className={`mc-glass-float group relative overflow-hidden cursor-pointer w-full transition-transform active:scale-95`}
+                className="group relative overflow-hidden cursor-pointer w-full transition-all duration-150 hover:-translate-y-0.5 shadow-lg"
                 style={{
-                  animationDelay: delay,
-                  animationDuration: `${4 + i * 1.5}s`,
-                  borderRadius: i === 1 ? '50%' : '20px',
-                  width: i === 1 ? '200px' : i === 0 ? '340px' : '280px',
-                  height: i === 1 ? '200px' : '160px',
+                  borderRadius: '16px',
+                  width: i === 0 ? '340px' : i === 1 ? '300px' : '260px',
+                  height: '140px',
                   alignSelf: i === 0 ? 'flex-end' : i === 1 ? 'center' : 'flex-start',
-                  border: dark ? '2px solid rgba(201,168,76,0.35)' : '2px solid rgba(255,255,255,0.50)',
-                  boxShadow: dark
-                    ? `0 20px 60px rgba(0,0,0,0.70), 0 0 30px rgba(201,168,76,0.15), inset 0 1px 0 rgba(255,255,255,0.06)`
-                    : `0 20px 60px rgba(99,102,241,0.25), 0 0 30px rgba(255,255,255,0.20), inset 0 1px 0 rgba(255,255,255,0.60)`,
+                  border: dark ? '1px solid rgba(201,168,76,0.30)' : '1px solid rgba(255,255,255,0.70)',
                 }}
               >
                 <img
                   src={img}
                   alt={label}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute bottom-4 left-4 right-4 z-20">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <MapPin size={10} className={dark ? 'text-[#c9a84c]' : 'text-gray-800'} />
-                    <p className={`text-xs font-bold ${dark ? 'text-[#c9a84c]' : 'text-gray-900'}`}>{label}</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute bottom-3 left-4 right-4 z-20">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <MapPin size={12} className={dark ? 'text-[#c9a84c]' : 'text-indigo-300'} />
+                    <p className="text-xs font-bold text-white">{label}</p>
                   </div>
-                  <p className={`text-[10px] ${dark ? 'text-gray-400' : 'text-gray-700 font-medium'}`}>{sub}</p>
+                  <p className="text-[11px] text-slate-300 font-medium">{sub}</p>
                 </div>
-
-                {/* Glass shimmer overlay */}
-                <div className="absolute inset-0 pointer-events-none" style={{
-                  background: dark
-                    ? 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, transparent 60%)'
-                    : 'linear-gradient(135deg, rgba(255,255,255,0.30) 0%, transparent 60%)',
-                }} />
               </div>
             ))}
-
-            {/* Decorative floating dot */}
-            <div className="mc-drift absolute -top-6 -left-4 w-3 h-3 rounded-full"
-              style={{ background: dark ? 'rgba(201,168,76,0.50)' : 'rgba(255,255,255,0.60)', animationDuration: '7s' }} />
-            <div className="mc-drift absolute bottom-8 -right-2 w-2 h-2 rounded-full"
-              style={{ background: dark ? 'rgba(201,168,76,0.35)' : 'rgba(200,210,255,0.70)', animationDuration: '9s', animationDelay: '2s' }} />
           </div>
         </div>
 
